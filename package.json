@@ -1,0 +1,24 @@
+{
+  "name": "@figma/plugin-typings",
+  "version": "1.1.0",
+  "description": "Typings for the Figma Plugin API",
+  "main": "",
+  "scripts": {
+    "test": "tsc --noEmit --typeRoots '[]' index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/figma/plugin-typings.git"
+  },
+  "keywords": [
+    "figma",
+    "plugin",
+    "typings"
+  ],
+  "author": "Figma",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/figma/plugin-typings/issues"
+  },
+  "homepage": "https://github.com/figma/plugin-typings#readme"
+}
