@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 10
+// Figma Plugin API version 1, update 11
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -85,25 +85,25 @@ declare global {
   }
 
   interface NotificationOptions {
-    timeout?: number,
+    timeout?: number
   }
 
   interface NotificationHandler {
-    cancel: () => void,
+    cancel: () => void
   }
 
   interface ShowUIOptions {
-    visible?: boolean,
-    width?: number,
-    height?: number,
+    visible?: boolean
+    width?: number
+    height?: number
   }
 
   interface UIPostMessageOptions {
-    origin?: string,
+    origin?: string
   }
 
   interface OnMessageProperties {
-    origin: string,
+    origin: string
   }
 
   type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
@@ -122,9 +122,10 @@ declare global {
   }
 
   interface ViewportAPI {
-    center: { x: number, y: number }
+    center: Vector
     zoom: number
     scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
+    readonly bounds: Rect
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -138,6 +139,13 @@ declare global {
   interface Vector {
     readonly x: number
     readonly y: number
+  }
+
+  interface Rect {
+    readonly x: number
+    readonly y: number
+    readonly width: number
+    readonly height: number
   }
 
   interface RGB {
@@ -376,15 +384,15 @@ declare global {
   type Action =
     { readonly type: "BACK" | "CLOSE" } |
     { readonly type: "URL", url: string } |
-    { readonly type: "NODE",
-      readonly destinationId: string | null,
-      readonly navigation: Navigation,
-      readonly transition: Transition | null,
-      readonly preserveScrollPosition: boolean,
+    { readonly type: "NODE"
+      readonly destinationId: string | null
+      readonly navigation: Navigation
+      readonly transition: Transition | null
+      readonly preserveScrollPosition: boolean
 
       // Only present if navigation == "OVERLAY" and the destination uses
       // overlay position type "RELATIVE"
-      readonly overlayRelativePosition?: Vector,
+      readonly overlayRelativePosition?: Vector
     }
 
   interface SimpleTransition {
@@ -402,13 +410,13 @@ declare global {
     readonly duration: number
   }
 
-  export type Transition = SimpleTransition | DirectionalTransition
+  type Transition = SimpleTransition | DirectionalTransition
 
   type Trigger =
     { readonly type: "ON_CLICK" | "ON_HOVER" | "ON_PRESS" | "ON_DRAG" } |
     { readonly type: "AFTER_TIMEOUT", readonly timeout: number } |
-    { readonly type: "MOUSE_ENTER" | "MOUSE_LEAVE" | "MOUSE_UP" | "MOUSE_DOWN",
-      readonly delay: number,
+    { readonly type: "MOUSE_ENTER" | "MOUSE_LEAVE" | "MOUSE_UP" | "MOUSE_DOWN"
+      readonly delay: number
     }
 
   type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY"
@@ -433,7 +441,7 @@ declare global {
   interface BaseNodeMixin {
     readonly id: string
     readonly parent: (BaseNode & ChildrenMixin) | null
-    name: string // Note: setting this also sets \`autoRename\` to false on TextNodes
+    name: string // Note: setting this also sets `autoRename` to false on TextNodes
     readonly removed: boolean
     toString(): string
     remove(): void
@@ -458,7 +466,19 @@ declare global {
     appendChild(child: SceneNode): void
     insertChild(index: number, child: SceneNode): void
 
+    findChildren(callback?: (node: SceneNode) => boolean): SceneNode[]
+    findChild(callback: (node: SceneNode) => boolean): SceneNode | null
+
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.filter(callback)
+     */
     findAll(callback?: (node: SceneNode) => boolean): SceneNode[]
+
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.find(callback)
+     */
     findOne(callback: (node: SceneNode) => boolean): SceneNode | null
   }
 
@@ -475,6 +495,7 @@ declare global {
 
     readonly width: number
     readonly height: number
+    constrainProportions: boolean
 
     layoutAlign: "MIN" | "CENTER" | "MAX" // applicable only inside auto-layout frames
 
@@ -491,6 +512,7 @@ declare global {
   }
 
   interface ContainerMixin {
+    expanded: boolean
     backgrounds: ReadonlyArray<Paint> // DEPRECATED: use 'fills' instead
     layoutGrids: ReadonlyArray<LayoutGrid>
     clipsContent: boolean
@@ -507,12 +529,14 @@ declare global {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed']
     strokes: ReadonlyArray<Paint>
     strokeWeight: number
+    strokeMiterLimit: number
     strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
     strokeCap: StrokeCap | PluginAPI['mixed']
     strokeJoin: StrokeJoin | PluginAPI['mixed']
     dashPattern: ReadonlyArray<number>
     fillStyleId: string | PluginAPI['mixed']
     strokeStyleId: string
+    outlineStroke(): VectorNode | null
   }
 
   interface CornerMixin {
@@ -532,20 +556,28 @@ declare global {
     exportAsync(settings?: ExportSettings): Promise<Uint8Array> // Defaults to PNG format
   }
 
+  interface RelaunchableMixin {
+
+    /** PROPOSED API ONLY */
+    setRelaunchData(relaunchData: { [command: string]: /* description */ string }): void
+  }
+
   interface ReactionMixin {
     readonly reactions: ReadonlyArray<Reaction>
   }
 
   interface DefaultShapeMixin extends
     BaseNodeMixin, SceneNodeMixin, ReactionMixin,
-    BlendMixin, GeometryMixin, LayoutMixin, ExportMixin {
+    BlendMixin, GeometryMixin, LayoutMixin,
+    ExportMixin, RelaunchableMixin {
   }
 
   interface DefaultFrameMixin extends
     BaseNodeMixin, SceneNodeMixin, ReactionMixin,
     ChildrenMixin, ContainerMixin,
     GeometryMixin, CornerMixin, RectangleCornerMixin,
-    BlendMixin, ConstraintMixin, LayoutMixin, ExportMixin {
+    BlendMixin, ConstraintMixin, LayoutMixin,
+    ExportMixin, RelaunchableMixin {
 
     layoutMode: "NONE" | "HORIZONTAL" | "VERTICAL"
     counterAxisSizingMode: "FIXED" | "AUTO" // applicable only if layoutMode != "NONE"
@@ -571,12 +603,24 @@ declare global {
 
     appendChild(child: PageNode): void
     insertChild(index: number, child: PageNode): void
+    findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>
+    findChild(callback: (node: PageNode) => boolean): PageNode | null
 
-    findAll(callback?: (node: (PageNode | SceneNode)) => boolean): Array<PageNode | SceneNode>
-    findOne(callback: (node: (PageNode | SceneNode)) => boolean): PageNode | SceneNode | null
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.filter(callback)
+     */
+    findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>
+
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.find(callback)
+     */
+    findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
   }
 
-  interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
+  interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin, RelaunchableMixin {
+
     readonly type: "PAGE"
     clone(): PageNode
 
@@ -593,12 +637,19 @@ declare global {
     clone(): FrameNode
   }
 
-  interface GroupNode extends BaseNodeMixin, SceneNodeMixin, ReactionMixin, ChildrenMixin, ContainerMixin, BlendMixin, LayoutMixin, ExportMixin {
+  interface GroupNode extends
+    BaseNodeMixin, SceneNodeMixin, ReactionMixin,
+    ChildrenMixin, ContainerMixin, BlendMixin,
+    LayoutMixin, ExportMixin, RelaunchableMixin {
+
     readonly type: "GROUP"
     clone(): GroupNode
   }
 
-  interface SliceNode extends BaseNodeMixin, SceneNodeMixin, LayoutMixin, ExportMixin {
+  interface SliceNode extends
+    BaseNodeMixin, SceneNodeMixin, LayoutMixin,
+    ExportMixin, RelaunchableMixin {
+
     readonly type: "SLICE"
     clone(): SliceNode
   }
@@ -694,12 +745,15 @@ declare global {
     readonly type: "INSTANCE"
     clone(): InstanceNode
     masterComponent: ComponentNode
+    scaleFactor: number
   }
 
   interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
     readonly type: "BOOLEAN_OPERATION"
     clone(): BooleanOperationNode
     booleanOperation: "UNION" | "INTERSECT" | "SUBTRACT" | "EXCLUDE"
+
+    expanded: boolean
   }
 
   type BaseNode =
