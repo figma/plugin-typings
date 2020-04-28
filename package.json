@@ -1,10 +1,10 @@
 {
   "name": "@figma/plugin-typings",
-  "version": "1.5.0",
+  "version": "1.7.0",
   "description": "Typings for the Figma Plugin API",
   "main": "",
   "scripts": {
-    "test": "tsc --noEmit --typeRoots '[]' index.d.ts"
+    "test": "tsc --noEmit --strict --typeRoots '[]' index.d.ts"
   },
   "repository": {
     "type": "git",
