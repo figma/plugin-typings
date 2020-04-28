@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 8
+// Figma Plugin API version 1, update 9
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -419,6 +419,14 @@ declare global {
 
   type OverflowDirection = "NONE" | "HORIZONTAL" | "VERTICAL" | "BOTH"
 
+  type OverlayPositionType = "CENTER" | "TOP_LEFT" | "TOP_CENTER" | "TOP_RIGHT" | "BOTTOM_LEFT" | "BOTTOM_CENTER" | "BOTTOM_RIGHT" | "MANUAL"
+
+  type OverlayBackground =
+    { readonly type: "NONE" } |
+    { readonly type: "SOLID_COLOR", readonly color: RGBA }
+
+  type OverlayBackgroundInteraction = "NONE" | "CLOSE_ON_CLICK_OUTSIDE"
+
   ////////////////////////////////////////////////////////////////////////////////
   // Mixins
 
@@ -467,6 +475,8 @@ declare global {
 
     readonly width: number
     readonly height: number
+
+    layoutAlign: "MIN" | "CENTER" | "MAX" // applicable only inside auto-layout frames
 
     resize(width: number, height: number): void
     resizeWithoutConstraints(width: number, height: number): void
@@ -537,8 +547,18 @@ declare global {
     GeometryMixin, CornerMixin, RectangleCornerMixin,
     BlendMixin, ConstraintMixin, LayoutMixin, ExportMixin {
 
+    layoutMode: "NONE" | "HORIZONTAL" | "VERTICAL"
+    counterAxisSizingMode: "FIXED" | "AUTO" // applicable only if layoutMode != "NONE"
+    horizontalPadding: number // applicable only if layoutMode != "NONE"
+    verticalPadding: number // applicable only if layoutMode != "NONE"
+    itemSpacing: number // applicable only if layoutMode != "NONE"
+
     overflowDirection: OverflowDirection // PROPOSED API ONLY
     numberOfFixedChildren: number // PROPOSED API ONLY
+
+    readonly overlayPositionType: OverlayPositionType // PROPOSED API ONLY
+    readonly overlayBackground: OverlayBackground // PROPOSED API ONLY
+    readonly overlayBackgroundInteraction: OverlayBackgroundInteraction // PROPOSED API ONLY
   }
 
   ////////////////////////////////////////////////////////////////////////////////
