@@ -435,6 +435,8 @@ declare global {
 
   type OverlayBackgroundInteraction = "NONE" | "CLOSE_ON_CLICK_OUTSIDE"
 
+  type PublishStatus = "UNPUBLISHED" | "CURRENT" | "CHANGED"
+
   ////////////////////////////////////////////////////////////////////////////////
   // Mixins
 
@@ -739,6 +741,7 @@ declare global {
     description: string
     readonly remote: boolean
     readonly key: string // The key to use with "importComponentByKeyAsync"
+    getPublishStatusAsync(): Promise<PublishStatus>
   }
 
   interface InstanceNode extends DefaultFrameMixin  {
@@ -805,6 +808,7 @@ declare global {
     remote: boolean
     readonly key: string // The key to use with "importStyleByKeyAsync"
     remove(): void
+    getPublishStatusAsync(): Promise<PublishStatus>
   }
 
   interface PaintStyle extends BaseStyle {
