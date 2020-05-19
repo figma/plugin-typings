@@ -13,7 +13,6 @@ This repository contains the typings for the Figma Plugin API.
     ```
 
 2. Configure _tsconfig.json_
-
     ```js
     {
         "compilerOptions": {
@@ -24,6 +23,8 @@ This repository contains the typings for the Figma Plugin API.
         }
     }
     ```
+    With config above, TypeScript will parse provided list of `"typeRoots"` folders for global available types (by default it's `"./node_modules/@types"`). Types should become globally available without needing to use import statements. We do it this way because the plugin API is part of the host environment, as opposed to being a package that a plugin includes.
+
 
 ## About
 
