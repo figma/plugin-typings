@@ -23,7 +23,9 @@ This repository contains the typings for the Figma Plugin API.
         }
     }
     ```
-    With config above, TypeScript will parse provided list of `"typeRoots"` folders for global available types (by default it's `"./node_modules/@types"`). Types should become globally available without needing to use import statements. We do it this way because the plugin API is part of the host environment, as opposed to being a package that a plugin includes.
+    The configuration above is needed for the TypeScript compiler to use type definitions found in both `./node_modules/@types` and `./node_modules/@figma`. Normally, most external type definitions are from DefinitelyTyped and are installed in `/@types`, which included by TypeScript by default. Since we host the plugin typings separately, they are installed outside in `/@figma` instead.
+
+    Types should become globally available without needing to use import statements. We do it this way because the plugin API is part of the host environment, as opposed to being a package that a plugin includes.
 
 
 ## About
