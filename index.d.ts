@@ -757,7 +757,7 @@ declare global {
   interface InstanceNode extends DefaultFrameMixin  {
     readonly type: "INSTANCE"
     clone(): InstanceNode
-    masterComponent: ComponentNode
+    mainComponent: ComponentNode
     scaleFactor: number
   }
 
