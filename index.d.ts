@@ -181,6 +181,7 @@ declare global {
     readonly color: RGBA
     readonly offset: Vector
     readonly radius: number
+    readonly spread?: number
     readonly visible: boolean
     readonly blendMode: BlendMode
   }
@@ -423,6 +424,14 @@ declare global {
 
   interface Easing {
     readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR"
+    readonly easingFunctionCubicBezier?: EasingFunctionBezier
+  }
+
+  interface EasingFunctionBezier {
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number
   }
 
   type OverflowDirection = "NONE" | "HORIZONTAL" | "VERTICAL" | "BOTH"
@@ -504,6 +513,7 @@ declare global {
 
     resize(width: number, height: number): void
     resizeWithoutConstraints(width: number, height: number): void
+    rescale(scale: number): void
   }
 
   interface BlendMixin {
@@ -805,7 +815,7 @@ declare global {
     readonly type: StyleType
     name: string
     description: string
-    remote: boolean
+    readonly remote: boolean
     readonly key: string // The key to use with "importStyleByKeyAsync"
     remove(): void
     getPublishStatusAsync(): Promise<PublishStatus>
