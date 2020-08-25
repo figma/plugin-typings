@@ -4,7 +4,7 @@ declare global {
   // Global variable with Figma's plugin API.
   const figma: PluginAPI
   const __html__: string
-  const __uiHtml__: {
+  const __uiFiles__: {
     [key: string]: string
   }
 
