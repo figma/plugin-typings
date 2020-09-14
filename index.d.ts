@@ -356,7 +356,6 @@ declare global {
   }
 
   type BlendMode =
-    "PASS_THROUGH" |
     "NORMAL" |
     "DARKEN" |
     "MULTIPLY" |
@@ -518,7 +517,7 @@ declare global {
 
   interface BlendMixin {
     opacity: number
-    blendMode: BlendMode
+    blendMode: "PASS_THROUGH" | BlendMode
     isMask: boolean
     effects: ReadonlyArray<Effect>
     effectStyleId: string
