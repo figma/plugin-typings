@@ -8,6 +8,10 @@ declare global {
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
     readonly command: string
+
+    // TODO figure out how to branch private plugin specific API
+    readonly fileKey: string | undefined
+
     readonly viewport: ViewportAPI
     closePlugin(message?: string): void
 
