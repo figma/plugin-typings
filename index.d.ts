@@ -4,6 +4,7 @@ declare global {
   // Global variable with Figma's plugin API.
   const figma: PluginAPI
   const __html__: string
+  const __uiFiles__: { [key: string]: string }
 
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
