@@ -65,6 +65,7 @@ declare global {
     getLocalGridStyles(): GridStyle[]
 
     importComponentByKeyAsync(key: string): Promise<ComponentNode>
+    importComponentSetByKeyAsync(key: string): Promise<ComponentSetNode>
     importStyleByKeyAsync(key: string): Promise<BaseStyle>
 
     listAvailableFontsAsync(): Promise<Font[]>
@@ -76,6 +77,7 @@ declare global {
     createImage(data: Uint8Array): Image
     getImageByHash(hash: string): Image
 
+    combineAsVariants(nodes: ReadonlyArray<ComponentNode>, parent: BaseNode & ChildrenMixin, index?: number): ComponentSetNode
     group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
     flatten(nodes: ReadonlyArray<BaseNode>, parent?: BaseNode & ChildrenMixin, index?: number): VectorNode
 
@@ -570,8 +572,24 @@ declare global {
     exportAsync(settings?: ExportSettings): Promise<Uint8Array> // Defaults to PNG format
   }
 
+  interface FramePrototypingMixin {
+    overflowDirection: OverflowDirection
+    numberOfFixedChildren: number
+
+    readonly overlayPositionType: OverlayPositionType
+    readonly overlayBackground: OverlayBackground
+    readonly overlayBackgroundInteraction: OverlayBackgroundInteraction
+  }
+
   interface ReactionMixin {
     readonly reactions: ReadonlyArray<Reaction>
+  }
+
+  interface PublishableMixin {
+    description: string
+    readonly remote: boolean
+    readonly key: string // The key to use with "importComponentByKeyAsync", "importComponentSetByKeyAsync", and "importStyleByKeyAsync"
+    getPublishStatusAsync(): Promise<PublishStatus>
   }
 
   interface DefaultShapeMixin extends
@@ -580,12 +598,11 @@ declare global {
     ExportMixin {
   }
 
-  interface DefaultFrameMixin extends
-    BaseNodeMixin, SceneNodeMixin, ReactionMixin,
-    ChildrenMixin, ContainerMixin,
-    GeometryMixin, CornerMixin, RectangleCornerMixin,
-    BlendMixin, ConstraintMixin, LayoutMixin,
-    ExportMixin {
+  interface BaseFrameMixin extends
+    BaseNodeMixin, SceneNodeMixin, ChildrenMixin,
+    ContainerMixin, GeometryMixin, CornerMixin,
+    RectangleCornerMixin, BlendMixin, ConstraintMixin,
+    LayoutMixin, ExportMixin {
 
     layoutMode: "NONE" | "HORIZONTAL" | "VERTICAL"
     counterAxisSizingMode: "FIXED" | "AUTO" // applicable only if layoutMode != "NONE"
@@ -597,14 +614,12 @@ declare global {
     gridStyleId: string
     clipsContent: boolean
     guides: ReadonlyArray<Guide>
-
-    overflowDirection: OverflowDirection
-    numberOfFixedChildren: number
-
-    readonly overlayPositionType: OverlayPositionType
-    readonly overlayBackground: OverlayBackground
-    readonly overlayBackgroundInteraction: OverlayBackgroundInteraction
   }
+
+  interface DefaultFrameMixin extends
+    BaseFrameMixin,
+    FramePrototypingMixin,
+    ReactionMixin {}
 
   ////////////////////////////////////////////////////////////////////////////////
   // Nodes
@@ -748,18 +763,19 @@ declare global {
     setRangeFillStyleId(start: number, end: number, value: string): void
   }
 
-  interface ComponentNode extends DefaultFrameMixin {
-    readonly type: "COMPONENT"
-    clone(): ComponentNode
-
-    createInstance(): InstanceNode
-    description: string
-    readonly remote: boolean
-    readonly key: string // The key to use with "importComponentByKeyAsync"
-    getPublishStatusAsync(): Promise<PublishStatus>
+  interface ComponentSetNode extends BaseFrameMixin, PublishableMixin {
+    readonly type: "COMPONENT_SET"
+    clone(): ComponentSetNode
+    readonly defaultVariant: ComponentNode
   }
 
-  interface InstanceNode extends DefaultFrameMixin  {
+  interface ComponentNode extends DefaultFrameMixin, PublishableMixin {
+    readonly type: "COMPONENT"
+    clone(): ComponentNode
+    createInstance(): InstanceNode
+  }
+
+  interface InstanceNode extends DefaultFrameMixin {
     readonly type: "INSTANCE"
     clone(): InstanceNode
     mainComponent: ComponentNode | null
@@ -815,15 +831,11 @@ declare global {
   // Styles
   type StyleType = "PAINT" | "TEXT" | "EFFECT" | "GRID"
 
-  interface BaseStyle {
+  interface BaseStyle extends PublishableMixin {
     readonly id: string
     readonly type: StyleType
     name: string
-    description: string
-    readonly remote: boolean
-    readonly key: string // The key to use with "importStyleByKeyAsync"
     remove(): void
-    getPublishStatusAsync(): Promise<PublishStatus>
   }
 
   interface PaintStyle extends BaseStyle {
