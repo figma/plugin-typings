@@ -799,6 +799,7 @@ declare global {
     SliceNode |
     FrameNode |
     GroupNode |
+    ComponentSetNode |
     ComponentNode |
     InstanceNode |
     BooleanOperationNode |
@@ -816,6 +817,7 @@ declare global {
     "SLICE" |
     "FRAME" |
     "GROUP" |
+    "COMPONENT_SET" |
     "COMPONENT" |
     "INSTANCE" |
     "BOOLEAN_OPERATION" |
