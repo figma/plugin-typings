@@ -516,7 +516,8 @@ declare global {
     readonly height: number
     constrainProportions: boolean
 
-    layoutAlign: "MIN" | "CENTER" | "MAX" | "STRETCH" // applicable only inside auto-layout frames
+    layoutAlign: "MIN" | "CENTER" | "MAX" | "STRETCH" | "INHERIT" // applicable only inside auto-layout frames
+    layoutGrow: number
 
     resize(width: number, height: number): void
     resizeWithoutConstraints(width: number, height: number): void
@@ -605,10 +606,21 @@ declare global {
     LayoutMixin, ExportMixin {
 
     layoutMode: "NONE" | "HORIZONTAL" | "VERTICAL"
+    primaryAxisSizingMode: "FIXED" | "AUTO" // applicable only if layoutMode != "NONE"
     counterAxisSizingMode: "FIXED" | "AUTO" // applicable only if layoutMode != "NONE"
-    horizontalPadding: number // applicable only if layoutMode != "NONE"
-    verticalPadding: number // applicable only if layoutMode != "NONE"
+
+    primaryAxisAlignItems: "MIN" | "MAX" | "CENTER" | "SPACE_BETWEEN" // applicable only if layoutMode != "NONE"
+    counterAxisAlignItems: "MIN" | "MAX" | "CENTER" // applicable only if layoutMode != "NONE"
+
+
+    paddingLeft: number // applicable only if layoutMode != "NONE"
+    paddingRight: number // applicable only if layoutMode != "NONE"
+    paddingTop: number // applicable only if layoutMode != "NONE"
+    paddingBottom: number // applicable only if layoutMode != "NONE"
     itemSpacing: number // applicable only if layoutMode != "NONE"
+
+    horizontalPadding: number // DEPRECATED: use the individual paddings
+    verticalPadding: number // DEPRECATED: use the individual paddings
 
     layoutGrids: ReadonlyArray<LayoutGrid>
     gridStyleId: string
