@@ -7,8 +7,9 @@ declare global {
   const __uiFiles__: {
     [key: string]: string
   }
+} // declare global
 
-  interface PluginAPI {
+  export interface PluginAPI {
     readonly apiVersion: "1.0.0"
     readonly command: string
 
@@ -87,36 +88,36 @@ declare global {
     exclude(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
   }
 
-  interface ClientStorageAPI {
+  export interface ClientStorageAPI {
     getAsync(key: string): Promise<any | undefined>
     setAsync(key: string, value: any): Promise<void>
   }
 
-  interface NotificationOptions {
+  export interface NotificationOptions {
     timeout?: number
   }
 
-  interface NotificationHandler {
+  export interface NotificationHandler {
     cancel: () => void
   }
 
-  interface ShowUIOptions {
+  export interface ShowUIOptions {
     visible?: boolean
     width?: number
     height?: number
   }
 
-  interface UIPostMessageOptions {
+  export interface UIPostMessageOptions {
     origin?: string
   }
 
-  interface OnMessageProperties {
+  export interface OnMessageProperties {
     origin: string
   }
 
-  type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
+  export type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
 
-  interface UIAPI {
+  export interface UIAPI {
     show(): void
     hide(): void
     resize(width: number, height: number): void
@@ -129,7 +130,7 @@ declare global {
     off(type: "message", callback: MessageEventHandler): void
   }
 
-  interface ViewportAPI {
+  export interface ViewportAPI {
     center: Vector
     zoom: number
     scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
@@ -139,52 +140,52 @@ declare global {
   ////////////////////////////////////////////////////////////////////////////////
   // Datatypes
 
-  type Transform = [
+  export type Transform = [
     [number, number, number],
     [number, number, number]
   ]
 
-  interface Vector {
+  export interface Vector {
     readonly x: number
     readonly y: number
   }
 
-  interface Rect {
+  export interface Rect {
     readonly x: number
     readonly y: number
     readonly width: number
     readonly height: number
   }
 
-  interface RGB {
+  export interface RGB {
     readonly r: number
     readonly g: number
     readonly b: number
   }
 
-  interface RGBA {
+  export interface RGBA {
     readonly r: number
     readonly g: number
     readonly b: number
     readonly a: number
   }
 
-  interface FontName {
+  export interface FontName {
     readonly family: string
     readonly style: string
   }
 
-  type TextCase = "ORIGINAL" | "UPPER" | "LOWER" | "TITLE"
+  export type TextCase = "ORIGINAL" | "UPPER" | "LOWER" | "TITLE"
 
-  type TextDecoration = "NONE" | "UNDERLINE" | "STRIKETHROUGH"
+  export type TextDecoration = "NONE" | "UNDERLINE" | "STRIKETHROUGH"
 
-  interface ArcData {
+  export interface ArcData {
     readonly startingAngle: number
     readonly endingAngle: number
     readonly innerRadius: number
   }
 
-  interface ShadowEffect {
+  export interface ShadowEffect {
     readonly type: "DROP_SHADOW" | "INNER_SHADOW"
     readonly color: RGBA
     readonly offset: Vector
@@ -194,27 +195,27 @@ declare global {
     readonly blendMode: BlendMode
   }
 
-  interface BlurEffect {
+  export interface BlurEffect {
     readonly type: "LAYER_BLUR" | "BACKGROUND_BLUR"
     readonly radius: number
     readonly visible: boolean
   }
 
-  type Effect = ShadowEffect | BlurEffect
+  export type Effect = ShadowEffect | BlurEffect
 
-  type ConstraintType = "MIN" | "CENTER" | "MAX" | "STRETCH" | "SCALE"
+  export type ConstraintType = "MIN" | "CENTER" | "MAX" | "STRETCH" | "SCALE"
 
-  interface Constraints {
+  export interface Constraints {
     readonly horizontal: ConstraintType
     readonly vertical: ConstraintType
   }
 
-  interface ColorStop {
+  export interface ColorStop {
     readonly position: number
     readonly color: RGBA
   }
 
-  interface ImageFilters {
+  export interface ImageFilters {
     readonly exposure?: number
     readonly contrast?: number
     readonly saturation?: number
@@ -224,7 +225,7 @@ declare global {
     readonly shadows?: number
   }
 
-  interface SolidPaint {
+  export interface SolidPaint {
     readonly type: "SOLID"
     readonly color: RGB
 
@@ -233,7 +234,7 @@ declare global {
     readonly blendMode?: BlendMode
   }
 
-  interface GradientPaint {
+  export interface GradientPaint {
     readonly type: "GRADIENT_LINEAR" | "GRADIENT_RADIAL" | "GRADIENT_ANGULAR" | "GRADIENT_DIAMOND"
     readonly gradientTransform: Transform
     readonly gradientStops: ReadonlyArray<ColorStop>
@@ -243,7 +244,7 @@ declare global {
     readonly blendMode?: BlendMode
   }
 
-  interface ImagePaint {
+  export interface ImagePaint {
     readonly type: "IMAGE"
     readonly scaleMode: "FILL" | "FIT" | "CROP" | "TILE"
     readonly imageHash: string | null
@@ -256,14 +257,14 @@ declare global {
     readonly blendMode?: BlendMode
   }
 
-  type Paint = SolidPaint | GradientPaint | ImagePaint
+  export type Paint = SolidPaint | GradientPaint | ImagePaint
 
-  interface Guide {
+  export interface Guide {
     readonly axis: "X" | "Y"
     readonly offset: number
   }
 
-  interface RowsColsLayoutGrid {
+  export interface RowsColsLayoutGrid {
     readonly pattern: "ROWS" | "COLUMNS"
     readonly alignment: "MIN" | "MAX" | "STRETCH" | "CENTER"
     readonly gutterSize: number
@@ -276,7 +277,7 @@ declare global {
     readonly color?: RGBA
   }
 
-  interface GridLayoutGrid {
+  export interface GridLayoutGrid {
     readonly pattern: "GRID"
     readonly sectionSize: number
 
@@ -284,21 +285,21 @@ declare global {
     readonly color?: RGBA
   }
 
-  type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
+  export type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
 
-  interface ExportSettingsConstraints {
+  export interface ExportSettingsConstraints {
     readonly type: "SCALE" | "WIDTH" | "HEIGHT"
     readonly value: number
   }
 
-  interface ExportSettingsImage {
+  export interface ExportSettingsImage {
     readonly format: "JPG" | "PNG"
     readonly contentsOnly?: boolean    // defaults to true
     readonly suffix?: string
     readonly constraint?: ExportSettingsConstraints
   }
 
-  interface ExportSettingsSVG {
+  export interface ExportSettingsSVG {
     readonly format: "SVG"
     readonly contentsOnly?: boolean    // defaults to true
     readonly suffix?: string
@@ -307,17 +308,17 @@ declare global {
     readonly svgSimplifyStroke?: boolean // defaults to true
   }
 
-  interface ExportSettingsPDF {
+  export interface ExportSettingsPDF {
     readonly format: "PDF"
     readonly contentsOnly?: boolean    // defaults to true
     readonly suffix?: string
   }
 
-  type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
+  export type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
 
-  type WindingRule = "NONZERO" | "EVENODD"
+  export type WindingRule = "NONZERO" | "EVENODD"
 
-  interface VectorVertex {
+  export interface VectorVertex {
     readonly x: number
     readonly y: number
     readonly strokeCap?: StrokeCap
@@ -326,44 +327,44 @@ declare global {
     readonly handleMirroring?: HandleMirroring
   }
 
-  interface VectorSegment {
+  export interface VectorSegment {
     readonly start: number
     readonly end: number
     readonly tangentStart?: Vector  // Defaults to { x: 0, y: 0 }
     readonly tangentEnd?: Vector  // Defaults to { x: 0, y: 0 }
   }
 
-  interface VectorRegion {
+  export interface VectorRegion {
     readonly windingRule: WindingRule
     readonly loops: ReadonlyArray<ReadonlyArray<number>>
   }
 
-  interface VectorNetwork {
+  export interface VectorNetwork {
     readonly vertices: ReadonlyArray<VectorVertex>
     readonly segments: ReadonlyArray<VectorSegment>
     readonly regions?: ReadonlyArray<VectorRegion> // Defaults to []
   }
 
-  interface VectorPath {
+  export interface VectorPath {
     readonly windingRule: WindingRule | "NONE"
     readonly data: string
   }
 
-  type VectorPaths = ReadonlyArray<VectorPath>
+  export type VectorPaths = ReadonlyArray<VectorPath>
 
-  interface LetterSpacing {
+  export interface LetterSpacing {
     readonly value: number
     readonly unit: "PIXELS" | "PERCENT"
   }
 
-  type LineHeight = {
+  export type LineHeight = {
     readonly value: number
     readonly unit: "PIXELS" | "PERCENT"
   } | {
     readonly unit: "AUTO"
   }
 
-  type BlendMode =
+  export type BlendMode =
     "NORMAL" |
     "DARKEN" |
     "MULTIPLY" |
@@ -383,13 +384,13 @@ declare global {
     "COLOR" |
     "LUMINOSITY"
 
-  interface Font {
+  export interface Font {
     fontName: FontName
   }
 
-  type Reaction = { action: Action, trigger: Trigger }
+  export type Reaction = { action: Action, trigger: Trigger }
 
-  type Action =
+  export type Action =
     { readonly type: "BACK" | "CLOSE" } |
     { readonly type: "URL", url: string } |
     { readonly type: "NODE"
@@ -399,17 +400,17 @@ declare global {
       readonly preserveScrollPosition: boolean
 
       // Only present if navigation == "OVERLAY" and the destination uses
-      // overlay position type "RELATIVE"
+      // overlay position export type "RELATIVE"
       readonly overlayRelativePosition?: Vector
     }
 
-  interface SimpleTransition {
+  export interface SimpleTransition {
     readonly type: "DISSOLVE" | "SMART_ANIMATE"
     readonly easing: Easing
     readonly duration: number
   }
 
-  interface DirectionalTransition {
+  export interface DirectionalTransition {
     readonly type: "MOVE_IN" | "MOVE_OUT" | "PUSH" | "SLIDE_IN" | "SLIDE_OUT"
     readonly direction: "LEFT" | "RIGHT" | "TOP" | "BOTTOM"
     readonly matchLayers: boolean
@@ -418,45 +419,45 @@ declare global {
     readonly duration: number
   }
 
-  type Transition = SimpleTransition | DirectionalTransition
+  export type Transition = SimpleTransition | DirectionalTransition
 
-  type Trigger =
+  export type Trigger =
     { readonly type: "ON_CLICK" | "ON_HOVER" | "ON_PRESS" | "ON_DRAG" } |
     { readonly type: "AFTER_TIMEOUT", readonly timeout: number } |
     { readonly type: "MOUSE_ENTER" | "MOUSE_LEAVE" | "MOUSE_UP" | "MOUSE_DOWN"
       readonly delay: number
     }
 
-  type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY"
+  export type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY"
 
-  interface Easing {
+  export interface Easing {
     readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR"
     readonly easingFunctionCubicBezier?: EasingFunctionBezier
   }
 
-  interface EasingFunctionBezier {
+  export interface EasingFunctionBezier {
     x1: number,
     y1: number,
     x2: number,
     y2: number
   }
 
-  type OverflowDirection = "NONE" | "HORIZONTAL" | "VERTICAL" | "BOTH"
+  export type OverflowDirection = "NONE" | "HORIZONTAL" | "VERTICAL" | "BOTH"
 
-  type OverlayPositionType = "CENTER" | "TOP_LEFT" | "TOP_CENTER" | "TOP_RIGHT" | "BOTTOM_LEFT" | "BOTTOM_CENTER" | "BOTTOM_RIGHT" | "MANUAL"
+  export type OverlayPositionType = "CENTER" | "TOP_LEFT" | "TOP_CENTER" | "TOP_RIGHT" | "BOTTOM_LEFT" | "BOTTOM_CENTER" | "BOTTOM_RIGHT" | "MANUAL"
 
-  type OverlayBackground =
+  export type OverlayBackground =
     { readonly type: "NONE" } |
     { readonly type: "SOLID_COLOR", readonly color: RGBA }
 
-  type OverlayBackgroundInteraction = "NONE" | "CLOSE_ON_CLICK_OUTSIDE"
+  export type OverlayBackgroundInteraction = "NONE" | "CLOSE_ON_CLICK_OUTSIDE"
 
-  type PublishStatus = "UNPUBLISHED" | "CURRENT" | "CHANGED"
+  export type PublishStatus = "UNPUBLISHED" | "CURRENT" | "CHANGED"
 
   ////////////////////////////////////////////////////////////////////////////////
   // Mixins
 
-  interface BaseNodeMixin {
+  export interface BaseNodeMixin {
     readonly id: string
     readonly parent: (BaseNode & ChildrenMixin) | null
     name: string // Note: setting this also sets `autoRename` to false on TextNodes
@@ -474,12 +475,12 @@ declare global {
     setRelaunchData(data: { [command: string]: /* description */ string }): void
   }
 
-  interface SceneNodeMixin {
+  export interface SceneNodeMixin {
     visible: boolean
     locked: boolean
   }
 
-  interface ChildrenMixin {
+  export interface ChildrenMixin {
     readonly children: ReadonlyArray<SceneNode>
 
     appendChild(child: SceneNode): void
@@ -501,11 +502,11 @@ declare global {
     findOne(callback: (node: SceneNode) => boolean): SceneNode | null
   }
 
-  interface ConstraintMixin {
+  export interface ConstraintMixin {
     constraints: Constraints
   }
 
-  interface LayoutMixin {
+  export interface LayoutMixin {
     readonly absoluteTransform: Transform
     relativeTransform: Transform
     x: number
@@ -524,7 +525,7 @@ declare global {
     rescale(scale: number): void
   }
 
-  interface BlendMixin {
+  export interface BlendMixin {
     opacity: number
     blendMode: "PASS_THROUGH" | BlendMode
     isMask: boolean
@@ -532,17 +533,17 @@ declare global {
     effectStyleId: string
   }
 
-  interface ContainerMixin {
+  export interface ContainerMixin {
     expanded: boolean
     backgrounds: ReadonlyArray<Paint> // DEPRECATED: use 'fills' instead
     backgroundStyleId: string // DEPRECATED: use 'fillStyleId' instead
   }
 
-  type StrokeCap = "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
-  type StrokeJoin = "MITER" | "BEVEL" | "ROUND"
-  type HandleMirroring = "NONE" | "ANGLE" | "ANGLE_AND_LENGTH"
+  export type StrokeCap = "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
+  export type StrokeJoin = "MITER" | "BEVEL" | "ROUND"
+  export type HandleMirroring = "NONE" | "ANGLE" | "ANGLE_AND_LENGTH"
 
-  interface GeometryMixin {
+  export interface GeometryMixin {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed']
     strokes: ReadonlyArray<Paint>
     strokeWeight: number
@@ -556,24 +557,24 @@ declare global {
     outlineStroke(): VectorNode | null
   }
 
-  interface CornerMixin {
+  export interface CornerMixin {
     cornerRadius: number | PluginAPI['mixed']
     cornerSmoothing: number
   }
 
-  interface RectangleCornerMixin {
+  export interface RectangleCornerMixin {
     topLeftRadius: number
     topRightRadius: number
     bottomLeftRadius: number
     bottomRightRadius: number
   }
 
-  interface ExportMixin {
+  export interface ExportMixin {
     exportSettings: ReadonlyArray<ExportSettings>
     exportAsync(settings?: ExportSettings): Promise<Uint8Array> // Defaults to PNG format
   }
 
-  interface FramePrototypingMixin {
+  export interface FramePrototypingMixin {
     overflowDirection: OverflowDirection
     numberOfFixedChildren: number
 
@@ -582,24 +583,24 @@ declare global {
     readonly overlayBackgroundInteraction: OverlayBackgroundInteraction
   }
 
-  interface ReactionMixin {
+  export interface ReactionMixin {
     readonly reactions: ReadonlyArray<Reaction>
   }
 
-  interface PublishableMixin {
+  export interface PublishableMixin {
     description: string
     readonly remote: boolean
     readonly key: string // The key to use with "importComponentByKeyAsync", "importComponentSetByKeyAsync", and "importStyleByKeyAsync"
     getPublishStatusAsync(): Promise<PublishStatus>
   }
 
-  interface DefaultShapeMixin extends
+  export interface DefaultShapeMixin extends
     BaseNodeMixin, SceneNodeMixin, ReactionMixin,
     BlendMixin, GeometryMixin, LayoutMixin,
     ExportMixin {
   }
 
-  interface BaseFrameMixin extends
+  export interface BaseFrameMixin extends
     BaseNodeMixin, SceneNodeMixin, ChildrenMixin,
     ContainerMixin, GeometryMixin, CornerMixin,
     RectangleCornerMixin, BlendMixin, ConstraintMixin,
@@ -628,7 +629,7 @@ declare global {
     guides: ReadonlyArray<Guide>
   }
 
-  interface DefaultFrameMixin extends
+  export interface DefaultFrameMixin extends
     BaseFrameMixin,
     FramePrototypingMixin,
     ReactionMixin {}
@@ -636,7 +637,7 @@ declare global {
   ////////////////////////////////////////////////////////////////////////////////
   // Nodes
 
-  interface DocumentNode extends BaseNodeMixin {
+  export interface DocumentNode extends BaseNodeMixin {
     readonly type: "DOCUMENT"
 
     readonly children: ReadonlyArray<PageNode>
@@ -659,7 +660,7 @@ declare global {
     findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
   }
 
-  interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
+  export interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
 
     readonly type: "PAGE"
     clone(): PageNode
@@ -673,12 +674,12 @@ declare global {
     readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null
   }
 
-  interface FrameNode extends DefaultFrameMixin {
+  export interface FrameNode extends DefaultFrameMixin {
     readonly type: "FRAME"
     clone(): FrameNode
   }
 
-  interface GroupNode extends
+  export interface GroupNode extends
     BaseNodeMixin, SceneNodeMixin, ReactionMixin,
     ChildrenMixin, ContainerMixin, BlendMixin,
     LayoutMixin, ExportMixin {
@@ -687,7 +688,7 @@ declare global {
     clone(): GroupNode
   }
 
-  interface SliceNode extends
+  export interface SliceNode extends
     BaseNodeMixin, SceneNodeMixin, LayoutMixin,
     ExportMixin {
 
@@ -695,36 +696,36 @@ declare global {
     clone(): SliceNode
   }
 
-  interface RectangleNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, RectangleCornerMixin {
+  export interface RectangleNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, RectangleCornerMixin {
     readonly type: "RECTANGLE"
     clone(): RectangleNode
   }
 
-  interface LineNode extends DefaultShapeMixin, ConstraintMixin {
+  export interface LineNode extends DefaultShapeMixin, ConstraintMixin {
     readonly type: "LINE"
     clone(): LineNode
   }
 
-  interface EllipseNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+  export interface EllipseNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
     readonly type: "ELLIPSE"
     clone(): EllipseNode
     arcData: ArcData
   }
 
-  interface PolygonNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+  export interface PolygonNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
     readonly type: "POLYGON"
     clone(): PolygonNode
     pointCount: number
   }
 
-  interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+  export interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
     readonly type: "STAR"
     clone(): StarNode
     pointCount: number
     innerRadius: number
   }
 
-  interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+  export interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
     readonly type: "VECTOR"
     clone(): VectorNode
     vectorNetwork: VectorNetwork
@@ -732,7 +733,7 @@ declare global {
     handleMirroring: HandleMirroring | PluginAPI['mixed']
   }
 
-  interface TextNode extends DefaultShapeMixin, ConstraintMixin {
+  export interface TextNode extends DefaultShapeMixin, ConstraintMixin {
     readonly type: "TEXT"
     clone(): TextNode
     readonly hasMissingFont: boolean
@@ -775,26 +776,26 @@ declare global {
     setRangeFillStyleId(start: number, end: number, value: string): void
   }
 
-  interface ComponentSetNode extends BaseFrameMixin, PublishableMixin {
+  export interface ComponentSetNode extends BaseFrameMixin, PublishableMixin {
     readonly type: "COMPONENT_SET"
     clone(): ComponentSetNode
     readonly defaultVariant: ComponentNode
   }
 
-  interface ComponentNode extends DefaultFrameMixin, PublishableMixin {
+  export interface ComponentNode extends DefaultFrameMixin, PublishableMixin {
     readonly type: "COMPONENT"
     clone(): ComponentNode
     createInstance(): InstanceNode
   }
 
-  interface InstanceNode extends DefaultFrameMixin {
+  export interface InstanceNode extends DefaultFrameMixin {
     readonly type: "INSTANCE"
     clone(): InstanceNode
     mainComponent: ComponentNode | null
     scaleFactor: number
   }
 
-  interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
+  export interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
     readonly type: "BOOLEAN_OPERATION"
     clone(): BooleanOperationNode
     booleanOperation: "UNION" | "INTERSECT" | "SUBTRACT" | "EXCLUDE"
@@ -802,12 +803,12 @@ declare global {
     expanded: boolean
   }
 
-  type BaseNode =
+  export type BaseNode =
     DocumentNode |
     PageNode |
     SceneNode
 
-  type SceneNode =
+  export type SceneNode =
     SliceNode |
     FrameNode |
     GroupNode |
@@ -823,7 +824,7 @@ declare global {
     RectangleNode |
     TextNode
 
-  type NodeType =
+  export type NodeType =
     "DOCUMENT" |
     "PAGE" |
     "SLICE" |
@@ -843,21 +844,21 @@ declare global {
 
   ////////////////////////////////////////////////////////////////////////////////
   // Styles
-  type StyleType = "PAINT" | "TEXT" | "EFFECT" | "GRID"
+  export type StyleType = "PAINT" | "TEXT" | "EFFECT" | "GRID"
 
-  interface BaseStyle extends PublishableMixin {
+  export interface BaseStyle extends PublishableMixin {
     readonly id: string
     readonly type: StyleType
     name: string
     remove(): void
   }
 
-  interface PaintStyle extends BaseStyle {
+  export interface PaintStyle extends BaseStyle {
     type: "PAINT"
     paints: ReadonlyArray<Paint>
   }
 
-  interface TextStyle extends BaseStyle {
+  export interface TextStyle extends BaseStyle {
     type: "TEXT"
     fontSize: number
     textDecoration: TextDecoration
@@ -869,12 +870,12 @@ declare global {
     textCase: TextCase
   }
 
-  interface EffectStyle extends BaseStyle {
+  export interface EffectStyle extends BaseStyle {
     type: "EFFECT"
     effects: ReadonlyArray<Effect>
   }
 
-  interface GridStyle extends BaseStyle {
+  export interface GridStyle extends BaseStyle {
     type: "GRID"
     layoutGrids: ReadonlyArray<LayoutGrid>
   }
@@ -882,10 +883,9 @@ declare global {
   ////////////////////////////////////////////////////////////////////////////////
   // Other
 
-  interface Image {
+  export interface Image {
     readonly hash: string
     getBytesAsync(): Promise<Uint8Array>
   }
-  } // declare global
 
   export {}
