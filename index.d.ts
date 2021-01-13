@@ -404,7 +404,7 @@ declare global {
     }
 
   interface SimpleTransition {
-    readonly type: "DISSOLVE" | "SMART_ANIMATE"
+    readonly type: "DISSOLVE" | "SMART_ANIMATE" | "SCROLL_ANIMATE"
     readonly easing: Easing
     readonly duration: number
   }
@@ -427,7 +427,7 @@ declare global {
       readonly delay: number
     }
 
-  type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY"
+  type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY" | "SCROLL_TO"
 
   interface Easing {
     readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR"
