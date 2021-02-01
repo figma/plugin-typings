@@ -63,10 +63,16 @@ declare global {
     getLocalTextStyles(): TextStyle[]
     getLocalEffectStyles(): EffectStyle[]
     getLocalGridStyles(): GridStyle[]
-    moveLocalPaintStyleAfter(targetNode: PaintStyle, reference: PaintStyle | "start"): void
-    moveLocalTextStyleAfter(targetNode: TextStyle, reference: TextStyle | "start"): void
-    moveLocalEffectStyleAfter(targetNode: EffectStyle, reference: EffectStyle | "start"): void
-    moveLocalGridStyleAfter(targetNode: GridStyle, reference: GridStyle | "start"): void
+
+    moveLocalPaintStyleAfter(targetNode: PaintStyle, reference: PaintStyle | null): void
+    moveLocalTextStyleAfter(targetNode: TextStyle, reference: TextStyle | null): void
+    moveLocalEffectStyleAfter(targetNode: EffectStyle, reference: EffectStyle | null): void
+    moveLocalGridStyleAfter(targetNode: GridStyle, reference: GridStyle | null): void
+
+    moveLocalPaintFolderAfter(targetFolder: string, reference: string | null): void
+    moveLocalTextFolderAfter(targetFolder: string, reference: string | null): void
+    moveLocalEffectFolderAfter(targetFolder: string, reference: string | null): void
+    moveLocalGridFolderAfter(targetFolder: string, reference: string | null): void
 
     importComponentByKeyAsync(key: string): Promise<ComponentNode>
     importComponentSetByKeyAsync(key: string): Promise<ComponentSetNode>
