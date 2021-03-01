@@ -437,7 +437,7 @@ declare global {
       readonly delay: number
     }
 
-  type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY" | "SCROLL_TO"
+  type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY" | "SCROLL_TO" | "CHANGE_TO"
 
   interface Easing {
     readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR"
