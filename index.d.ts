@@ -34,6 +34,9 @@ declare global {
     once(type: "selectionchange" | "currentpagechange" | "close", callback: () => void): void
     off(type: "selectionchange" | "currentpagechange" | "close", callback: () => void): void
 
+    triggerUndo(): void
+    commitUndo(): void
+
     readonly mixed: unique symbol
 
     createRectangle(): RectangleNode
