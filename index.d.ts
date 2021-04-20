@@ -801,6 +801,7 @@ declare global {
     readonly type: "INSTANCE"
     clone(): InstanceNode
     mainComponent: ComponentNode | null
+    swapComponent(componentNode: ComponentNode): void
     scaleFactor: number
   }
 
