@@ -596,8 +596,13 @@ declare global {
     readonly reactions: ReadonlyArray<Reaction>
   }
 
+  interface DocumentationLink {
+    readonly uri: string
+  }
+
   interface PublishableMixin {
     description: string
+    documentationLinks: ReadonlyArray<DocumentationLink>
     readonly remote: boolean
     readonly key: string // The key to use with "importComponentByKeyAsync", "importComponentSetByKeyAsync", and "importStyleByKeyAsync"
     getPublishStatusAsync(): Promise<PublishStatus>
@@ -802,6 +807,7 @@ declare global {
     clone(): InstanceNode
     mainComponent: ComponentNode | null
     swapComponent(componentNode: ComponentNode): void
+    detachInstance(): FrameNode
     scaleFactor: number
   }
 
