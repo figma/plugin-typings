@@ -807,7 +807,7 @@ declare global {
     clone(): InstanceNode
     mainComponent: ComponentNode | null
     swapComponent(componentNode: ComponentNode): void
-    detachInstance: FrameNode
+    detachInstance(): FrameNode
     scaleFactor: number
   }
 
