@@ -259,6 +259,7 @@ declare global {
     readonly imageHash: string | null
     readonly imageTransform?: Transform // setting for "CROP"
     readonly scalingFactor?: number // setting for "TILE"
+    readonly rotation?: number // setting for "FILL" | "FIT" | "TILE"
     readonly filters?: ImageFilters
 
     readonly visible?: boolean
