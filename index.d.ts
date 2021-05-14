@@ -431,11 +431,29 @@ declare global {
   type Transition = SimpleTransition | DirectionalTransition
 
   type Trigger =
-    { readonly type: "ON_CLICK" | "ON_HOVER" | "ON_PRESS" | "ON_DRAG" } |
-    { readonly type: "AFTER_TIMEOUT", readonly timeout: number } |
-    { readonly type: "MOUSE_ENTER" | "MOUSE_LEAVE" | "MOUSE_UP" | "MOUSE_DOWN"
-      readonly delay: number
-    }
+    | { readonly type: "ON_CLICK" | "ON_HOVER" | "ON_PRESS" | "ON_DRAG" }
+    | {
+        readonly type: "AFTER_TIMEOUT";
+        readonly timeout: number;
+      }
+    | {
+        readonly type:
+          | "MOUSE_ENTER"
+          | "MOUSE_LEAVE"
+          | "MOUSE_UP"
+          | "MOUSE_DOWN";
+        readonly delay: number;
+      }
+    | {
+        readonly type: "ON_KEY_DOWN";
+        readonly device:
+          | "KEYBOARD"
+          | "XBOX_ONE"
+          | "PS4"
+          | "SWITCH_PRO"
+          | "UNKNOWN_CONTROLLER";
+        readonly keyCodes: ReadonlyArray<number>;
+      };
 
   type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY" | "SCROLL_TO" | "CHANGE_TO"
 
