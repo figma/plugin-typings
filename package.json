@@ -16,7 +16,7 @@
     "typings"
   ],
   "author": "Figma",
-  "license": "ISC",
+  "license": "MIT License",
   "bugs": {
     "url": "https://github.com/figma/plugin-typings/issues"
   },
