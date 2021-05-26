@@ -305,6 +305,7 @@ declare global {
   interface ExportSettingsImage {
     readonly format: "JPG" | "PNG"
     readonly contentsOnly?: boolean    // defaults to true
+    readonly useAbsoluteBounds?: boolean    // defaults to false
     readonly suffix?: string
     readonly constraint?: ExportSettingsConstraints
   }
@@ -312,6 +313,7 @@ declare global {
   interface ExportSettingsSVG {
     readonly format: "SVG"
     readonly contentsOnly?: boolean    // defaults to true
+    readonly useAbsoluteBounds?: boolean    // defaults to false
     readonly suffix?: string
     readonly svgOutlineText?: boolean  // defaults to true
     readonly svgIdAttribute?: boolean  // defaults to false
@@ -321,6 +323,7 @@ declare global {
   interface ExportSettingsPDF {
     readonly format: "PDF"
     readonly contentsOnly?: boolean    // defaults to true
+    readonly useAbsoluteBounds?: boolean    // defaults to false
     readonly suffix?: string
   }
 
