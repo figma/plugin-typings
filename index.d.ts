@@ -374,6 +374,11 @@ declare global {
     readonly unit: "AUTO"
   }
 
+  type HyperlinkTarget = {
+    type: "URL" | "NODE"
+    value: string
+  }
+
   type BlendMode =
     "NORMAL" |
     "DARKEN" |
@@ -784,6 +789,7 @@ declare global {
     textDecoration: TextDecoration | PluginAPI['mixed']
     letterSpacing: LetterSpacing | PluginAPI['mixed']
     lineHeight: LineHeight | PluginAPI['mixed']
+    hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
 
     characters: string
     insertCharacters(start: number, characters: string, useStyle?: "BEFORE" | "AFTER"): void
@@ -801,6 +807,8 @@ declare global {
     setRangeLetterSpacing(start: number, end: number, value: LetterSpacing): void
     getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
     setRangeLineHeight(start: number, end: number, value: LineHeight): void
+    getRangeHyperlink(start: number, end: number): HyperlinkTarget | null | PluginAPI['mixed']
+    setRangeHyperlink(start: number, end: number, value: HyperlinkTarget | null): void
     getRangeFills(start: number, end: number): Paint[] | PluginAPI['mixed']
     setRangeFills(start: number, end: number, value: Paint[]): void
     getRangeTextStyleId(start: number, end: number): string | PluginAPI['mixed']
