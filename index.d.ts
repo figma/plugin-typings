@@ -112,6 +112,7 @@ declare global {
 
   interface ShowUIOptions {
     visible?: boolean
+    title?: string
     width?: number
     height?: number
   }
