@@ -47,6 +47,9 @@ declare global {
     createComponent(): ComponentNode
     createPage(): PageNode
     createSlice(): SliceNode
+    createSticky(): StickyNode
+    createConnector(): ConnectorNode
+    createShapeWithText(): ShapeWithTextNode
     /**
      * [DEPRECATED]: This API often fails to create a valid boolean operation. Use figma.union, figma.subtract, figma.intersect and figma.exclude instead.
      */
@@ -672,6 +675,21 @@ declare global {
     FramePrototypingMixin,
     ReactionMixin {}
 
+  interface OpaqueNodeMixin  {
+    readonly id: string
+    readonly absoluteTransform: Transform
+    relativeTransform: Transform
+    x: number
+    y: number
+    readonly width: number
+    readonly height: number
+    readonly removed: boolean
+    remove(): void
+    readonly parent: (BaseNode & ChildrenMixin) | null
+    name: string
+    toString(): string
+  }
+
   ////////////////////////////////////////////////////////////////////////////////
   // Nodes
 
@@ -844,6 +862,18 @@ declare global {
     booleanOperation: "UNION" | "INTERSECT" | "SUBTRACT" | "EXCLUDE"
 
     expanded: boolean
+  }
+
+  interface StickyNode extends OpaqueNodeMixin {
+    readonly type: "STICKY"
+  }
+
+  interface ConnectorNode extends OpaqueNodeMixin {
+    readonly type: "CONNECTOR"
+  }
+
+  interface ShapeWithTextNode extends OpaqueNodeMixin {
+    readonly type: "SHAPE_WITH_TEXT"
   }
 
   type BaseNode =
