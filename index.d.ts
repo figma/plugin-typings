@@ -49,6 +49,9 @@ declare global {
     createComponent(): ComponentNode
     createPage(): PageNode
     createSlice(): SliceNode
+    createSticky(): StickyNode
+    createConnector(): ConnectorNode
+    createShapeWithText(): ShapeWithTextNode
     /**
      * [DEPRECATED]: This API often fails to create a valid boolean operation. Use figma.union, figma.subtract, figma.intersect and figma.exclude instead.
      */
@@ -622,6 +625,20 @@ declare global {
     outlineStroke(): VectorNode | null
   }
 
+  interface MinimalFillsMixin {
+    fills: ReadonlyArray<Paint> | PluginAPI['mixed']
+    fillStyleId: string | PluginAPI['mixed']
+  }
+
+interface MinimalStrokesMixin {
+    strokes: ReadonlyArray<Paint>
+    strokeStyleId: string
+    strokeWeight: number
+    strokeJoin: StrokeJoin | PluginAPI['mixed']
+    strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
+    dashPattern: ReadonlyArray<number>
+  }
+
   interface CornerMixin {
     cornerRadius: number | PluginAPI['mixed']
     cornerSmoothing: number
@@ -703,6 +720,82 @@ declare global {
     BaseFrameMixin,
     FramePrototypingMixin,
     ReactionMixin {}
+
+  interface OpaqueNodeMixin  {
+    readonly id: string
+    readonly absoluteTransform: Transform
+    relativeTransform: Transform
+    x: number
+    y: number
+    readonly width: number
+    readonly height: number
+    readonly removed: boolean
+    remove(): void
+    readonly parent: (BaseNode & ChildrenMixin) | null
+    name: string
+    toString(): string
+
+    getPluginData(key: string): string
+    setPluginData(key: string, value: string): void
+
+    // Namespace is a string that must be at least 3 alphanumeric characters, and should
+    // be a name related to your plugin. Other plugins will be able to read this data.
+    getSharedPluginData(namespace: string, key: string): string
+    setSharedPluginData(namespace: string, key: string, value: string): void
+    setRelaunchData(data: { [command: string]: /* description */ string }): void
+  }
+
+  interface MinimalBlendMixin {
+    readonly opacity?: number
+    readonly blendMode?: BlendMode
+  }
+
+  interface TextSublayerNode {
+    readonly hasMissingFont: boolean
+
+    paragraphIndent: number
+    paragraphSpacing: number
+
+    fontSize: number | PluginAPI['mixed']
+    fontName: FontName | PluginAPI['mixed']
+    textCase: TextCase | PluginAPI['mixed']
+    textDecoration: TextDecoration | PluginAPI['mixed']
+    letterSpacing: LetterSpacing | PluginAPI['mixed']
+    lineHeight: LineHeight | PluginAPI['mixed']
+    hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
+
+    characters: string
+    insertCharacters(start: number, characters: string, useStyle?: "BEFORE" | "AFTER"): void
+    deleteCharacters(start: number, end: number): void
+
+    getRangeFontSize(start: number, end: number): number | PluginAPI['mixed']
+    setRangeFontSize(start: number, end: number, value: number): void
+    getRangeFontName(start: number, end: number): FontName | PluginAPI['mixed']
+    setRangeFontName(start: number, end: number, value: FontName): void
+    getRangeTextCase(start: number, end: number): TextCase | PluginAPI['mixed']
+    setRangeTextCase(start: number, end: number, value: TextCase): void
+    getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
+    setRangeTextDecoration(start: number, end: number, value: TextDecoration): void
+    getRangeLetterSpacing(start: number, end: number): LetterSpacing | PluginAPI['mixed']
+    setRangeLetterSpacing(start: number, end: number, value: LetterSpacing): void
+    getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
+    setRangeLineHeight(start: number, end: number, value: LineHeight): void
+    getRangeHyperlink(start: number, end: number): HyperlinkTarget | null | PluginAPI['mixed']
+    setRangeHyperlink(start: number, end: number, value: HyperlinkTarget | null): void
+    getRangeFills(start: number, end: number): Paint[] | PluginAPI['mixed']
+    setRangeFills(start: number, end: number, value: Paint[]): void
+    getRangeTextStyleId(start: number, end: number): string | PluginAPI['mixed']
+    setRangeTextStyleId(start: number, end: number, value: string): void
+    getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
+    setRangeFillStyleId(start: number, end: number, value: string): void
+
+  }
+
+  interface ConnectorEndpoint {
+    position?: { x: number, y: number }
+    magnet?: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' 
+    endpointNodeId?: string
+  }
 
   ////////////////////////////////////////////////////////////////////////////////
   // Nodes
@@ -882,6 +975,30 @@ declare global {
     expanded: boolean
   }
 
+  interface StickyNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, ExportMixin {
+    readonly type: "STICKY"
+    readonly text: TextSublayerNode
+  }
+
+  interface ShapeWithTextNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
+    readonly type: "SHAPE_WITH_TEXT"
+    shapeType: 'SQUARE' | 'ELLIPSE' | 'ROUNDED_RECTANGLE' | 'DIAMOND' | 'TRIANGLE_UP' | 'TRIANGLE_DOWN' | 'PARALLELOGRAM_RIGHT' | 'PARALLELOGRAM_LEFT' 
+    readonly text: TextSublayerNode
+    readonly cornerRadius?: number
+
+    resize(width: number, height: number): void
+    rescale(scale: number): void
+  }
+
+  interface ConnectorNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
+    readonly type: "CONNECTOR"
+    readonly text: TextSublayerNode 
+    readonly cornerRadius?: number
+    connectorLineType: 'ELBOWED' | 'STRAIGHT'
+    connectorStart: ConnectorEndpoint
+    connectorEnd: ConnectorEndpoint
+  }
+
   type BaseNode =
     DocumentNode |
     PageNode |
@@ -901,7 +1018,10 @@ declare global {
     EllipseNode |
     PolygonNode |
     RectangleNode |
-    TextNode
+    TextNode |
+    StickyNode |
+    ConnectorNode |
+    ShapeWithTextNode
 
   type NodeType =
     "DOCUMENT" |
