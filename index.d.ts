@@ -895,7 +895,10 @@ declare global {
     EllipseNode |
     PolygonNode |
     RectangleNode |
-    TextNode
+    TextNode |
+    StickyNode |
+    ConnectorNode |
+    ShapeWithTextNode
 
   type NodeType =
     "DOCUMENT" |
