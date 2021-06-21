@@ -934,6 +934,13 @@ declare global {
     readonly hash: string
     getBytesAsync(): Promise<Uint8Array>
   }
-  } // declare global
 
-  export {}
+  ////////////////////////////////////////////////////////////////////////////////
+  // Undo history
+
+  commitUndo(): void;
+  triggerUndo(): void;
+  
+} // declare global
+
+export {}
