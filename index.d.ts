@@ -16,6 +16,7 @@ declare global {
 
     readonly fileKey: string | undefined
 
+    readonly timer: TimerAPI
     readonly viewport: ViewportAPI
     closePlugin(message?: string): void
 
