@@ -8,12 +8,15 @@ declare global {
     [key: string]: string
   }
 
+  type EventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone" | "run"
+
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
     readonly command: string
 
     readonly fileKey: string | undefined
 
+    readonly timer?: TimerAPI
     readonly viewport: ViewportAPI
     closePlugin(message?: string): void
 
@@ -32,9 +35,9 @@ declare global {
     readonly root: DocumentNode
     currentPage: PageNode
 
-    on(type: "selectionchange" | "currentpagechange" | "close" | "run", callback: (event?: RunEvent) => void): void
-    once(type: "selectionchange" | "currentpagechange" | "close" | "run", callback: (event?: RunEvent) => void): void
-    off(type: "selectionchange" | "currentpagechange" | "close" | "run", callback: (event?: RunEvent) => void): void
+    on(type: EventType, callback: () => void): void
+    once(type: EventType, callback: () => void): void
+    off(type: EventType, callback: () => void): void
 
     readonly mixed: unique symbol
 
@@ -144,6 +147,17 @@ declare global {
     on(type: "message", callback: MessageEventHandler): void
     once(type: "message", callback: MessageEventHandler): void
     off(type: "message", callback: MessageEventHandler): void
+  }
+
+  interface TimerAPI {
+    readonly remaining: number
+    readonly total: number
+    readonly state: "STOPPED" | "PAUSED" | "RUNNING"
+
+    pause: () => void
+    resume: () => void
+    start: (seconds: number) => void
+    stop: () => void
   }
 
   interface ViewportAPI {
@@ -533,10 +547,10 @@ declare global {
 
   interface ConnectorEndpointEndpointNodeIdAndMagnet {
     endpointNodeId: string
-    magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' 
+    magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT'
   }
 
-  type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId 
+  type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId
 
   ////////////////////////////////////////////////////////////////////////////////
   // Mixins
@@ -635,7 +649,7 @@ declare global {
     strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
     dashPattern: ReadonlyArray<number>
   }
-  
+
   interface MinimalFillsMixin {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed']
     fillStyleId: string | PluginAPI['mixed']
@@ -646,7 +660,7 @@ declare global {
     outlineStroke(): VectorNode | null
   }
 
-  
+
   interface CornerMixin {
     cornerRadius: number | PluginAPI['mixed']
     cornerSmoothing: number
@@ -932,7 +946,7 @@ declare global {
 
   interface ShapeWithTextNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
     readonly type: "SHAPE_WITH_TEXT"
-    shapeType: 'SQUARE' | 'ELLIPSE' | 'ROUNDED_RECTANGLE' | 'DIAMOND' | 'TRIANGLE_UP' | 'TRIANGLE_DOWN' | 'PARALLELOGRAM_RIGHT' | 'PARALLELOGRAM_LEFT' 
+    shapeType: 'SQUARE' | 'ELLIPSE' | 'ROUNDED_RECTANGLE' | 'DIAMOND' | 'TRIANGLE_UP' | 'TRIANGLE_DOWN' | 'PARALLELOGRAM_RIGHT' | 'PARALLELOGRAM_LEFT'
     readonly text: TextSublayerNode
     readonly cornerRadius?: number
 
@@ -942,7 +956,7 @@ declare global {
 
   interface ConnectorNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
     readonly type: "CONNECTOR"
-    readonly text: TextSublayerNode 
+    readonly text: TextSublayerNode
     readonly cornerRadius?: number
     connectorLineType: 'ELBOWED' | 'STRAIGHT'
     connectorStart: ConnectorEndpoint
