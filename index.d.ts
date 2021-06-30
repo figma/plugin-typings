@@ -383,10 +383,6 @@ declare global {
     value: string
   }
 
-  type TextListOptions = {
-    type: "ORDERED" | "UNORDERED" | "NONE"
-  }
-
   type BlendMode =
     "NORMAL" |
     "DARKEN" |
@@ -823,10 +819,6 @@ declare global {
     setRangeTextStyleId(start: number, end: number, value: string): void
     getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
     setRangeFillStyleId(start: number, end: number, value: string): void
-    getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
-    setRangeListOptions(start: number, end: number, value: TextListOptions): void
-    getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
-    setRangeIndentation(start: number, end: number, value: number): void
   }
 
   interface ComponentSetNode extends BaseFrameMixin, PublishableMixin {
