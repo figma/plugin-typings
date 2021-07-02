@@ -21,6 +21,9 @@ declare global {
 
     showUI(html: string, options?: ShowUIOptions): void
     readonly ui: UIAPI
+    
+    commitUndo(): void;
+    triggerUndo(): void;
 
     readonly clientStorage: ClientStorageAPI
 
