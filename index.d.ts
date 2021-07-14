@@ -498,6 +498,22 @@ declare global {
 
   type PublishStatus = "UNPUBLISHED" | "CURRENT" | "CHANGED"
 
+  interface ConnectorEndpointPosition {
+    position: { x: number, y: number }
+  }
+
+  interface ConnectorEndpointPositionAndEndpointNodeId {
+    position: { x: number, y: number }
+    endpointNodeId: string
+  }
+
+  interface ConnectorEndpointEndpointNodeIdAndMagnet {
+    endpointNodeId: string
+    magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' 
+  }
+
+  type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId 
+
   ////////////////////////////////////////////////////////////////////////////////
   // Mixins
 
@@ -587,34 +603,26 @@ declare global {
   type StrokeJoin = "MITER" | "BEVEL" | "ROUND"
   type HandleMirroring = "NONE" | "ANGLE" | "ANGLE_AND_LENGTH"
 
-  interface GeometryMixin {
-    fills: ReadonlyArray<Paint> | PluginAPI['mixed']
+  interface MinimalStrokesMixin {
     strokes: ReadonlyArray<Paint>
-    strokeWeight: number
-    strokeMiterLimit: number
-    strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
-    strokeCap: StrokeCap | PluginAPI['mixed']
-    strokeJoin: StrokeJoin | PluginAPI['mixed']
-    dashPattern: ReadonlyArray<number>
-    fillStyleId: string | PluginAPI['mixed']
     strokeStyleId: string
-    outlineStroke(): VectorNode | null
+    strokeWeight: number
+    strokeJoin: StrokeJoin | PluginAPI['mixed']
+    strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
+    dashPattern: ReadonlyArray<number>
   }
-
+  
   interface MinimalFillsMixin {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed']
     fillStyleId: string | PluginAPI['mixed']
   }
-
-interface MinimalStrokesMixin {
-    strokes: ReadonlyArray<Paint>
-    strokeStyleId: string
-    strokeWeight: number
-    strokeJoin: StrokeJoin | PluginAPI['mixed']
-    strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
-    dashPattern: ReadonlyArray<number>
+  interface GeometryMixin extends MinimalStrokesMixin, MinimalStrokesMixin {
+    strokeCap: StrokeCap | PluginAPI['mixed']
+    strokeMiterLimit: number
+    outlineStroke(): VectorNode | null
   }
 
+  
   interface CornerMixin {
     cornerRadius: number | PluginAPI['mixed']
     cornerSmoothing: number
@@ -697,28 +705,13 @@ interface MinimalStrokesMixin {
     FramePrototypingMixin,
     ReactionMixin {}
 
-  interface OpaqueNodeMixin  {
-    readonly id: string
+  interface OpaqueNodeMixin extends BaseNodeMixin  {
     readonly absoluteTransform: Transform
     relativeTransform: Transform
     x: number
     y: number
     readonly width: number
     readonly height: number
-    readonly removed: boolean
-    remove(): void
-    readonly parent: (BaseNode & ChildrenMixin) | null
-    name: string
-    toString(): string
-
-    getPluginData(key: string): string
-    setPluginData(key: string, value: string): void
-
-    // Namespace is a string that must be at least 3 alphanumeric characters, and should
-    // be a name related to your plugin. Other plugins will be able to read this data.
-    getSharedPluginData(namespace: string, key: string): string
-    setSharedPluginData(namespace: string, key: string, value: string): void
-    setRelaunchData(data: { [command: string]: /* description */ string }): void
   }
 
   interface MinimalBlendMixin {
@@ -765,22 +758,6 @@ interface MinimalStrokesMixin {
     getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
     setRangeFillStyleId(start: number, end: number, value: string): void
   }
-
-  interface ConnectorEndpointPosition {
-    position: { x: number, y: number }
-  }
-
-  interface ConnectorEndpointPositionAndEndpointNodeId {
-    position: { x: number, y: number }
-    endpointNodeId: string
-  }
-
-  interface ConnectorEndpointEndpointNodeIdAndMagnet {
-    endpointNodeId: string
-    magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' 
-  }
-
-  type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId 
 
   ////////////////////////////////////////////////////////////////////////////////
   // Nodes
