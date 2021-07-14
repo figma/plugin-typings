@@ -543,7 +543,7 @@ declare global {
 
   interface BaseNodeMixin {
     readonly id: string
-    readonly paent: (BaseNode & ChildrenMixin) | null
+    readonly parent: (BaseNode & ChildrenMixin) | null
     name: string // Note: setting this also sets `autoRename` to false on TextNodes
     readonly removed: boolean
     toString(): string
