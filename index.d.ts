@@ -766,11 +766,21 @@ interface MinimalStrokesMixin {
     setRangeFillStyleId(start: number, end: number, value: string): void
   }
 
-  interface ConnectorEndpoint {
-    position?: { x: number, y: number }
-    magnet?: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' 
-    endpointNodeId?: string
+  interface ConnectorEndpointPosition {
+    position: { x: number, y: number }
   }
+
+  interface ConnectorEndpointPositionAndEndpointNodeId {
+    position: { x: number, y: number }
+    endpointNodeId: string
+  }
+
+  interface ConnectorEndpointEndpointNodeIdAndMagnet {
+    endpointNodeId: string
+    magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' 
+  }
+
+  type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId 
 
   ////////////////////////////////////////////////////////////////////////////////
   // Nodes
