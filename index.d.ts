@@ -640,7 +640,7 @@ declare global {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed']
     fillStyleId: string | PluginAPI['mixed']
   }
-  interface GeometryMixin extends MinimalStrokesMixin, MinimalStrokesMixin {
+  interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
     strokeCap: StrokeCap | PluginAPI['mixed']
     strokeMiterLimit: number
     outlineStroke(): VectorNode | null
