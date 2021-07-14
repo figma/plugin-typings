@@ -764,7 +764,6 @@ interface MinimalStrokesMixin {
     setRangeTextStyleId(start: number, end: number, value: string): void
     getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
     setRangeFillStyleId(start: number, end: number, value: string): void
-
   }
 
   interface ConnectorEndpoint {
