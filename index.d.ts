@@ -104,6 +104,7 @@ declare global {
 
   interface NotificationOptions {
     timeout?: number
+    error?: boolean
   }
 
   interface NotificationHandler {
