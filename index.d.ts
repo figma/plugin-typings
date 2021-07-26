@@ -412,7 +412,7 @@ declare global {
     fontName: FontName
   }
 
-  type Reaction = { action: Action, trigger: Trigger }
+  type Reaction = { action: Action | null, trigger: Trigger | null }
 
   type Action =
     { readonly type: "BACK" | "CLOSE" } |
@@ -626,7 +626,7 @@ declare global {
   }
 
   interface ReactionMixin {
-    readonly reactions: ReadonlyArray<Reaction>
+    reactions: ReadonlyArray<Reaction>
   }
 
   interface DocumentationLink {
