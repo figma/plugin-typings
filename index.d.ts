@@ -920,6 +920,11 @@ declare global {
     readonly text: TextSublayerNode
   }
 
+  interface StampNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, ExportMixin {
+    readonly type: "STAMP",
+    readonly name: string;
+  }
+
   interface ShapeWithTextNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
     readonly type: "SHAPE_WITH_TEXT"
     shapeType: 'SQUARE' | 'ELLIPSE' | 'ROUNDED_RECTANGLE' | 'DIAMOND' | 'TRIANGLE_UP' | 'TRIANGLE_DOWN' | 'PARALLELOGRAM_RIGHT' | 'PARALLELOGRAM_LEFT' 
@@ -961,7 +966,8 @@ declare global {
     TextNode |
     StickyNode |
     ConnectorNode |
-    ShapeWithTextNode
+    ShapeWithTextNode |
+    StampNode
 
   type NodeType =
     "DOCUMENT" |
@@ -979,7 +985,8 @@ declare global {
     "ELLIPSE" |
     "POLYGON" |
     "RECTANGLE" |
-    "TEXT"
+    "TEXT" | 
+    "STAMP"
 
   ////////////////////////////////////////////////////////////////////////////////
   // Styles
