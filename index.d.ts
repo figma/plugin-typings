@@ -13,6 +13,7 @@ declare global {
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
     readonly command: string
+    readonly editorType: 'figma' | 'figjam'
 
     readonly fileKey: string | undefined
 
