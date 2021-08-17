@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 29
+// Figma Plugin API version 1, update 30
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -151,7 +151,7 @@ declare global {
   }
 
   interface ParameterValues {
-    [key: string]: string
+    [key: string]: any
   }
 
   interface SuggestionResults {
