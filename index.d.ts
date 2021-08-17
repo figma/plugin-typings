@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 14
+// Figma Plugin API version 1, update 29
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -24,15 +24,17 @@ declare global {
 
     readonly clientStorage: ClientStorageAPI
 
+    readonly parameters: ParametersAPI
+
     getNodeById(id: string): BaseNode | null
     getStyleById(id: string): BaseStyle | null
 
     readonly root: DocumentNode
     currentPage: PageNode
 
-    on(type: "selectionchange" | "currentpagechange" | "close", callback: () => void): void
-    once(type: "selectionchange" | "currentpagechange" | "close", callback: () => void): void
-    off(type: "selectionchange" | "currentpagechange" | "close", callback: () => void): void
+    on(type: "selectionchange" | "currentpagechange" | "close" | "run", callback: (event?: RunEvent) => void): void
+    once(type: "selectionchange" | "currentpagechange" | "close" | "run", callback: (event?: RunEvent) => void): void
+    off(type: "selectionchange" | "currentpagechange" | "close" | "run", callback: (event?: RunEvent) => void): void
 
     readonly mixed: unique symbol
 
@@ -146,6 +148,27 @@ declare global {
     zoom: number
     scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
     readonly bounds: Rect
+  }
+
+  interface ParameterValues {
+    [key: string]: string
+  }
+
+  interface SuggestionResults {
+    setSuggestions: (suggestions: string[]) => void
+  }
+
+  type ParameterChangeHandler = (parameters: ParameterValues, suggestionKey: string, result: SuggestionResults) => void
+
+  interface ParametersAPI {
+    on(type: "input", callback: ParameterChangeHandler): void
+    once(type: "input", callback: ParameterChangeHandler): void
+    off(type: "input", callback: ParameterChangeHandler): void
+  }
+
+  interface RunEvent {
+    command: string
+    parameters?: ParameterValues
   }
 
   ////////////////////////////////////////////////////////////////////////////////
