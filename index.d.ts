@@ -151,7 +151,7 @@ declare global {
   }
 
   interface ParameterValues {
-    [key: string]: string
+    [key: string]: any
   }
 
   interface SuggestionResults {
