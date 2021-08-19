@@ -7,6 +7,7 @@ declare global {
   const __uiFiles__: {
     [key: string]: string
   }
+  const console: Console
 
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
@@ -966,6 +967,18 @@ declare global {
     readonly hash: string
     getBytesAsync(): Promise<Uint8Array>
   }
+
+  // The plugin environment exposes the browser console API,
+  // so expected calls like console.log() still work.
+  interface Console {
+    log(message?: any, ...optionalParams: any[]): void
+    error(message?: any, ...optionalParams: any[]): void
+    assert(condition?: boolean, message?: string, ...data: any[]): void
+    info(message?: any, ...optionalParams: any[]): void
+    warn(message?: any, ...optionalParams: any[]): void
+    clear(): void
+  }
+
   } // declare global
 
   export {}
