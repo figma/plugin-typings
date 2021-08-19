@@ -994,24 +994,7 @@ declare global {
     ShapeWithTextNode |
     StampNode
 
-  type NodeType =
-    "DOCUMENT" |
-    "PAGE" |
-    "SLICE" |
-    "FRAME" |
-    "GROUP" |
-    "COMPONENT_SET" |
-    "COMPONENT" |
-    "INSTANCE" |
-    "BOOLEAN_OPERATION" |
-    "VECTOR" |
-    "STAR" |
-    "LINE" |
-    "ELLIPSE" |
-    "POLYGON" |
-    "RECTANGLE" |
-    "TEXT" | 
-    "STAMP"
+  type NodeType = BaseNode['type']
 
   ////////////////////////////////////////////////////////////////////////////////
   // Styles
