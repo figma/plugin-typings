@@ -961,9 +961,14 @@ declare global {
     rescale(scale: number): void
   }
 
+  interface LayerSublayerNode {
+    fills: Paint[] | PluginAPI['mixed']
+  }
+
   interface ConnectorNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
     readonly type: "CONNECTOR"
     readonly text: TextSublayerNode
+    readonly textBackground: LayerSublayerNode
     readonly cornerRadius?: number
     connectorLineType: 'ELBOWED' | 'STRAIGHT'
     connectorStart: ConnectorEndpoint
