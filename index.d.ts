@@ -943,6 +943,7 @@ declare global {
   interface StickyNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, ExportMixin {
     readonly type: "STICKY"
     readonly text: TextSublayerNode
+    authorVisible: boolean
   }
 
   interface StampNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, ExportMixin {
