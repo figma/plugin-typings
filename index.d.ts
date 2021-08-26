@@ -37,9 +37,9 @@ declare global {
     readonly root: DocumentNode
     currentPage: PageNode
 
-    on(type: EventType, callback: () => void): void
-    once(type: EventType, callback: () => void): void
-    off(type: EventType, callback: () => void): void
+    on(type: EventType, callback: (event?: RunEvent) => void): void
+    once(type: EventType, callback: (event?: RunEvent) => void): void
+    off(type: EventType, callback: (event?: RunEvent) => void): void
 
     readonly mixed: unique symbol
 
