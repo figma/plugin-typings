@@ -781,6 +781,7 @@ declare global {
     setRangeFontSize(start: number, end: number, value: number): void
     getRangeFontName(start: number, end: number): FontName | PluginAPI['mixed']
     setRangeFontName(start: number, end: number, value: FontName): void
+    getRangeAllFontNames(start: number, end: number): FontName[]
     getRangeTextCase(start: number, end: number): TextCase | PluginAPI['mixed']
     setRangeTextCase(start: number, end: number, value: TextCase): void
     getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
