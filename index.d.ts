@@ -20,6 +20,9 @@ declare global {
 
     readonly timer?: TimerAPI
     readonly viewport: ViewportAPI
+
+    readonly currentUser: CurrentUser | null
+
     closePlugin(message?: string): void
 
     notify(message: string, options?: NotificationOptions): NotificationHandler
@@ -1062,6 +1065,18 @@ declare global {
     info(message?: any, ...optionalParams: any[]): void
     warn(message?: any, ...optionalParams: any[]): void
     clear(): void
+  }
+
+  type HexCode = string
+
+  interface CurrentUser {
+    readonly id: string
+    readonly name: string
+    readonly photoURL: string
+
+    // The current user's multiplayer color. This will match the color of their
+    // dot stamps and cursor.
+    readonly color: HexCode
   }
 
   } // declare global
