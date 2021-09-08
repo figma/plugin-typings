@@ -1,6 +1,6 @@
 {
   "name": "@figma/plugin-typings",
-  "version": "1.23.0",
+  "version": "1.33.0",
   "description": "Typings for the Figma Plugin API",
   "main": "",
   "scripts": {
@@ -16,7 +16,7 @@
     "typings"
   ],
   "author": "Figma",
-  "license": "ISC",
+  "license": "MIT License",
   "bugs": {
     "url": "https://github.com/figma/plugin-typings/issues"
   },
