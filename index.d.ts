@@ -23,7 +23,7 @@ declare global {
     closePlugin(message?: string): void
 
     notify(message: string, options?: NotificationOptions): NotificationHandler
-    
+
     commitUndo(): void
     triggerUndo(): void
 
@@ -845,6 +845,7 @@ declare global {
     guides: ReadonlyArray<Guide>
     selection: ReadonlyArray<SceneNode>
     selectedTextRange: { node: TextNode, start: number, end: number } | null
+    flowStartingPoints: ReadonlyArray<{ nodeId: string, name: string }>
 
     backgrounds: ReadonlyArray<Paint>
 
