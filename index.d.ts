@@ -18,6 +18,9 @@ declare global {
     closePlugin(message?: string): void
 
     notify(message: string, options?: NotificationOptions): NotificationHandler
+    
+    commitUndo(): void
+    triggerUndo(): void
 
     showUI(html: string, options?: ShowUIOptions): void
     readonly ui: UIAPI
