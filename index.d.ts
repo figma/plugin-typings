@@ -759,6 +759,10 @@ declare global {
     readonly blendMode?: BlendMode
   }
 
+  interface VariantMixin {
+    readonly variantProperties: {[property: string]: string} | null
+  }
+
   interface TextSublayerNode {
     readonly hasMissingFont: boolean
 
@@ -921,19 +925,21 @@ declare global {
     readonly type: "COMPONENT_SET"
     clone(): ComponentSetNode
     readonly defaultVariant: ComponentNode
+    readonly variantGroupProperties: {[property: string]: {values: string[]}}
   }
 
-  interface ComponentNode extends DefaultFrameMixin, PublishableMixin {
+  interface ComponentNode extends DefaultFrameMixin, PublishableMixin, VariantMixin {
     readonly type: "COMPONENT"
     clone(): ComponentNode
     createInstance(): InstanceNode
   }
 
-  interface InstanceNode extends DefaultFrameMixin {
+  interface InstanceNode extends DefaultFrameMixin, VariantMixin {
     readonly type: "INSTANCE"
     clone(): InstanceNode
     mainComponent: ComponentNode | null
     swapComponent(componentNode: ComponentNode): void
+    setProperties(properties: {[property: string]: string}): void
     detachInstance(): FrameNode
     scaleFactor: number
   }
