@@ -11,8 +11,6 @@ declare global {
 
   type EventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone" | "run"
 
-  type EventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone"
-
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
     readonly command: string
