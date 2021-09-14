@@ -1,0 +1,11 @@
+name: CI
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    # Note: this uses whichever tsc version is installed on ubuntu-latest.
+    - run: npm test
