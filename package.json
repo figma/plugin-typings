@@ -4,7 +4,7 @@
   "description": "Typings for the Figma Plugin API",
   "main": "",
   "scripts": {
-    "test": "tsc --noEmit --strict --typeRoots '[]' index.d.ts"
+    "test": "tsc"
   },
   "repository": {
     "type": "git",
