@@ -1076,6 +1076,10 @@ declare global {
     warn(message?: any, ...optionalParams: any[]): void
     clear(): void
   }
+  function setTimeout(callback: Function, timeout: number): number;
+  function clearTimeout(handle: number): void;
+  function setInterval(callback: Function, timeout: number): number;
+  function clearInterval(handle: number): void;
 
   type HexCode = string
 
