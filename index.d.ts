@@ -23,7 +23,7 @@ declare global {
 
     readonly currentUser: User | null
 
-    readonly allActiveUsers: ActiveUser[]
+    readonly activeUsers: ActiveUser[]
 
     closePlugin(message?: string): void
 
