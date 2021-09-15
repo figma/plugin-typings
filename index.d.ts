@@ -21,7 +21,9 @@ declare global {
     readonly timer?: TimerAPI
     readonly viewport: ViewportAPI
 
-    readonly currentUser: CurrentUser | null
+    readonly currentUser: User | null
+
+    readonly allActiveUsers: ActiveUser[]
 
     closePlugin(message?: string): void
 
@@ -1083,7 +1085,7 @@ declare global {
 
   type HexCode = string
 
-  interface CurrentUser {
+  interface User {
     readonly id: string
     readonly name: string
     readonly photoURL: string
@@ -1091,6 +1093,14 @@ declare global {
     // The current user's multiplayer color. This will match the color of their
     // dot stamps and cursor.
     readonly color: HexCode
+  }
+
+  interface ActiveUser {
+    readonly sessionID: number 
+    readonly position: Vector | null 
+    readonly viewport: Rect 
+    readonly selection: SceneNode[]
+    readonly user?: User
   }
 
   } // declare global
