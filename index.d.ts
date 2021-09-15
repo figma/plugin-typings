@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 30
+// Figma Plugin API version 1, update 35
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -180,15 +180,22 @@ declare global {
   }
 
   interface SuggestionResults {
-    setSuggestions: (suggestions: string[]) => void
+    setSuggestions: (suggestions: Array<string | { name: string; data?: any }>) => void
   }
 
-  type ParameterChangeHandler = (parameters: ParameterValues, suggestionKey: string, result: SuggestionResults) => void
+  type ParameterInputEvent = {
+    parameters: ParameterValues
+    key: string
+    query: string
+    result: SuggestionResults
+  }
+
+  type ParameterInputHandler = (ParameterInputEvent) => void
 
   interface ParametersAPI {
-    on(type: "input", callback: ParameterChangeHandler): void
-    once(type: "input", callback: ParameterChangeHandler): void
-    off(type: "input", callback: ParameterChangeHandler): void
+    on(type: "input", callback: ParameterInputHandler): void
+    once(type: "input", callback: ParameterInputHandler): void
+    off(type: "input", callback: ParameterInputHandler): void
   }
 
   interface RunEvent {
