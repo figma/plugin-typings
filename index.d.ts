@@ -963,6 +963,7 @@ declare global {
     readonly type: "STICKY"
     readonly text: TextSublayerNode
     authorVisible: boolean
+    readonly authorName: string
   }
 
   interface StampNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, ExportMixin {
