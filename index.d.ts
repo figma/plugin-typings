@@ -1088,7 +1088,7 @@ declare global {
   interface User {
     readonly id: string
     readonly name: string
-    readonly photoURL: string
+    readonly photoUrl: string
 
     // The current user's multiplayer color. This will match the color of their
     // dot stamps and cursor.
