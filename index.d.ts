@@ -21,8 +21,6 @@ declare global {
     readonly timer?: TimerAPI
     readonly viewport: ViewportAPI
 
-    readonly currentUser: CurrentUser | null
-
     closePlugin(message?: string): void
 
     notify(message: string, options?: NotificationOptions): NotificationHandler
@@ -1085,18 +1083,6 @@ declare global {
   function clearTimeout(handle: number): void;
   function setInterval(callback: Function, timeout: number): number;
   function clearInterval(handle: number): void;
-
-  type HexCode = string
-
-  interface CurrentUser {
-    readonly id: string
-    readonly name: string
-    readonly photoURL: string
-
-    // The current user's multiplayer color. This will match the color of their
-    // dot stamps and cursor.
-    readonly color: HexCode
-  }
 
   } // declare global
 
