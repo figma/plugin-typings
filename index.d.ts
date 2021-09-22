@@ -7,7 +7,9 @@ declare global {
   const __uiFiles__: {
     [key: string]: string
   }
-  const console: Console
+
+  // Using var so TypeScript can merge this with @types/node and "lib": ["DOM"]
+  var console: Console
 
   type EventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone" | "run"
 
