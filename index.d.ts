@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 34
+// Figma Plugin API version 1, update 35
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -9,7 +9,7 @@ declare global {
   }
   const console: Console
 
-  type EventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone" | "run"
+  type ArgFreeEventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone"
 
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
@@ -41,9 +41,12 @@ declare global {
     readonly root: DocumentNode
     currentPage: PageNode
 
-    on(type: EventType, callback: (event?: RunEvent) => void): void
-    once(type: EventType, callback: (event?: RunEvent) => void): void
-    off(type: EventType, callback: (event?: RunEvent) => void): void
+    on(type: ArgFreeEventType, callback: () => void): void
+    once(type: ArgFreeEventType, callback: () => void): void
+    off(type: ArgFreeEventType, callback: () => void): void
+    on(type: "run", callback: (event: RunEvent) => void): void
+    once(type: "run", callback: (event: RunEvent) => void): void
+    off(type: "run", callback: (event: RunEvent) => void): void
 
     readonly mixed: unique symbol
 
@@ -178,13 +181,15 @@ declare global {
   }
 
   interface SuggestionResults {
-    setSuggestions: (suggestions: Array<string | { name: string; data?: any }>) => void
+    setSuggestions(suggestions: Array<string | { name: string; data?: any; icon?: (string | Uint8Array); iconUrl?: string }>): void
+    setError(message: string): void
+    setLoadingMessage(message: string): void
   }
 
-  type ParameterInputEvent = {
+  type ParameterInputEvent<ParametersType = ParameterValues> = {
     query: string,
     key: string,
-    parameters: ParameterValues,
+    parameters: Partial<ParametersType>,
     result: SuggestionResults,
   }
 
@@ -194,9 +199,9 @@ declare global {
     off(type: "input", callback: (event: ParameterInputEvent) => void): void
   }
 
-  interface RunEvent {
+  interface RunEvent<ParametersType = (ParameterValues | undefined)> {
     command: string
-    parameters?: ParameterValues
+    parameters: ParametersType
   }
 
   ////////////////////////////////////////////////////////////////////////////////
