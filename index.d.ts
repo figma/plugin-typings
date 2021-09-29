@@ -28,6 +28,8 @@ declare global {
     commitUndo(): void
     triggerUndo(): void
 
+    saveVersionHistoryAsync(title: string, description?: string): Promise<void>
+
     showUI(html: string, options?: ShowUIOptions): void
     readonly ui: UIAPI
 
