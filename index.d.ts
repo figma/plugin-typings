@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 35
+// Figma Plugin API version 1, update 37
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -666,11 +666,13 @@ declare global {
     strokeJoin: StrokeJoin | PluginAPI['mixed']
     strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
     dashPattern: ReadonlyArray<number>
+    strokeGeometry: VectorPaths
   }
 
   interface MinimalFillsMixin {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed']
     fillStyleId: string | PluginAPI['mixed']
+    fillGeometry: VectorPaths
   }
   interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
     strokeCap: StrokeCap | PluginAPI['mixed']
