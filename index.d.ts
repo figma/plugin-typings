@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 35
+// Figma Plugin API version 1, update 37
 
 declare global {
   // Global variable with Figma's plugin API.
