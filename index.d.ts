@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 35
+// Figma Plugin API version 1, update 37
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -20,6 +20,9 @@ declare global {
 
     readonly timer?: TimerAPI
     readonly viewport: ViewportAPI
+
+    readonly currentUser: User | null
+    readonly activeUsers: ActiveUser[]
 
     closePlugin(message?: string): void
 
@@ -135,6 +138,7 @@ declare global {
     title?: string
     width?: number
     height?: number
+    position?: { x: number; y: number }
   }
 
   interface UIPostMessageOptions {
@@ -475,7 +479,8 @@ declare global {
   type Action =
     { readonly type: "BACK" | "CLOSE" } |
     { readonly type: "URL", url: string } |
-    { readonly type: "NODE"
+    {
+      readonly type: "NODE"
       readonly destinationId: string | null
       readonly navigation: Navigation
       readonly transition: Transition | null
@@ -506,27 +511,27 @@ declare global {
   type Trigger =
     | { readonly type: "ON_CLICK" | "ON_HOVER" | "ON_PRESS" | "ON_DRAG" }
     | {
-        readonly type: "AFTER_TIMEOUT";
-        readonly timeout: number;
-      }
+      readonly type: "AFTER_TIMEOUT";
+      readonly timeout: number;
+    }
     | {
-        readonly type:
-          | "MOUSE_ENTER"
-          | "MOUSE_LEAVE"
-          | "MOUSE_UP"
-          | "MOUSE_DOWN";
-        readonly delay: number;
-      }
+      readonly type:
+      | "MOUSE_ENTER"
+      | "MOUSE_LEAVE"
+      | "MOUSE_UP"
+      | "MOUSE_DOWN";
+      readonly delay: number;
+    }
     | {
-        readonly type: "ON_KEY_DOWN";
-        readonly device:
-          | "KEYBOARD"
-          | "XBOX_ONE"
-          | "PS4"
-          | "SWITCH_PRO"
-          | "UNKNOWN_CONTROLLER";
-        readonly keyCodes: ReadonlyArray<number>;
-      };
+      readonly type: "ON_KEY_DOWN";
+      readonly device:
+      | "KEYBOARD"
+      | "XBOX_ONE"
+      | "PS4"
+      | "SWITCH_PRO"
+      | "UNKNOWN_CONTROLLER";
+      readonly keyCodes: ReadonlyArray<number>;
+    };
 
   type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY" | "SCROLL_TO" | "CHANGE_TO"
 
@@ -759,9 +764,9 @@ declare global {
   interface DefaultFrameMixin extends
     BaseFrameMixin,
     FramePrototypingMixin,
-    ReactionMixin {}
+    ReactionMixin { }
 
-  interface OpaqueNodeMixin extends BaseNodeMixin  {
+  interface OpaqueNodeMixin extends BaseNodeMixin {
     readonly absoluteTransform: Transform
     relativeTransform: Transform
     x: number
@@ -776,7 +781,7 @@ declare global {
   }
 
   interface VariantMixin {
-    readonly variantProperties: {[property: string]: string} | null
+    readonly variantProperties: { [property: string]: string } | null
   }
 
   interface TextSublayerNode {
@@ -942,7 +947,7 @@ declare global {
     readonly type: "COMPONENT_SET"
     clone(): ComponentSetNode
     readonly defaultVariant: ComponentNode
-    readonly variantGroupProperties: {[property: string]: {values: string[]}}
+    readonly variantGroupProperties: { [property: string]: { values: string[] } }
   }
 
   interface ComponentNode extends DefaultFrameMixin, PublishableMixin, VariantMixin {
@@ -956,7 +961,7 @@ declare global {
     clone(): InstanceNode
     mainComponent: ComponentNode | null
     swapComponent(componentNode: ComponentNode): void
-    setProperties(properties: {[property: string]: string}): void
+    setProperties(properties: { [property: string]: string }): void
     detachInstance(): FrameNode
     scaleFactor: number
   }
@@ -1003,6 +1008,13 @@ declare global {
     connectorEnd: ConnectorEndpoint
   }
 
+  interface WidgetNode extends OpaqueNodeMixin, SceneNodeMixin {
+    readonly type: 'WIDGET'
+    readonly widgetSyncedState: { [key: string]: any }
+    clone(): WidgetNode
+    cloneWidget(overrides: { [key: string]: any }): WidgetNode
+  }
+
   type BaseNode =
     DocumentNode |
     PageNode |
@@ -1026,7 +1038,8 @@ declare global {
     StickyNode |
     ConnectorNode |
     ShapeWithTextNode |
-    StampNode
+    StampNode |
+    WidgetNode
 
   type NodeType = BaseNode['type']
 
@@ -1091,6 +1104,23 @@ declare global {
   function setInterval(callback: Function, timeout: number): number;
   function clearInterval(handle: number): void;
 
-  } // declare global
+  interface User {
+    readonly id: string | null
+    readonly name: string
+    readonly photoUrl: string | null
 
-  export {}
+    // The current user's multiplayer color. This will match the color of their
+    // dot stamps and cursor.
+    readonly color: string
+    readonly sessionId: number
+  }
+
+  interface ActiveUser extends User {
+    readonly position: Vector | null
+    readonly viewport: Rect
+    readonly selection: string[]
+  }
+
+} // declare global
+
+export { }
