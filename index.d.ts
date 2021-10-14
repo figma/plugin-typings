@@ -671,11 +671,13 @@ declare global {
     strokeJoin: StrokeJoin | PluginAPI['mixed']
     strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
     dashPattern: ReadonlyArray<number>
+    strokeGeometry: VectorPaths
   }
 
   interface MinimalFillsMixin {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed']
     fillStyleId: string | PluginAPI['mixed']
+    fillGeometry: VectorPaths
   }
   interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
     strokeCap: StrokeCap | PluginAPI['mixed']
