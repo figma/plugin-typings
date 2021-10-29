@@ -69,6 +69,7 @@ declare global {
     createSticky(): StickyNode
     createConnector(): ConnectorNode
     createShapeWithText(): ShapeWithTextNode
+    createCodeBlock(): CodeBlockNode
     /**
      * [DEPRECATED]: This API often fails to create a valid boolean operation. Use figma.union, figma.subtract, figma.intersect and figma.exclude instead.
      */
@@ -1007,6 +1008,12 @@ declare global {
     rescale(scale: number): void
   }
 
+  interface CodeBlockNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalBlendMixin, ExportMixin {
+    readonly type: "CODE_BLOCK"
+    code: string
+    codeLanguage: 'TYPESCRIPT' | 'CPP' | 'RUBY' | 'CSS' | 'JAVASCRIPT' | 'HTML' | 'JSON' | 'GRAPHQL' | 'PYTHON' | 'GO' | 'SQL' | 'SWIFT' | 'KOTLIN' | 'RUST'
+  }
+
   interface LayerSublayerNode {
     fills: Paint[] | PluginAPI['mixed']
   }
@@ -1051,6 +1058,7 @@ declare global {
     StickyNode |
     ConnectorNode |
     ShapeWithTextNode |
+    CodeBlockNode |
     StampNode |
     WidgetNode
 
