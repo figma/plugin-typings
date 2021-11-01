@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 37
+// Figma Plugin API version 1, update 38
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -648,6 +648,7 @@ declare global {
 
     readonly width: number
     readonly height: number
+    readonly absoluteRenderBounds: Rect | null
     constrainProportions: boolean
 
     layoutAlign: "MIN" | "CENTER" | "MAX" | "STRETCH" | "INHERIT" // applicable only inside auto-layout frames
