@@ -1024,7 +1024,7 @@ declare global {
     fills: Paint[] | PluginAPI['mixed']
   }
 
-  interface ConnectorNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin {
+  interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrokesMixin {
     readonly type: "CONNECTOR"
     readonly text: TextSublayerNode
     readonly textBackground: LayerSublayerNode
