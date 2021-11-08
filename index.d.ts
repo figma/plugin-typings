@@ -781,7 +781,7 @@ declare global {
     FramePrototypingMixin,
     ReactionMixin { }
 
-  interface OpaqueNodeMixin extends BaseNodeMixin {
+  interface OpaqueNodeMixin extends BaseNodeMixin, SceneNodeMixin, ExportMixin {
     readonly absoluteTransform: Transform
     relativeTransform: Transform
     x: number
@@ -989,17 +989,20 @@ declare global {
     expanded: boolean
   }
 
-  interface StickyNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, ExportMixin {
+  interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin {
     readonly type: "STICKY"
     readonly text: TextSublayerNode
     authorVisible: boolean
+    authorName: string
+    clone(): StickyNode
   }
 
-  interface StampNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, ExportMixin {
+  interface StampNode extends DefaultShapeMixin, ConstraintMixin {
     readonly type: "STAMP",
+    clone(): StampNode
   }
 
-  interface ShapeWithTextNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
+  interface ShapeWithTextNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin {
     readonly type: "SHAPE_WITH_TEXT"
     shapeType: 'SQUARE' | 'ELLIPSE' | 'ROUNDED_RECTANGLE' | 'DIAMOND' | 'TRIANGLE_UP' | 'TRIANGLE_DOWN' | 'PARALLELOGRAM_RIGHT' | 'PARALLELOGRAM_LEFT'
     readonly text: TextSublayerNode
@@ -1007,19 +1010,21 @@ declare global {
 
     resize(width: number, height: number): void
     rescale(scale: number): void
+    clone(): ShapeWithTextNode
   }
 
-  interface CodeBlockNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalBlendMixin, ExportMixin {
+  interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
     readonly type: "CODE_BLOCK"
     code: string
     codeLanguage: 'TYPESCRIPT' | 'CPP' | 'RUBY' | 'CSS' | 'JAVASCRIPT' | 'HTML' | 'JSON' | 'GRAPHQL' | 'PYTHON' | 'GO' | 'SQL' | 'SWIFT' | 'KOTLIN' | 'RUST'
+    clone(): CodeBlockNode
   }
 
   interface LayerSublayerNode {
     fills: Paint[] | PluginAPI['mixed']
   }
 
-  interface ConnectorNode extends OpaqueNodeMixin, SceneNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin, ExportMixin {
+  interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrokesMixin {
     readonly type: "CONNECTOR"
     readonly text: TextSublayerNode
     readonly textBackground: LayerSublayerNode
@@ -1027,9 +1032,10 @@ declare global {
     connectorLineType: 'ELBOWED' | 'STRAIGHT'
     connectorStart: ConnectorEndpoint
     connectorEnd: ConnectorEndpoint
+    clone(): ConnectorNode
   }
 
-  interface WidgetNode extends OpaqueNodeMixin, SceneNodeMixin {
+  interface WidgetNode extends OpaqueNodeMixin {
     readonly type: 'WIDGET'
     readonly widgetSyncedState: { [key: string]: any }
     clone(): WidgetNode
