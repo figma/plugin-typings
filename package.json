@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/figma/plugin-typings/issues"
   },
-  "homepage": "https://github.com/figma/plugin-typings#readme"
+  "homepage": "https://github.com/figma/plugin-typings#readme",
+  "dependencies": {
+    "typescript": "^4.4.4"
+  }
 }
