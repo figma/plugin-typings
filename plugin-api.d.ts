@@ -250,7 +250,7 @@ interface ArcData {
 }
 
 interface DropShadowEffect {
-  readonly type: "DROP_SHADOW" | "INNER_SHADOW"
+  readonly type: "DROP_SHADOW"
   readonly color: RGBA
   readonly offset: Vector
   readonly radius: number
@@ -261,7 +261,7 @@ interface DropShadowEffect {
 }
 
 interface InnerShadowEffect {
-  readonly type: "DROP_SHADOW" | "INNER_SHADOW"
+  readonly type: "INNER_SHADOW"
   readonly color: RGBA
   readonly offset: Vector
   readonly radius: number
@@ -538,7 +538,7 @@ type Trigger =
 type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY" | "SCROLL_TO" | "CHANGE_TO"
 
 interface Easing {
-  readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR" | 'EASE_IN_BACK' | 'EASE_OUT_BACK' | 'EASE_IN_AND_OUT_BACK' | 'CUSTOM_CUBIC_BEZIER'
+  readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR" | "EASE_IN_BACK" | "EASE_OUT_BACK" | "EASE_IN_AND_OUT_BACK" | "CUSTOM_CUBIC_BEZIER"
   readonly easingFunctionCubicBezier?: EasingFunctionBezier
 }
 
@@ -682,6 +682,7 @@ interface MinimalFillsMixin {
   fillStyleId: string | PluginAPI['mixed']
   fillGeometry: VectorPaths
 }
+
 interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   strokeCap: StrokeCap | PluginAPI['mixed']
   strokeMiterLimit: number
@@ -941,8 +942,6 @@ interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode 
   textAlignHorizontal: "LEFT" | "CENTER" | "RIGHT" | "JUSTIFIED"
   textAlignVertical: "TOP" | "CENTER" | "BOTTOM"
   textAutoResize: "NONE" | "WIDTH_AND_HEIGHT" | "HEIGHT"
-  paragraphIndent: number
-  paragraphSpacing: number
   autoRename: boolean
 
   textStyleId: string | PluginAPI['mixed']
@@ -994,7 +993,7 @@ interface StampNode extends DefaultShapeMixin, ConstraintMixin {
 
 interface ShapeWithTextNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin {
   readonly type: "SHAPE_WITH_TEXT"
-  shapeType: 'SQUARE' | 'ELLIPSE' | 'ROUNDED_RECTANGLE' | 'DIAMOND' | 'TRIANGLE_UP' | 'TRIANGLE_DOWN' | 'PARALLELOGRAM_RIGHT' | 'PARALLELOGRAM_LEFT'
+  shapeType: "SQUARE" | "ELLIPSE" | "ROUNDED_RECTANGLE" | "DIAMOND" | "TRIANGLE_UP" | "TRIANGLE_DOWN" | "PARALLELOGRAM_RIGHT" | "PARALLELOGRAM_LEFT" | "ENG_DATABASE" | "ENG_QUEUE" | "ENG_FILE" | "ENG_FOLDER"
   readonly text: TextSublayerNode
   readonly cornerRadius?: number
 
