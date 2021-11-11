@@ -36,12 +36,9 @@ interface PluginAPI {
   readonly root: DocumentNode
   currentPage: PageNode
 
-  on(type: ArgFreeEventType, callback: () => void): void
-  once(type: ArgFreeEventType, callback: () => void): void
-  off(type: ArgFreeEventType, callback: () => void): void
-  on(type: "run", callback: (event: RunEvent) => void): void
-  once(type: "run", callback: (event: RunEvent) => void): void
-  off(type: "run", callback: (event: RunEvent) => void): void
+  on<T extends ArgFreeEventType | "run">(type: T, callback: (event: T extends ArgFreeEventType ? never : RunEvent) => void): void
+  once<T extends ArgFreeEventType | "run">(type: T, callback: (event: T extends ArgFreeEventType ? never : RunEvent) => void): void
+  off<T extends ArgFreeEventType | "run">(type: T, callback: (event: T extends ArgFreeEventType ? never : RunEvent) => void): void
 
   readonly mixed: unique symbol
 
