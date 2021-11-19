@@ -97,6 +97,8 @@ interface PluginAPI {
   createImage(data: Uint8Array): Image
   getImageByHash(hash: string): Image
 
+  createEmbedAsync(url:string): Promise<EmbedNode | LinkPreviewNode>;
+
   combineAsVariants(nodes: ReadonlyArray<ComponentNode>, parent: BaseNode & ChildrenMixin, index?: number): ComponentSetNode
   group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
   flatten(nodes: ReadonlyArray<BaseNode>, parent?: BaseNode & ChildrenMixin, index?: number): VectorNode
@@ -1028,6 +1030,31 @@ interface WidgetNode extends OpaqueNodeMixin {
   cloneWidget(overrides: { [key: string]: any }): WidgetNode
 }
 
+interface EmbedData {
+  srcUrl: string;
+  canonicalUrl: string | null;
+  title: string | null;
+  description: string | null;
+  provider: string | null;
+}
+interface EmbedNode extends OpaqueNodeMixin {
+  readonly type: 'EMBED'
+  readonly embedData: EmbedData;
+  clone(): EmbedNode
+}
+
+interface LinkPreviewData {
+  url: string;
+  title: string | null;
+  description: string | null;
+  provider: string | null;
+}
+interface LinkPreviewNode extends OpaqueNodeMixin {
+  readonly type: 'LINK_PREVIEW'
+  readonly linkPreviewData: LinkPreviewData;
+  clone(): LinkPreviewNode
+}
+
 type BaseNode =
   DocumentNode |
   PageNode |
@@ -1053,7 +1080,9 @@ type SceneNode =
   ShapeWithTextNode |
   CodeBlockNode |
   StampNode |
-  WidgetNode
+  WidgetNode |
+  EmbedNode |
+  LinkPreviewNode
 
 type NodeType = BaseNode['type']
 
