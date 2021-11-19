@@ -1,5 +1,5 @@
 // Figma Plugin API version 1, update 39
-/// <reference path="./plugin-api" />
+/// <reference path="./plugin-api.d.ts" />
 
 declare global {
   // Global variable with Figma's plugin API.
