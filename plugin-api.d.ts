@@ -97,7 +97,7 @@ interface PluginAPI {
   createImage(data: Uint8Array): Image
   getImageByHash(hash: string): Image
 
-  createEmbedAsync(url:string): Promise<EmbedNode | LinkPreviewNode>
+  createLinkPreviewAsync(url:string): Promise<EmbedNode | LinkUnfurlNode>
 
   combineAsVariants(nodes: ReadonlyArray<ComponentNode>, parent: BaseNode & ChildrenMixin, index?: number): ComponentSetNode
   group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
@@ -1043,16 +1043,16 @@ interface EmbedNode extends OpaqueNodeMixin, SceneNodeMixin {
   clone(): EmbedNode
 }
 
-interface LinkPreviewData {
+interface LinkUnfurlData {
   url: string;
   title: string | null;
   description: string | null;
   provider: string | null;
 }
-interface LinkPreviewNode extends OpaqueNodeMixin, SceneNodeMixin {
-  readonly type: "LINK_PREVIEW"
-  readonly linkPreviewData: LinkPreviewData;
-  clone(): LinkPreviewNode
+interface LinkUnfurlNode extends OpaqueNodeMixin, SceneNodeMixin {
+  readonly type: "LINK_UNFURL"
+  readonly linkUnfurlData: LinkUnfurlData;
+  clone(): LinkUnfurlNode
 }
 
 type BaseNode =
@@ -1082,7 +1082,7 @@ type SceneNode =
   StampNode |
   WidgetNode |
   EmbedNode |
-  LinkPreviewNode
+  LinkUnfurlNode
 
 type NodeType = BaseNode['type']
 
