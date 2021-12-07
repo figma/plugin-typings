@@ -5,6 +5,8 @@ interface PluginAPI {
   readonly apiVersion: "1.0.0"
   readonly command: string
   readonly editorType: 'figma' | 'figjam'
+  readonly pluginId?: string
+  readonly widgetId?: string
 
   readonly fileKey: string | undefined
 
@@ -1025,9 +1027,13 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
 
 interface WidgetNode extends OpaqueNodeMixin {
   readonly type: 'WIDGET'
+  readonly widgetId: string
   readonly widgetSyncedState: { [key: string]: any }
   clone(): WidgetNode
-  cloneWidget(overrides: { [key: string]: any }): WidgetNode
+  cloneWidget(
+    syncedStateOverrides: { [name: string]: any },
+    syncedMapOverrides?: { [mapName: string]: { [key: string]: any } },
+  ): WidgetNode
 }
 
 interface EmbedData {
