@@ -36,17 +36,9 @@ interface PluginAPI {
   readonly root: DocumentNode
   currentPage: PageNode
 
-  on(type: ArgFreeEventType, callback: () => void): void;
-  on(type: "run", callback: (event: RunEvent) => void): void
-  on(type: "drop", callback: (event: DropEvent) => boolean): void;
-
-  once(type: ArgFreeEventType, callback: () => void): void
-  once(type: "run", callback: (event: RunEvent) => void): void;
-  once(type: "drop", callback: (event: DropEvent) => boolean): void;
-
-  off(type: ArgFreeEventType, callback: () => void): void
-  off(type: "run", callback: (event: RunEvent) => void): void;
-  off(type: "drop", callback: (event: DropEvent) => boolean): void;
+  on<T extends ArgFreeEventType | "run">(type: T, callback: (event: T extends ArgFreeEventType ? never : RunEvent) => void): void
+  once<T extends ArgFreeEventType | "run">(type: T, callback: (event: T extends ArgFreeEventType ? never : RunEvent) => void): void
+  off<T extends ArgFreeEventType | "run">(type: T, callback: (event: T extends ArgFreeEventType ? never : RunEvent) => void): void
 
   readonly mixed: unique symbol
 
@@ -206,29 +198,6 @@ interface ParametersAPI {
 interface RunEvent<ParametersType = (ParameterValues | undefined)> {
   command: string
   parameters: ParametersType
-}
-
-interface DropEvent {
-  node: BaseNode | SceneNode
-  x: number
-  y: number
-  absoluteX: number
-  absoluteY: number
-  items: DropItem[]
-  files: DropFile[]
-  dropMetadata?: any
-}
-
-interface DropItem {
-  type: string
-  data: string
-}
-
-interface DropFile {
-  name: string
-  type: string
-  getBytesAsync: Promise<Uint8Array>
-  getTextAsync: Promise<string>
 }
 
 ////////////////////////////////////////////////////////////////////////////////
