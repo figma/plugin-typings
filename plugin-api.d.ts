@@ -122,6 +122,8 @@ interface PluginAPI {
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
   setAsync(key: string, value: any): Promise<void>
+  deleteAsync(key: string): Promise<void>
+  keysAsync(): Promise<string[]>
 }
 
 interface NotificationOptions {
@@ -612,7 +614,7 @@ type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNo
 ////////////////////////////////////////////////////////////////////////////////
 // Mixins
 
-interface BaseNodeMixin {
+interface BaseNodeMixin extends PluginDataMixin {
   readonly id: string
   readonly parent: (BaseNode & ChildrenMixin) | null
   name: string // Note: setting this also sets `autoRename` to false on TextNodes
@@ -620,14 +622,20 @@ interface BaseNodeMixin {
   toString(): string
   remove(): void
 
+  setRelaunchData(data: { [command: string]: /* description */ string }): void
+  getRelaunchData(): { [command: string]: /* description */ string }
+}
+
+interface PluginDataMixin {
   getPluginData(key: string): string
   setPluginData(key: string, value: string): void
+  getPluginDataKeys(): string[]
 
   // Namespace is a string that must be at least 3 alphanumeric characters, and should
   // be a name related to your plugin. Other plugins will be able to read this data.
   getSharedPluginData(namespace: string, key: string): string
   setSharedPluginData(namespace: string, key: string, value: string): void
-  setRelaunchData(data: { [command: string]: /* description */ string }): void
+  getSharedPluginDataKeys(namespace: string): string[]
 }
 
 interface SceneNodeMixin {
@@ -1127,7 +1135,7 @@ type NodeType = BaseNode['type']
 // Styles
 type StyleType = "PAINT" | "TEXT" | "EFFECT" | "GRID"
 
-interface BaseStyle extends PublishableMixin {
+interface BaseStyle extends PublishableMixin, PluginDataMixin {
   readonly id: string
   readonly type: StyleType
   name: string
