@@ -14,6 +14,7 @@ declare global {
   // so expected calls like console.log() still work.
   interface Console {
     log(message?: any, ...optionalParams: any[]): void
+    dir(message?: any, ...optionalParams: any[]): void
     error(message?: any, ...optionalParams: any[]): void
     assert(condition?: boolean, message?: string, ...data: any[]): void
     info(message?: any, ...optionalParams: any[]): void
