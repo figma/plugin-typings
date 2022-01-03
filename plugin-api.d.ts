@@ -10,6 +10,8 @@ interface PluginAPI {
 
   readonly fileKey: string | undefined
 
+  skipInvisibleInstanceChildren: boolean
+
   readonly timer?: TimerAPI
   readonly viewport: ViewportAPI
 
@@ -663,6 +665,9 @@ interface ChildrenMixin {
    * to call node.children.find(callback) or node.findChild(callback)
    */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
+
+  findAllWithCriteria(criteria: { types: NodeType[] }): SceneNode[]
+  findAllByType<T extends keyof NodeTypeMap>(type: T): NodeTypeMap[T]
 }
 
 interface ConstraintMixin {
@@ -899,6 +904,9 @@ interface DocumentNode extends BaseNodeMixin {
    * to call node.children.find(callback) or node.findChild(callback)
    */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
+
+  findAllWithCriteria(criteria: { types: NodeType[] }): Array<PageNode | SceneNode>
+  findAllByType<T extends keyof NodeTypeMap>(type: T): NodeTypeMap[T]
 }
 
 interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
@@ -1130,6 +1138,33 @@ type SceneNode =
   LinkUnfurlNode
 
 type NodeType = BaseNode['type']
+
+type NodeTypeMap = {
+  'DOCUMENT': DocumentNode,
+  'PAGE': PageNode,
+  'SLICE': SliceNode,
+  'FRAME': FrameNode,
+  'GROUP': GroupNode,
+  'COMPONENT_SET': ComponentSetNode,
+  'COMPONENT': ComponentNode,
+  'INSTANCE': InstanceNode,
+  'BOOLEAN_OPERATION': BooleanOperationNode,
+  'VECTOR': VectorNode,
+  'STAR': StarNode,
+  'LINE': LineNode,
+  'ELLIPSE': EllipseNode,
+  'POLYGON': PolygonNode,
+  'RECTANGLE': RectangleNode,
+  'TEXT': TextNode,
+  'STICKY': StickyNode,
+  'CONNECTOR': ConnectorNode,
+  'SHAPE_WITH_TEXT': ShapeWithTextNode,
+  'CODE_BLOCK': CodeBlockNode,
+  'STAMP': StampNode,
+  'WIDGET': WidgetNode,
+  'EMBED': EmbedNode,
+  'LINK_UNFURL': LinkUnfurlNode,
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Styles
