@@ -451,7 +451,7 @@ interface VectorRegion {
   readonly windingRule: WindingRule
   readonly loops: ReadonlyArray<ReadonlyArray<number>>
   readonly fills?: ReadonlyArray<Paint>
-  readonly fillStyleId?: { key: string, version: string } | null
+  readonly fillStyleId?: string | null
 }
 
 interface VectorNetwork {
