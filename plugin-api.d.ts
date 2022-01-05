@@ -667,7 +667,7 @@ interface ChildrenMixin {
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
 
   findAllWithCriteria(criteria: { types: NodeType[] }): SceneNode[]
-  findAllByType<T extends keyof NodeTypeMap>(type: T): NodeTypeMap[T]
+  findAllByType<T extends NodeType>(type: T): Array<{ type: T } & SceneNode>
 }
 
 interface ConstraintMixin {
@@ -906,7 +906,7 @@ interface DocumentNode extends BaseNodeMixin {
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
 
   findAllWithCriteria(criteria: { types: NodeType[] }): Array<PageNode | SceneNode>
-  findAllByType<T extends keyof NodeTypeMap>(type: T): NodeTypeMap[T]
+  findAllByType<T extends NodeType>(type: T): Array<{ type: T } & (PageNode | SceneNode)>
 }
 
 interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
@@ -1138,33 +1138,6 @@ type SceneNode =
   LinkUnfurlNode
 
 type NodeType = BaseNode['type']
-
-type NodeTypeMap = {
-  'DOCUMENT': DocumentNode,
-  'PAGE': PageNode,
-  'SLICE': SliceNode,
-  'FRAME': FrameNode,
-  'GROUP': GroupNode,
-  'COMPONENT_SET': ComponentSetNode,
-  'COMPONENT': ComponentNode,
-  'INSTANCE': InstanceNode,
-  'BOOLEAN_OPERATION': BooleanOperationNode,
-  'VECTOR': VectorNode,
-  'STAR': StarNode,
-  'LINE': LineNode,
-  'ELLIPSE': EllipseNode,
-  'POLYGON': PolygonNode,
-  'RECTANGLE': RectangleNode,
-  'TEXT': TextNode,
-  'STICKY': StickyNode,
-  'CONNECTOR': ConnectorNode,
-  'SHAPE_WITH_TEXT': ShapeWithTextNode,
-  'CODE_BLOCK': CodeBlockNode,
-  'STAMP': StampNode,
-  'WIDGET': WidgetNode,
-  'EMBED': EmbedNode,
-  'LINK_UNFURL': LinkUnfurlNode,
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Styles
