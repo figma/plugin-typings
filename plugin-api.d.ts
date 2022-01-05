@@ -10,6 +10,8 @@ interface PluginAPI {
 
   readonly fileKey: string | undefined
 
+  skipInvisibleInstanceChildren: boolean
+
   readonly timer?: TimerAPI
   readonly viewport: ViewportAPI
 
@@ -663,6 +665,9 @@ interface ChildrenMixin {
    * to call node.children.find(callback) or node.findChild(callback)
    */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
+
+  findAllWithCriteria(criteria: { types: NodeType[] }): SceneNode[]
+  findAllByType<T extends NodeType>(type: T): Array<{ type: T } & SceneNode>
 }
 
 interface ConstraintMixin {
@@ -899,6 +904,9 @@ interface DocumentNode extends BaseNodeMixin {
    * to call node.children.find(callback) or node.findChild(callback)
    */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
+
+  findAllWithCriteria(criteria: { types: NodeType[] }): Array<PageNode | SceneNode>
+  findAllByType<T extends NodeType>(type: T): Array<{ type: T } & (PageNode | SceneNode)>
 }
 
 interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
