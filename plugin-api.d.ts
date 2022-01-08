@@ -666,8 +666,7 @@ interface ChildrenMixin {
    */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
 
-  findAllWithCriteria(criteria: { types: NodeType[] }): SceneNode[]
-  findAllByType<T extends NodeType>(type: T): Array<{ type: T } & SceneNode>
+  findAllWithCriteria<T extends NodeType[]>(criteria: { types: T }): Array<{ type: T[number] } & SceneNode>
 }
 
 interface ConstraintMixin {
@@ -905,8 +904,7 @@ interface DocumentNode extends BaseNodeMixin {
    */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
 
-  findAllWithCriteria(criteria: { types: NodeType[] }): Array<PageNode | SceneNode>
-  findAllByType<T extends NodeType>(type: T): Array<{ type: T } & (PageNode | SceneNode)>
+  findAllWithCriteria<T extends NodeType[]>(criteria: { types: T }): Array<{ type: T[number] } & (PageNode | SceneNode)>
 }
 
 interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
