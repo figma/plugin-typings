@@ -919,6 +919,8 @@ interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
 
   backgrounds: ReadonlyArray<Paint>
 
+  prototypeBackgrounds: ReadonlyArray<Paint>
+
   readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null
 }
 
