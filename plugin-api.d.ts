@@ -107,7 +107,7 @@ interface PluginAPI {
   createNodeFromSvg(svg: string): FrameNode
 
   createImage(data: Uint8Array): Image
-  getImageByHash(hash: string): Image
+  getImageByHash(hash: string): Image | null
 
   createLinkPreviewAsync(url:string): Promise<EmbedNode | LinkUnfurlNode>
 
