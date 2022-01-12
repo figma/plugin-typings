@@ -616,6 +616,13 @@ interface ConnectorEndpointEndpointNodeIdAndMagnet {
 
 type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId
 
+type ConnectorStrokeCap =
+  | "NONE"
+  | "ARROW_EQUILATERAL"
+  | "ARROW_LINES"
+  | "TRIANGLE_FILLED"
+  | "DIAMOND_FILLED";
+
 ////////////////////////////////////////////////////////////////////////////////
 // Mixins
 
@@ -1072,6 +1079,8 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   connectorLineType: 'ELBOWED' | 'STRAIGHT'
   connectorStart: ConnectorEndpoint
   connectorEnd: ConnectorEndpoint
+  connectorStartStrokeCap: ConnectorStrokeCap
+  connectorEndStrokeCap: ConnectorStrokeCap
   clone(): ConnectorNode
 }
 
