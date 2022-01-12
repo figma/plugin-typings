@@ -119,6 +119,9 @@ interface PluginAPI {
   subtract(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
   intersect(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
   exclude(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
+
+  base64Encode(data: Uint8Array): string
+  base64Decode(data: string): Uint8Array
 }
 
 interface ClientStorageAPI {
