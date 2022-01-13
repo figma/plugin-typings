@@ -10,6 +10,8 @@ interface PluginAPI {
 
   readonly fileKey: string | undefined
 
+  skipInvisibleInstanceChildren: boolean
+
   readonly timer?: TimerAPI
   readonly viewport: ViewportAPI
 
@@ -105,7 +107,7 @@ interface PluginAPI {
   createNodeFromSvg(svg: string): FrameNode
 
   createImage(data: Uint8Array): Image
-  getImageByHash(hash: string): Image
+  getImageByHash(hash: string): Image | null
 
   createLinkPreviewAsync(url:string): Promise<EmbedNode | LinkUnfurlNode>
 
@@ -117,6 +119,9 @@ interface PluginAPI {
   subtract(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
   intersect(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
   exclude(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
+
+  base64Encode(data: Uint8Array): string
+  base64Decode(data: string): Uint8Array
 }
 
 interface ClientStorageAPI {
@@ -613,6 +618,13 @@ interface ConnectorEndpointEndpointNodeIdAndMagnet {
 
 type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId
 
+type ConnectorStrokeCap =
+  | "NONE"
+  | "ARROW_EQUILATERAL"
+  | "ARROW_LINES"
+  | "TRIANGLE_FILLED"
+  | "DIAMOND_FILLED";
+
 ////////////////////////////////////////////////////////////////////////////////
 // Mixins
 
@@ -665,6 +677,8 @@ interface ChildrenMixin {
    * to call node.children.find(callback) or node.findChild(callback)
    */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
+
+  findAllWithCriteria<T extends NodeType[]>(criteria: { types: T }): Array<{ type: T[number] } & SceneNode>
 }
 
 interface ConstraintMixin {
@@ -901,6 +915,8 @@ interface DocumentNode extends BaseNodeMixin {
    * to call node.children.find(callback) or node.findChild(callback)
    */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
+
+  findAllWithCriteria<T extends NodeType[]>(criteria: { types: T }): Array<{ type: T[number] } & (PageNode | SceneNode)>
 }
 
 interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
@@ -914,6 +930,8 @@ interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
   flowStartingPoints: ReadonlyArray<{ nodeId: string, name: string }>
 
   backgrounds: ReadonlyArray<Paint>
+
+  prototypeBackgrounds: ReadonlyArray<Paint>
 
   readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null
 }
@@ -1063,6 +1081,8 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   connectorLineType: 'ELBOWED' | 'STRAIGHT'
   connectorStart: ConnectorEndpoint
   connectorEnd: ConnectorEndpoint
+  connectorStartStrokeCap: ConnectorStrokeCap
+  connectorEndStrokeCap: ConnectorStrokeCap
   clone(): ConnectorNode
 }
 
