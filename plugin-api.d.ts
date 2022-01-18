@@ -515,6 +515,24 @@ interface Font {
   fontName: FontName
 }
 
+interface StyledTextSegment {
+  characters: string
+  start: number,
+  end: number
+  fontSize: number
+  fontName: FontName
+  textDecoration: TextDecoration
+  textCase: TextCase
+  lineHeight: LineHeight
+  letterSpacing: LetterSpacing
+  fills: Paint[]
+  textStyleId: string
+  fillStyleId: string
+  listOptions: TextListOptions
+  indentation: number
+  hyperlink: HyperlinkTarget | null
+}
+
 type Reaction = { action: Action | null, trigger: Trigger | null }
 
 type Action =
@@ -887,6 +905,11 @@ interface TextSublayerNode {
   setRangeListOptions(start: number, end: number, value: TextListOptions): void
   getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
   setRangeIndentation(start: number, end: number, value: number): void
+  getStyledTextSegments<StyledTextSegmentFields extends (keyof Omit<StyledTextSegment, 'characters' | 'start' | 'end'>)[]>(
+    fields: StyledTextSegmentFields,
+    start?: number,
+    end?: number
+  ): Array<Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>>
 }
 
 ////////////////////////////////////////////////////////////////////////////////
