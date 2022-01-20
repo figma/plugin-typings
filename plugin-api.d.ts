@@ -123,8 +123,8 @@ interface PluginAPI {
   base64Encode(data: Uint8Array): string
   base64Decode(data: string): Uint8Array
 
-  getFileThumbnailNode(): SceneNode | null
-  setFileThumbnailNodeAsync(node: SceneNode | null): Promise<void>
+  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
+  setFileThumbnailNodeAsync(node: FrameNode | ComponentNode | ComponentSetNode | null): Promise<void>
 }
 
 interface ClientStorageAPI {
