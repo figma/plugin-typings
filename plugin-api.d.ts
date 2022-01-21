@@ -1148,9 +1148,11 @@ interface LinkUnfurlNode extends OpaqueNodeMixin, SceneNodeMixin {
 interface MediaData {
   hash: string;
 }
-interface MediaNode extends OpaqueNodeMixin, SceneNodeMixin {
+interface MediaNode extends OpaqueNodeMixin {
   readonly type: "MEDIA";
   readonly mediaData: MediaData;
+
+  resize(width: number, height: number): void;
   clone(): MediaNode;
 }
 
