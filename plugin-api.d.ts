@@ -111,6 +111,8 @@ interface PluginAPI {
 
   createLinkPreviewAsync(url:string): Promise<EmbedNode | LinkUnfurlNode>
 
+  createGif(hash: string): MediaNode
+
   combineAsVariants(nodes: ReadonlyArray<ComponentNode>, parent: BaseNode & ChildrenMixin, index?: number): ComponentSetNode
   group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
   flatten(nodes: ReadonlyArray<BaseNode>, parent?: BaseNode & ChildrenMixin, index?: number): VectorNode
@@ -1146,6 +1148,17 @@ interface LinkUnfurlNode extends OpaqueNodeMixin, SceneNodeMixin {
   clone(): LinkUnfurlNode
 }
 
+interface MediaData {
+  hash: string;
+}
+interface MediaNode extends OpaqueNodeMixin {
+  readonly type: "MEDIA";
+  readonly mediaData: MediaData;
+
+  resize(width: number, height: number): void;
+  clone(): MediaNode;
+}
+
 type BaseNode =
   DocumentNode |
   PageNode |
@@ -1173,7 +1186,8 @@ type SceneNode =
   StampNode |
   WidgetNode |
   EmbedNode |
-  LinkUnfurlNode
+  LinkUnfurlNode |
+  MediaNode
 
 type NodeType = BaseNode['type']
 
