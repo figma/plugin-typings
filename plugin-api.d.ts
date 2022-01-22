@@ -111,6 +111,8 @@ interface PluginAPI {
 
   createLinkPreviewAsync(url:string): Promise<EmbedNode | LinkUnfurlNode>
 
+  createGif(hash: string): MediaNode
+
   combineAsVariants(nodes: ReadonlyArray<ComponentNode>, parent: BaseNode & ChildrenMixin, index?: number): ComponentSetNode
   group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
   flatten(nodes: ReadonlyArray<BaseNode>, parent?: BaseNode & ChildrenMixin, index?: number): VectorNode
@@ -122,6 +124,9 @@ interface PluginAPI {
 
   base64Encode(data: Uint8Array): string
   base64Decode(data: string): Uint8Array
+
+  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
+  setFileThumbnailNodeAsync(node: FrameNode | ComponentNode | ComponentSetNode | null): Promise<void>
 }
 
 interface ClientStorageAPI {
@@ -517,6 +522,24 @@ interface Font {
   fontName: FontName
 }
 
+interface StyledTextSegment {
+  characters: string
+  start: number,
+  end: number
+  fontSize: number
+  fontName: FontName
+  textDecoration: TextDecoration
+  textCase: TextCase
+  lineHeight: LineHeight
+  letterSpacing: LetterSpacing
+  fills: Paint[]
+  textStyleId: string
+  fillStyleId: string
+  listOptions: TextListOptions
+  indentation: number
+  hyperlink: HyperlinkTarget | null
+}
+
 type Reaction = { action: Action | null, trigger: Trigger | null }
 
 type Action =
@@ -889,6 +912,11 @@ interface TextSublayerNode {
   setRangeListOptions(start: number, end: number, value: TextListOptions): void
   getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
   setRangeIndentation(start: number, end: number, value: number): void
+  getStyledTextSegments<StyledTextSegmentFields extends (keyof Omit<StyledTextSegment, 'characters' | 'start' | 'end'>)[]>(
+    fields: StyledTextSegmentFields,
+    start?: number,
+    end?: number
+  ): Array<Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>>
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1122,6 +1150,18 @@ interface LinkUnfurlNode extends OpaqueNodeMixin, SceneNodeMixin {
   clone(): LinkUnfurlNode
 }
 
+interface MediaData {
+  hash: string;
+}
+interface MediaNode extends OpaqueNodeMixin {
+  readonly type: "MEDIA";
+  readonly mediaData: MediaData;
+
+  resize(width: number, height: number): void;
+  resizeWithoutConstraints(width: number, height: number): void;
+  clone(): MediaNode;
+}
+
 type BaseNode =
   DocumentNode |
   PageNode |
@@ -1149,7 +1189,8 @@ type SceneNode =
   StampNode |
   WidgetNode |
   EmbedNode |
-  LinkUnfurlNode
+  LinkUnfurlNode |
+  MediaNode
 
 type NodeType = BaseNode['type']
 
