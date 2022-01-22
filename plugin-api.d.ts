@@ -1156,6 +1156,7 @@ interface MediaNode extends OpaqueNodeMixin {
   readonly mediaData: MediaData;
 
   resize(width: number, height: number): void;
+  resizeWithoutConstraints(width: number, height: number): void;
   clone(): MediaNode;
 }
 
