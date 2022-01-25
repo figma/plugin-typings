@@ -460,6 +460,8 @@ interface VectorSegment {
 interface VectorRegion {
   readonly windingRule: WindingRule
   readonly loops: ReadonlyArray<ReadonlyArray<number>>
+  readonly fills?: ReadonlyArray<Paint>
+  readonly fillStyleId?: string
 }
 
 interface VectorNetwork {
