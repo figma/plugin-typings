@@ -25,7 +25,7 @@ interface PluginAPI {
   commitUndo(): void
   triggerUndo(): void
 
-  saveVersionHistoryAsync(title: string, description?: string): Promise<void>
+  saveVersionHistoryAsync(title: string, description?: string): Promise<VersionHistoryResult>
 
   showUI(html: string, options?: ShowUIOptions): void
   readonly ui: UIAPI
@@ -127,6 +127,10 @@ interface PluginAPI {
 
   getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
   setFileThumbnailNodeAsync(node: FrameNode | ComponentNode | ComponentSetNode | null): Promise<void>
+}
+
+interface VersionHistoryResult {
+  id: string
 }
 
 interface ClientStorageAPI {
