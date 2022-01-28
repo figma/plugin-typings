@@ -163,6 +163,7 @@ interface FetchOptions {
   method?: string
   headersObject?: {[name: string]: string}
   body?: Uint8Array
+  credentials?: string
   cache?: string
   redirect?: string
   referrer?: string
@@ -177,6 +178,7 @@ interface FetchResponse {
   statusText: string
   type: string
   url: string
+  arrayBuffer(): Promise<ArrayBuffer>
   uint8Array(): Promise<Uint8Array>
   text(): Promise<string>
 }
