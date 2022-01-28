@@ -161,7 +161,7 @@ interface ShowUIOptions {
 
 interface FetchOptions {
   method?: string
-  headers?: {[name: string]: string}
+  headersObject?: {[name: string]: string}
   body?: Uint8Array
   cache?: string
   redirect?: string
@@ -170,7 +170,7 @@ interface FetchOptions {
 }
 
 interface FetchResponse {
-  headers: {[name: string]: string}
+  headersObject: {[name: string]: string}
   ok: boolean
   redirected: boolean
   status: number
