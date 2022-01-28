@@ -127,6 +127,8 @@ interface PluginAPI {
 
   getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
   setFileThumbnailNodeAsync(node: FrameNode | ComponentNode | ComponentSetNode | null): Promise<void>
+
+  fetch(url: string, init?: FetchOptions): Promise<FetchResponse>
 }
 
 interface VersionHistoryResult {
@@ -155,6 +157,28 @@ interface ShowUIOptions {
   width?: number
   height?: number
   position?: { x: number; y: number }
+}
+
+interface FetchOptions {
+  method?: string
+  headers?: {[name: string]: string}
+  body?: Uint8Array
+  cache?: string
+  redirect?: string
+  referrer?: string
+  integrity?: string
+}
+
+interface FetchResponse {
+  headers: {[name: string]: string}
+  ok: boolean
+  redirected: boolean
+  status: number
+  statusText: string
+  type: string
+  url: string
+  uint8Array(): Promise<Uint8Array>
+  text(): Promise<string>
 }
 
 interface UIPostMessageOptions {
