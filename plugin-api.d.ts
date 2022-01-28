@@ -241,8 +241,8 @@ interface DropItem {
 interface DropFile {
   name: string
   type: string
-  getBytesAsync: Promise<Uint8Array>
-  getTextAsync: Promise<string>
+  getBytesAsync(): Promise<Uint8Array>
+  getTextAsync(): Promise<string>
 }
 
 ////////////////////////////////////////////////////////////////////////////////
