@@ -1,4 +1,4 @@
-fetch(url: string, init?: FetchOptions): Promise<FetchResponse>
+declare const fetch: (url: string, init?: FetchOptions) => Promise<FetchResponse>
 
 interface FetchOptions {
   method?: string
