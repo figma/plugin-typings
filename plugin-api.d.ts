@@ -1,3 +1,28 @@
+fetch(url: string, init?: FetchOptions): Promise<FetchResponse>
+
+interface FetchOptions {
+  method?: string
+  headersObject?: {[name: string]: string}
+  body?: Uint8Array
+  credentials?: string
+  cache?: string
+  redirect?: string
+  referrer?: string
+  integrity?: string
+}
+
+interface FetchResponse {
+  headersObject: {[name: string]: string}
+  ok: boolean
+  redirected: boolean
+  status: number
+  statusText: string
+  type: string
+  url: string
+  arrayBuffer(): Promise<ArrayBuffer>
+  uint8Array(): Promise<Uint8Array>
+  text(): Promise<string>
+}
 
 type ArgFreeEventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone"
 
@@ -127,8 +152,6 @@ interface PluginAPI {
 
   getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
   setFileThumbnailNodeAsync(node: FrameNode | ComponentNode | ComponentSetNode | null): Promise<void>
-
-  fetch(url: string, init?: FetchOptions): Promise<FetchResponse>
 }
 
 interface VersionHistoryResult {
@@ -157,30 +180,6 @@ interface ShowUIOptions {
   width?: number
   height?: number
   position?: { x: number; y: number }
-}
-
-interface FetchOptions {
-  method?: string
-  headersObject?: {[name: string]: string}
-  body?: Uint8Array
-  credentials?: string
-  cache?: string
-  redirect?: string
-  referrer?: string
-  integrity?: string
-}
-
-interface FetchResponse {
-  headersObject: {[name: string]: string}
-  ok: boolean
-  redirected: boolean
-  status: number
-  statusText: string
-  type: string
-  url: string
-  arrayBuffer(): Promise<ArrayBuffer>
-  uint8Array(): Promise<Uint8Array>
-  text(): Promise<string>
 }
 
 interface UIPostMessageOptions {
