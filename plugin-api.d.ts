@@ -1,29 +1,3 @@
-declare const fetch: (url: string, init?: FetchOptions) => Promise<FetchResponse>
-
-interface FetchOptions {
-  method?: string
-  headersObject?: {[name: string]: string}
-  body?: Uint8Array
-  credentials?: string
-  cache?: string
-  redirect?: string
-  referrer?: string
-  integrity?: string
-}
-
-interface FetchResponse {
-  headersObject: {[name: string]: string}
-  ok: boolean
-  redirected: boolean
-  status: number
-  statusText: string
-  type: string
-  url: string
-  arrayBuffer(): Promise<ArrayBuffer>
-  uint8Array(): Promise<Uint8Array>
-  text(): Promise<string>
-}
-
 type ArgFreeEventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone"
 
 interface PluginAPI {
