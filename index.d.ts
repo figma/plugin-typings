@@ -20,10 +20,35 @@ declare global {
     warn(message?: any, ...optionalParams: any[]): void
     clear(): void
   }
-  function setTimeout(callback: Function, timeout: number): number;
-  function clearTimeout(handle: number): void;
-  function setInterval(callback: Function, timeout: number): number;
-  function clearInterval(handle: number): void;
+  function setTimeout(callback: Function, timeout: number): number
+  function clearTimeout(handle: number): void
+  function setInterval(callback: Function, timeout: number): number
+  function clearInterval(handle: number): void
+
+  const fetch: (url: string, init?: FetchOptions) => Promise<FetchResponse>
+
+  interface FetchOptions {
+    method?: string
+    headersObject?: { [name: string]: string }
+    body?: Uint8Array
+    credentials?: string
+    cache?: string
+    redirect?: string
+    referrer?: string
+    integrity?: string
+  }
+
+  interface FetchResponse {
+    headersObject: { [name: string]: string }
+    ok: boolean
+    redirected: boolean
+    status: number
+    statusText: string
+    type: string
+    url: string
+    arrayBuffer(): Promise<ArrayBuffer>
+    text(): Promise<string>
+  }
 } // declare global
 
-export { }
+export {}

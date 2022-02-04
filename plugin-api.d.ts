@@ -1,4 +1,3 @@
-
 type ArgFreeEventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone"
 
 interface PluginAPI {
