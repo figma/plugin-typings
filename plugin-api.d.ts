@@ -877,6 +877,8 @@ interface TextSublayerNode {
 
   paragraphIndent: number
   paragraphSpacing: number
+  
+  listSpacing: number
 
   fontSize: number | PluginAPI['mixed']
   fontName: FontName | PluginAPI['mixed']
@@ -1222,6 +1224,7 @@ interface TextStyle extends BaseStyle {
   lineHeight: LineHeight
   paragraphIndent: number
   paragraphSpacing: number
+  listSpacing: number
   textCase: TextCase
 }
 
