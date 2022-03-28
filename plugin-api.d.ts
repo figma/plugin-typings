@@ -68,6 +68,7 @@ interface PluginAPI {
   createConnector(): ConnectorNode
   createShapeWithText(): ShapeWithTextNode
   createCodeBlock(): CodeBlockNode
+  createSection(): SectionNode
   /**
    * [DEPRECATED]: This API often fails to create a valid boolean operation. Use figma.union, figma.subtract, figma.intersect and figma.exclude instead.
    */
@@ -1165,6 +1166,11 @@ interface MediaNode extends OpaqueNodeMixin {
   clone(): MediaNode;
 }
 
+interface SectionNode extends BaseFrameMixin {
+  readonly type: "SECTION";
+  clone(): SectionNode;
+}
+
 type BaseNode =
   DocumentNode |
   PageNode |
@@ -1193,7 +1199,8 @@ type SceneNode =
   WidgetNode |
   EmbedNode |
   LinkUnfurlNode |
-  MediaNode
+  MediaNode | 
+  SectionNode
 
 type NodeType = BaseNode['type']
 
