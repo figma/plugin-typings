@@ -1169,6 +1169,7 @@ interface MediaNode extends OpaqueNodeMixin {
 interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
   readonly type: "SECTION";
   clone(): SectionNode;
+  resizeWithoutConstraints(width: number, height: number): void;
 }
 
 type BaseNode =
