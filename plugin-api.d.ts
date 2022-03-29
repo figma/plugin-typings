@@ -1166,7 +1166,7 @@ interface MediaNode extends OpaqueNodeMixin {
   clone(): MediaNode;
 }
 
-interface SectionNode extends BaseFrameMixin {
+interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
   readonly type: "SECTION";
   clone(): SectionNode;
 }
