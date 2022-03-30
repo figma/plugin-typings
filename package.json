@@ -4,6 +4,8 @@
   "description": "Typings for the Figma Plugin API",
   "main": "",
   "scripts": {
+    "prettier": "npm run prettier-path -- '**/*.{ts,js}'",
+    "prettier-path": "prettier --write",
     "test": "tsc"
   },
   "repository": {
@@ -20,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/figma/plugin-typings/issues"
   },
-  "homepage": "https://github.com/figma/plugin-typings#readme"
+  "homepage": "https://github.com/figma/plugin-typings#readme",
+  "devDependencies": {
+    "prettier": "^2.6.1"
+  }
 }
