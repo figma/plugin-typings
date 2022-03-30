@@ -1,7 +1,16 @@
-type ArgFreeEventType = "selectionchange" | "currentpagechange" | "close" | "timerstart" | "timerstop" | "timerpause" | "timerresume" | "timeradjust" | "timerdone"
+type ArgFreeEventType =
+  | 'selectionchange'
+  | 'currentpagechange'
+  | 'close'
+  | 'timerstart'
+  | 'timerstop'
+  | 'timerpause'
+  | 'timerresume'
+  | 'timeradjust'
+  | 'timerdone'
 
 interface PluginAPI {
-  readonly apiVersion: "1.0.0"
+  readonly apiVersion: '1.0.0'
   readonly command: string
   readonly editorType: 'figma' | 'figjam'
   readonly pluginId?: string
@@ -39,17 +48,17 @@ interface PluginAPI {
   readonly root: DocumentNode
   currentPage: PageNode
 
-  on(type: ArgFreeEventType, callback: () => void): void;
-  on(type: "run", callback: (event: RunEvent) => void): void
-  on(type: "drop", callback: (event: DropEvent) => boolean): void;
+  on(type: ArgFreeEventType, callback: () => void): void
+  on(type: 'run', callback: (event: RunEvent) => void): void
+  on(type: 'drop', callback: (event: DropEvent) => boolean): void
 
   once(type: ArgFreeEventType, callback: () => void): void
-  once(type: "run", callback: (event: RunEvent) => void): void;
-  once(type: "drop", callback: (event: DropEvent) => boolean): void;
+  once(type: 'run', callback: (event: RunEvent) => void): void
+  once(type: 'drop', callback: (event: DropEvent) => boolean): void
 
   off(type: ArgFreeEventType, callback: () => void): void
-  off(type: "run", callback: (event: RunEvent) => void): void;
-  off(type: "drop", callback: (event: DropEvent) => boolean): void;
+  off(type: 'run', callback: (event: RunEvent) => void): void
+  off(type: 'drop', callback: (event: DropEvent) => boolean): void
 
   readonly mixed: unique symbol
 
@@ -109,24 +118,50 @@ interface PluginAPI {
   createImage(data: Uint8Array): Image
   getImageByHash(hash: string): Image | null
 
-  createLinkPreviewAsync(url:string): Promise<EmbedNode | LinkUnfurlNode>
+  createLinkPreviewAsync(url: string): Promise<EmbedNode | LinkUnfurlNode>
 
   createGif(hash: string): MediaNode
 
-  combineAsVariants(nodes: ReadonlyArray<ComponentNode>, parent: BaseNode & ChildrenMixin, index?: number): ComponentSetNode
+  combineAsVariants(
+    nodes: ReadonlyArray<ComponentNode>,
+    parent: BaseNode & ChildrenMixin,
+    index?: number,
+  ): ComponentSetNode
   group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
-  flatten(nodes: ReadonlyArray<BaseNode>, parent?: BaseNode & ChildrenMixin, index?: number): VectorNode
+  flatten(
+    nodes: ReadonlyArray<BaseNode>,
+    parent?: BaseNode & ChildrenMixin,
+    index?: number,
+  ): VectorNode
 
-  union(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
-  subtract(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
-  intersect(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
-  exclude(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode
+  union(
+    nodes: ReadonlyArray<BaseNode>,
+    parent: BaseNode & ChildrenMixin,
+    index?: number,
+  ): BooleanOperationNode
+  subtract(
+    nodes: ReadonlyArray<BaseNode>,
+    parent: BaseNode & ChildrenMixin,
+    index?: number,
+  ): BooleanOperationNode
+  intersect(
+    nodes: ReadonlyArray<BaseNode>,
+    parent: BaseNode & ChildrenMixin,
+    index?: number,
+  ): BooleanOperationNode
+  exclude(
+    nodes: ReadonlyArray<BaseNode>,
+    parent: BaseNode & ChildrenMixin,
+    index?: number,
+  ): BooleanOperationNode
 
   base64Encode(data: Uint8Array): string
   base64Decode(data: string): Uint8Array
 
   getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
-  setFileThumbnailNodeAsync(node: FrameNode | ComponentNode | ComponentSetNode | null): Promise<void>
+  setFileThumbnailNodeAsync(
+    node: FrameNode | ComponentNode | ComponentSetNode | null,
+  ): Promise<void>
 }
 
 interface VersionHistoryResult {
@@ -175,15 +210,15 @@ interface UIAPI {
 
   postMessage(pluginMessage: any, options?: UIPostMessageOptions): void
   onmessage: MessageEventHandler | undefined
-  on(type: "message", callback: MessageEventHandler): void
-  once(type: "message", callback: MessageEventHandler): void
-  off(type: "message", callback: MessageEventHandler): void
+  on(type: 'message', callback: MessageEventHandler): void
+  once(type: 'message', callback: MessageEventHandler): void
+  off(type: 'message', callback: MessageEventHandler): void
 }
 
 interface TimerAPI {
   readonly remaining: number
   readonly total: number
-  readonly state: "STOPPED" | "PAUSED" | "RUNNING"
+  readonly state: 'STOPPED' | 'PAUSED' | 'RUNNING'
 
   pause: () => void
   resume: () => void
@@ -203,25 +238,35 @@ interface ParameterValues {
 }
 
 interface SuggestionResults {
-  setSuggestions(suggestions: Array<string | { name: string; data?: any; icon?: (string | Uint8Array); iconUrl?: string }>): void
+  setSuggestions(
+    suggestions: Array<
+      | string
+      | {
+          name: string
+          data?: any
+          icon?: string | Uint8Array
+          iconUrl?: string
+        }
+    >,
+  ): void
   setError(message: string): void
   setLoadingMessage(message: string): void
 }
 
 type ParameterInputEvent<ParametersType = ParameterValues> = {
-  query: string,
-  key: string,
-  parameters: Partial<ParametersType>,
-  result: SuggestionResults,
+  query: string
+  key: string
+  parameters: Partial<ParametersType>
+  result: SuggestionResults
 }
 
 interface ParametersAPI {
-  on(type: "input", callback: (event: ParameterInputEvent) => void): void
-  once(type: "input", callback: (event: ParameterInputEvent) => void): void
-  off(type: "input", callback: (event: ParameterInputEvent) => void): void
+  on(type: 'input', callback: (event: ParameterInputEvent) => void): void
+  once(type: 'input', callback: (event: ParameterInputEvent) => void): void
+  off(type: 'input', callback: (event: ParameterInputEvent) => void): void
 }
 
-interface RunEvent<ParametersType = (ParameterValues | undefined)> {
+interface RunEvent<ParametersType = ParameterValues | undefined> {
   command: string
   parameters: ParametersType
 }
@@ -252,10 +297,7 @@ interface DropFile {
 ////////////////////////////////////////////////////////////////////////////////
 // Datatypes
 
-type Transform = [
-  [number, number, number],
-  [number, number, number]
-]
+type Transform = [[number, number, number], [number, number, number]]
 
 interface Vector {
   readonly x: number
@@ -287,9 +329,9 @@ interface FontName {
   readonly style: string
 }
 
-type TextCase = "ORIGINAL" | "UPPER" | "LOWER" | "TITLE"
+type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE'
 
-type TextDecoration = "NONE" | "UNDERLINE" | "STRIKETHROUGH"
+type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
 
 interface ArcData {
   readonly startingAngle: number
@@ -298,7 +340,7 @@ interface ArcData {
 }
 
 interface DropShadowEffect {
-  readonly type: "DROP_SHADOW"
+  readonly type: 'DROP_SHADOW'
   readonly color: RGBA
   readonly offset: Vector
   readonly radius: number
@@ -309,7 +351,7 @@ interface DropShadowEffect {
 }
 
 interface InnerShadowEffect {
-  readonly type: "INNER_SHADOW"
+  readonly type: 'INNER_SHADOW'
   readonly color: RGBA
   readonly offset: Vector
   readonly radius: number
@@ -319,14 +361,14 @@ interface InnerShadowEffect {
 }
 
 interface BlurEffect {
-  readonly type: "LAYER_BLUR" | "BACKGROUND_BLUR"
+  readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
   readonly radius: number
   readonly visible: boolean
 }
 
 type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
 
-type ConstraintType = "MIN" | "CENTER" | "MAX" | "STRETCH" | "SCALE"
+type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
 
 interface Constraints {
   readonly horizontal: ConstraintType
@@ -349,7 +391,7 @@ interface ImageFilters {
 }
 
 interface SolidPaint {
-  readonly type: "SOLID"
+  readonly type: 'SOLID'
   readonly color: RGB
 
   readonly visible?: boolean
@@ -358,7 +400,7 @@ interface SolidPaint {
 }
 
 interface GradientPaint {
-  readonly type: "GRADIENT_LINEAR" | "GRADIENT_RADIAL" | "GRADIENT_ANGULAR" | "GRADIENT_DIAMOND"
+  readonly type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND'
   readonly gradientTransform: Transform
   readonly gradientStops: ReadonlyArray<ColorStop>
 
@@ -368,8 +410,8 @@ interface GradientPaint {
 }
 
 interface ImagePaint {
-  readonly type: "IMAGE"
-  readonly scaleMode: "FILL" | "FIT" | "CROP" | "TILE"
+  readonly type: 'IMAGE'
+  readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
   readonly imageHash: string | null
   readonly imageTransform?: Transform // setting for "CROP"
   readonly scalingFactor?: number // setting for "TILE"
@@ -384,25 +426,25 @@ interface ImagePaint {
 type Paint = SolidPaint | GradientPaint | ImagePaint
 
 interface Guide {
-  readonly axis: "X" | "Y"
+  readonly axis: 'X' | 'Y'
   readonly offset: number
 }
 
 interface RowsColsLayoutGrid {
-  readonly pattern: "ROWS" | "COLUMNS"
-  readonly alignment: "MIN" | "MAX" | "STRETCH" | "CENTER"
+  readonly pattern: 'ROWS' | 'COLUMNS'
+  readonly alignment: 'MIN' | 'MAX' | 'STRETCH' | 'CENTER'
   readonly gutterSize: number
 
-  readonly count: number        // Infinity when "Auto" is set in the UI
+  readonly count: number // Infinity when "Auto" is set in the UI
   readonly sectionSize?: number // Not set for alignment: "STRETCH"
-  readonly offset?: number      // Not set for alignment: "CENTER"
+  readonly offset?: number // Not set for alignment: "CENTER"
 
   readonly visible?: boolean
   readonly color?: RGBA
 }
 
 interface GridLayoutGrid {
-  readonly pattern: "GRID"
+  readonly pattern: 'GRID'
   readonly sectionSize: number
 
   readonly visible?: boolean
@@ -412,38 +454,38 @@ interface GridLayoutGrid {
 type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
 
 interface ExportSettingsConstraints {
-  readonly type: "SCALE" | "WIDTH" | "HEIGHT"
+  readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT'
   readonly value: number
 }
 
 interface ExportSettingsImage {
-  readonly format: "JPG" | "PNG"
-  readonly contentsOnly?: boolean    // defaults to true
-  readonly useAbsoluteBounds?: boolean    // defaults to false
+  readonly format: 'JPG' | 'PNG'
+  readonly contentsOnly?: boolean // defaults to true
+  readonly useAbsoluteBounds?: boolean // defaults to false
   readonly suffix?: string
   readonly constraint?: ExportSettingsConstraints
 }
 
 interface ExportSettingsSVG {
-  readonly format: "SVG"
-  readonly contentsOnly?: boolean    // defaults to true
-  readonly useAbsoluteBounds?: boolean    // defaults to false
+  readonly format: 'SVG'
+  readonly contentsOnly?: boolean // defaults to true
+  readonly useAbsoluteBounds?: boolean // defaults to false
   readonly suffix?: string
-  readonly svgOutlineText?: boolean  // defaults to true
-  readonly svgIdAttribute?: boolean  // defaults to false
+  readonly svgOutlineText?: boolean // defaults to true
+  readonly svgIdAttribute?: boolean // defaults to false
   readonly svgSimplifyStroke?: boolean // defaults to true
 }
 
 interface ExportSettingsPDF {
-  readonly format: "PDF"
-  readonly contentsOnly?: boolean    // defaults to true
-  readonly useAbsoluteBounds?: boolean    // defaults to false
+  readonly format: 'PDF'
+  readonly contentsOnly?: boolean // defaults to true
+  readonly useAbsoluteBounds?: boolean // defaults to false
   readonly suffix?: string
 }
 
 type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
 
-type WindingRule = "NONZERO" | "EVENODD"
+type WindingRule = 'NONZERO' | 'EVENODD'
 
 interface VectorVertex {
   readonly x: number
@@ -457,8 +499,8 @@ interface VectorVertex {
 interface VectorSegment {
   readonly start: number
   readonly end: number
-  readonly tangentStart?: Vector  // Defaults to { x: 0, y: 0 }
-  readonly tangentEnd?: Vector  // Defaults to { x: 0, y: 0 }
+  readonly tangentStart?: Vector // Defaults to { x: 0, y: 0 }
+  readonly tangentEnd?: Vector // Defaults to { x: 0, y: 0 }
 }
 
 interface VectorRegion {
@@ -475,7 +517,7 @@ interface VectorNetwork {
 }
 
 interface VectorPath {
-  readonly windingRule: WindingRule | "NONE"
+  readonly windingRule: WindingRule | 'NONE'
   readonly data: string
 }
 
@@ -483,44 +525,46 @@ type VectorPaths = ReadonlyArray<VectorPath>
 
 interface LetterSpacing {
   readonly value: number
-  readonly unit: "PIXELS" | "PERCENT"
+  readonly unit: 'PIXELS' | 'PERCENT'
 }
 
-type LineHeight = {
-  readonly value: number
-  readonly unit: "PIXELS" | "PERCENT"
-} | {
-  readonly unit: "AUTO"
-}
+type LineHeight =
+  | {
+      readonly value: number
+      readonly unit: 'PIXELS' | 'PERCENT'
+    }
+  | {
+      readonly unit: 'AUTO'
+    }
 
 type HyperlinkTarget = {
-  type: "URL" | "NODE"
+  type: 'URL' | 'NODE'
   value: string
 }
 
 type TextListOptions = {
-  type: "ORDERED" | "UNORDERED" | "NONE"
+  type: 'ORDERED' | 'UNORDERED' | 'NONE'
 }
 
 type BlendMode =
-  "NORMAL" |
-  "DARKEN" |
-  "MULTIPLY" |
-  "LINEAR_BURN" |
-  "COLOR_BURN" |
-  "LIGHTEN" |
-  "SCREEN" |
-  "LINEAR_DODGE" |
-  "COLOR_DODGE" |
-  "OVERLAY" |
-  "SOFT_LIGHT" |
-  "HARD_LIGHT" |
-  "DIFFERENCE" |
-  "EXCLUSION" |
-  "HUE" |
-  "SATURATION" |
-  "COLOR" |
-  "LUMINOSITY"
+  | 'NORMAL'
+  | 'DARKEN'
+  | 'MULTIPLY'
+  | 'LINEAR_BURN'
+  | 'COLOR_BURN'
+  | 'LIGHTEN'
+  | 'SCREEN'
+  | 'LINEAR_DODGE'
+  | 'COLOR_DODGE'
+  | 'OVERLAY'
+  | 'SOFT_LIGHT'
+  | 'HARD_LIGHT'
+  | 'DIFFERENCE'
+  | 'EXCLUSION'
+  | 'HUE'
+  | 'SATURATION'
+  | 'COLOR'
+  | 'LUMINOSITY'
 
 interface Font {
   fontName: FontName
@@ -528,7 +572,7 @@ interface Font {
 
 interface StyledTextSegment {
   characters: string
-  start: number,
+  start: number
   end: number
   fontSize: number
   fontName: FontName
@@ -544,32 +588,32 @@ interface StyledTextSegment {
   hyperlink: HyperlinkTarget | null
 }
 
-type Reaction = { action: Action | null, trigger: Trigger | null }
+type Reaction = { action: Action | null; trigger: Trigger | null }
 
 type Action =
-  { readonly type: "BACK" | "CLOSE" } |
-  { readonly type: "URL", url: string } |
-  {
-    readonly type: "NODE"
-    readonly destinationId: string | null
-    readonly navigation: Navigation
-    readonly transition: Transition | null
-    readonly preserveScrollPosition: boolean
+  | { readonly type: 'BACK' | 'CLOSE' }
+  | { readonly type: 'URL'; url: string }
+  | {
+      readonly type: 'NODE'
+      readonly destinationId: string | null
+      readonly navigation: Navigation
+      readonly transition: Transition | null
+      readonly preserveScrollPosition: boolean
 
-    // Only present if navigation == "OVERLAY" and the destination uses
-    // overlay position type "RELATIVE"
-    readonly overlayRelativePosition?: Vector
-  }
+      // Only present if navigation == "OVERLAY" and the destination uses
+      // overlay position type "RELATIVE"
+      readonly overlayRelativePosition?: Vector
+    }
 
 interface SimpleTransition {
-  readonly type: "DISSOLVE" | "SMART_ANIMATE" | "SCROLL_ANIMATE"
+  readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
   readonly easing: Easing
   readonly duration: number
 }
 
 interface DirectionalTransition {
-  readonly type: "MOVE_IN" | "MOVE_OUT" | "PUSH" | "SLIDE_IN" | "SLIDE_OUT"
-  readonly direction: "LEFT" | "RIGHT" | "TOP" | "BOTTOM"
+  readonly type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT'
+  readonly direction: 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
   readonly matchLayers: boolean
 
   readonly easing: Easing
@@ -579,62 +623,69 @@ interface DirectionalTransition {
 type Transition = SimpleTransition | DirectionalTransition
 
 type Trigger =
-  | { readonly type: "ON_CLICK" | "ON_HOVER" | "ON_PRESS" | "ON_DRAG" }
+  | { readonly type: 'ON_CLICK' | 'ON_HOVER' | 'ON_PRESS' | 'ON_DRAG' }
   | {
-    readonly type: "AFTER_TIMEOUT";
-    readonly timeout: number;
-  }
+      readonly type: 'AFTER_TIMEOUT'
+      readonly timeout: number
+    }
   | {
-    readonly type:
-    | "MOUSE_ENTER"
-    | "MOUSE_LEAVE"
-    | "MOUSE_UP"
-    | "MOUSE_DOWN";
-    readonly delay: number;
-  }
+      readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE' | 'MOUSE_UP' | 'MOUSE_DOWN'
+      readonly delay: number
+    }
   | {
-    readonly type: "ON_KEY_DOWN";
-    readonly device:
-    | "KEYBOARD"
-    | "XBOX_ONE"
-    | "PS4"
-    | "SWITCH_PRO"
-    | "UNKNOWN_CONTROLLER";
-    readonly keyCodes: ReadonlyArray<number>;
-  };
+      readonly type: 'ON_KEY_DOWN'
+      readonly device: 'KEYBOARD' | 'XBOX_ONE' | 'PS4' | 'SWITCH_PRO' | 'UNKNOWN_CONTROLLER'
+      readonly keyCodes: ReadonlyArray<number>
+    }
 
-type Navigation = "NAVIGATE" | "SWAP" | "OVERLAY" | "SCROLL_TO" | "CHANGE_TO"
+type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
 
 interface Easing {
-  readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR" | "EASE_IN_BACK" | "EASE_OUT_BACK" | "EASE_IN_AND_OUT_BACK" | "CUSTOM_CUBIC_BEZIER"
+  readonly type:
+    | 'EASE_IN'
+    | 'EASE_OUT'
+    | 'EASE_IN_AND_OUT'
+    | 'LINEAR'
+    | 'EASE_IN_BACK'
+    | 'EASE_OUT_BACK'
+    | 'EASE_IN_AND_OUT_BACK'
+    | 'CUSTOM_CUBIC_BEZIER'
   readonly easingFunctionCubicBezier?: EasingFunctionBezier
 }
 
 interface EasingFunctionBezier {
-  x1: number,
-  y1: number,
-  x2: number,
+  x1: number
+  y1: number
+  x2: number
   y2: number
 }
 
-type OverflowDirection = "NONE" | "HORIZONTAL" | "VERTICAL" | "BOTH"
+type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
 
-type OverlayPositionType = "CENTER" | "TOP_LEFT" | "TOP_CENTER" | "TOP_RIGHT" | "BOTTOM_LEFT" | "BOTTOM_CENTER" | "BOTTOM_RIGHT" | "MANUAL"
+type OverlayPositionType =
+  | 'CENTER'
+  | 'TOP_LEFT'
+  | 'TOP_CENTER'
+  | 'TOP_RIGHT'
+  | 'BOTTOM_LEFT'
+  | 'BOTTOM_CENTER'
+  | 'BOTTOM_RIGHT'
+  | 'MANUAL'
 
 type OverlayBackground =
-  { readonly type: "NONE" } |
-  { readonly type: "SOLID_COLOR", readonly color: RGBA }
+  | { readonly type: 'NONE' }
+  | { readonly type: 'SOLID_COLOR'; readonly color: RGBA }
 
-type OverlayBackgroundInteraction = "NONE" | "CLOSE_ON_CLICK_OUTSIDE"
+type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
 
-type PublishStatus = "UNPUBLISHED" | "CURRENT" | "CHANGED"
+type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
 
 interface ConnectorEndpointPosition {
-  position: { x: number, y: number }
+  position: { x: number; y: number }
 }
 
 interface ConnectorEndpointPositionAndEndpointNodeId {
-  position: { x: number, y: number }
+  position: { x: number; y: number }
   endpointNodeId: string
 }
 
@@ -643,14 +694,17 @@ interface ConnectorEndpointEndpointNodeIdAndMagnet {
   magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT'
 }
 
-type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId
+type ConnectorEndpoint =
+  | ConnectorEndpointPosition
+  | ConnectorEndpointEndpointNodeIdAndMagnet
+  | ConnectorEndpointPositionAndEndpointNodeId
 
 type ConnectorStrokeCap =
-  | "NONE"
-  | "ARROW_EQUILATERAL"
-  | "ARROW_LINES"
-  | "TRIANGLE_FILLED"
-  | "DIAMOND_FILLED";
+  | 'NONE'
+  | 'ARROW_EQUILATERAL'
+  | 'ARROW_LINES'
+  | 'TRIANGLE_FILLED'
+  | 'DIAMOND_FILLED'
 
 ////////////////////////////////////////////////////////////////////////////////
 // Mixins
@@ -705,7 +759,9 @@ interface ChildrenMixin {
    */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
 
-  findAllWithCriteria<T extends NodeType[]>(criteria: { types: T }): Array<{ type: T[number] } & SceneNode>
+  findAllWithCriteria<T extends NodeType[]>(criteria: {
+    types: T
+  }): Array<{ type: T[number] } & SceneNode>
 }
 
 interface ConstraintMixin {
@@ -724,7 +780,7 @@ interface LayoutMixin {
   readonly absoluteRenderBounds: Rect | null
   constrainProportions: boolean
 
-  layoutAlign: "MIN" | "CENTER" | "MAX" | "STRETCH" | "INHERIT" // applicable only inside auto-layout frames
+  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT' // applicable only inside auto-layout frames
   layoutGrow: number
 
   resize(width: number, height: number): void
@@ -734,7 +790,7 @@ interface LayoutMixin {
 
 interface BlendMixin {
   opacity: number
-  blendMode: "PASS_THROUGH" | BlendMode
+  blendMode: 'PASS_THROUGH' | BlendMode
   isMask: boolean
   effects: ReadonlyArray<Effect>
   effectStyleId: string
@@ -746,16 +802,16 @@ interface ContainerMixin {
   backgroundStyleId: string // DEPRECATED: use 'fillStyleId' instead
 }
 
-type StrokeCap = "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
-type StrokeJoin = "MITER" | "BEVEL" | "ROUND"
-type HandleMirroring = "NONE" | "ANGLE" | "ANGLE_AND_LENGTH"
+type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
+type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
+type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
 
 interface MinimalStrokesMixin {
   strokes: ReadonlyArray<Paint>
   strokeStyleId: string
   strokeWeight: number
   strokeJoin: StrokeJoin | PluginAPI['mixed']
-  strokeAlign: "CENTER" | "INSIDE" | "OUTSIDE"
+  strokeAlign: 'CENTER' | 'INSIDE' | 'OUTSIDE'
   dashPattern: ReadonlyArray<number>
   strokeGeometry: VectorPaths
 }
@@ -771,7 +827,6 @@ interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   strokeMiterLimit: number
   outlineStroke(): VectorNode | null
 }
-
 
 interface CornerMixin {
   cornerRadius: number | PluginAPI['mixed']
@@ -815,25 +870,33 @@ interface PublishableMixin {
   getPublishStatusAsync(): Promise<PublishStatus>
 }
 
-interface DefaultShapeMixin extends
-  BaseNodeMixin, SceneNodeMixin, ReactionMixin,
-  BlendMixin, GeometryMixin, LayoutMixin,
-  ExportMixin {
-}
+interface DefaultShapeMixin
+  extends BaseNodeMixin,
+    SceneNodeMixin,
+    ReactionMixin,
+    BlendMixin,
+    GeometryMixin,
+    LayoutMixin,
+    ExportMixin {}
 
-interface BaseFrameMixin extends
-  BaseNodeMixin, SceneNodeMixin, ChildrenMixin,
-  ContainerMixin, GeometryMixin, CornerMixin,
-  RectangleCornerMixin, BlendMixin, ConstraintMixin,
-  LayoutMixin, ExportMixin {
+interface BaseFrameMixin
+  extends BaseNodeMixin,
+    SceneNodeMixin,
+    ChildrenMixin,
+    ContainerMixin,
+    GeometryMixin,
+    CornerMixin,
+    RectangleCornerMixin,
+    BlendMixin,
+    ConstraintMixin,
+    LayoutMixin,
+    ExportMixin {
+  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
+  primaryAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
+  counterAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
 
-  layoutMode: "NONE" | "HORIZONTAL" | "VERTICAL"
-  primaryAxisSizingMode: "FIXED" | "AUTO" // applicable only if layoutMode != "NONE"
-  counterAxisSizingMode: "FIXED" | "AUTO" // applicable only if layoutMode != "NONE"
-
-  primaryAxisAlignItems: "MIN" | "MAX" | "CENTER" | "SPACE_BETWEEN" // applicable only if layoutMode != "NONE"
-  counterAxisAlignItems: "MIN" | "MAX" | "CENTER" // applicable only if layoutMode != "NONE"
-
+  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN' // applicable only if layoutMode != "NONE"
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' // applicable only if layoutMode != "NONE"
 
   paddingLeft: number // applicable only if layoutMode != "NONE"
   paddingRight: number // applicable only if layoutMode != "NONE"
@@ -850,10 +913,7 @@ interface BaseFrameMixin extends
   guides: ReadonlyArray<Guide>
 }
 
-interface DefaultFrameMixin extends
-  BaseFrameMixin,
-  FramePrototypingMixin,
-  ReactionMixin { }
+interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
 
 interface OpaqueNodeMixin extends BaseNodeMixin, SceneNodeMixin, ExportMixin {
   readonly absoluteTransform: Transform
@@ -888,7 +948,7 @@ interface TextSublayerNode {
   hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
 
   characters: string
-  insertCharacters(start: number, characters: string, useStyle?: "BEFORE" | "AFTER"): void
+  insertCharacters(start: number, characters: string, useStyle?: 'BEFORE' | 'AFTER'): void
   deleteCharacters(start: number, end: number): void
 
   getRangeFontSize(start: number, end: number): number | PluginAPI['mixed']
@@ -916,18 +976,25 @@ interface TextSublayerNode {
   setRangeListOptions(start: number, end: number, value: TextListOptions): void
   getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
   setRangeIndentation(start: number, end: number, value: number): void
-  getStyledTextSegments<StyledTextSegmentFields extends (keyof Omit<StyledTextSegment, 'characters' | 'start' | 'end'>)[]>(
+  getStyledTextSegments<
+    StyledTextSegmentFields extends (keyof Omit<
+      StyledTextSegment,
+      'characters' | 'start' | 'end'
+    >)[],
+  >(
     fields: StyledTextSegmentFields,
     start?: number,
-    end?: number
-  ): Array<Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>>
+    end?: number,
+  ): Array<
+    Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>
+  >
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Nodes
 
 interface DocumentNode extends BaseNodeMixin {
-  readonly type: "DOCUMENT"
+  readonly type: 'DOCUMENT'
 
   readonly children: ReadonlyArray<PageNode>
 
@@ -948,18 +1015,19 @@ interface DocumentNode extends BaseNodeMixin {
    */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
 
-  findAllWithCriteria<T extends NodeType[]>(criteria: { types: T }): Array<{ type: T[number] } & (PageNode | SceneNode)>
+  findAllWithCriteria<T extends NodeType[]>(criteria: {
+    types: T
+  }): Array<{ type: T[number] } & (PageNode | SceneNode)>
 }
 
 interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
-
-  readonly type: "PAGE"
+  readonly type: 'PAGE'
   clone(): PageNode
 
   guides: ReadonlyArray<Guide>
   selection: ReadonlyArray<SceneNode>
-  selectedTextRange: { node: TextNode, start: number, end: number } | null
-  flowStartingPoints: ReadonlyArray<{ nodeId: string, name: string }>
+  selectedTextRange: { node: TextNode; start: number; end: number } | null
+  flowStartingPoints: ReadonlyArray<{ nodeId: string; name: string }>
 
   backgrounds: ReadonlyArray<Paint>
 
@@ -969,58 +1037,63 @@ interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
 }
 
 interface FrameNode extends DefaultFrameMixin {
-  readonly type: "FRAME"
+  readonly type: 'FRAME'
   clone(): FrameNode
 }
 
-interface GroupNode extends
-  BaseNodeMixin, SceneNodeMixin, ReactionMixin,
-  ChildrenMixin, ContainerMixin, BlendMixin,
-  LayoutMixin, ExportMixin {
-
-  readonly type: "GROUP"
+interface GroupNode
+  extends BaseNodeMixin,
+    SceneNodeMixin,
+    ReactionMixin,
+    ChildrenMixin,
+    ContainerMixin,
+    BlendMixin,
+    LayoutMixin,
+    ExportMixin {
+  readonly type: 'GROUP'
   clone(): GroupNode
 }
 
-interface SliceNode extends
-  BaseNodeMixin, SceneNodeMixin, LayoutMixin,
-  ExportMixin {
-
-  readonly type: "SLICE"
+interface SliceNode extends BaseNodeMixin, SceneNodeMixin, LayoutMixin, ExportMixin {
+  readonly type: 'SLICE'
   clone(): SliceNode
 }
 
-interface RectangleNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, RectangleCornerMixin {
-  readonly type: "RECTANGLE"
+interface RectangleNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    CornerMixin,
+    RectangleCornerMixin {
+  readonly type: 'RECTANGLE'
   clone(): RectangleNode
 }
 
 interface LineNode extends DefaultShapeMixin, ConstraintMixin {
-  readonly type: "LINE"
+  readonly type: 'LINE'
   clone(): LineNode
 }
 
 interface EllipseNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
-  readonly type: "ELLIPSE"
+  readonly type: 'ELLIPSE'
   clone(): EllipseNode
   arcData: ArcData
 }
 
 interface PolygonNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
-  readonly type: "POLYGON"
+  readonly type: 'POLYGON'
   clone(): PolygonNode
   pointCount: number
 }
 
 interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
-  readonly type: "STAR"
+  readonly type: 'STAR'
   clone(): StarNode
   pointCount: number
   innerRadius: number
 }
 
 interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
-  readonly type: "VECTOR"
+  readonly type: 'VECTOR'
   clone(): VectorNode
   vectorNetwork: VectorNetwork
   vectorPaths: VectorPaths
@@ -1028,32 +1101,32 @@ interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
 }
 
 interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode {
-  readonly type: "TEXT"
+  readonly type: 'TEXT'
   clone(): TextNode
 
-  textAlignHorizontal: "LEFT" | "CENTER" | "RIGHT" | "JUSTIFIED"
-  textAlignVertical: "TOP" | "CENTER" | "BOTTOM"
-  textAutoResize: "NONE" | "WIDTH_AND_HEIGHT" | "HEIGHT"
+  textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
+  textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM'
+  textAutoResize: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT'
   autoRename: boolean
 
   textStyleId: string | PluginAPI['mixed']
 }
 
 interface ComponentSetNode extends BaseFrameMixin, PublishableMixin {
-  readonly type: "COMPONENT_SET"
+  readonly type: 'COMPONENT_SET'
   clone(): ComponentSetNode
   readonly defaultVariant: ComponentNode
   readonly variantGroupProperties: { [property: string]: { values: string[] } }
 }
 
 interface ComponentNode extends DefaultFrameMixin, PublishableMixin, VariantMixin {
-  readonly type: "COMPONENT"
+  readonly type: 'COMPONENT'
   clone(): ComponentNode
   createInstance(): InstanceNode
 }
 
 interface InstanceNode extends DefaultFrameMixin, VariantMixin {
-  readonly type: "INSTANCE"
+  readonly type: 'INSTANCE'
   clone(): InstanceNode
   mainComponent: ComponentNode | null
   swapComponent(componentNode: ComponentNode): void
@@ -1063,15 +1136,15 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
 }
 
 interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
-  readonly type: "BOOLEAN_OPERATION"
+  readonly type: 'BOOLEAN_OPERATION'
   clone(): BooleanOperationNode
-  booleanOperation: "UNION" | "INTERSECT" | "SUBTRACT" | "EXCLUDE"
+  booleanOperation: 'UNION' | 'INTERSECT' | 'SUBTRACT' | 'EXCLUDE'
 
   expanded: boolean
 }
 
 interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin {
-  readonly type: "STICKY"
+  readonly type: 'STICKY'
   readonly text: TextSublayerNode
   authorVisible: boolean
   authorName: string
@@ -1079,13 +1152,29 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
 }
 
 interface StampNode extends DefaultShapeMixin, ConstraintMixin {
-  readonly type: "STAMP",
+  readonly type: 'STAMP'
   clone(): StampNode
 }
 
-interface ShapeWithTextNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin {
-  readonly type: "SHAPE_WITH_TEXT"
-  shapeType: "SQUARE" | "ELLIPSE" | "ROUNDED_RECTANGLE" | "DIAMOND" | "TRIANGLE_UP" | "TRIANGLE_DOWN" | "PARALLELOGRAM_RIGHT" | "PARALLELOGRAM_LEFT" | "ENG_DATABASE" | "ENG_QUEUE" | "ENG_FILE" | "ENG_FOLDER"
+interface ShapeWithTextNode
+  extends OpaqueNodeMixin,
+    MinimalFillsMixin,
+    MinimalBlendMixin,
+    MinimalStrokesMixin {
+  readonly type: 'SHAPE_WITH_TEXT'
+  shapeType:
+    | 'SQUARE'
+    | 'ELLIPSE'
+    | 'ROUNDED_RECTANGLE'
+    | 'DIAMOND'
+    | 'TRIANGLE_UP'
+    | 'TRIANGLE_DOWN'
+    | 'PARALLELOGRAM_RIGHT'
+    | 'PARALLELOGRAM_LEFT'
+    | 'ENG_DATABASE'
+    | 'ENG_QUEUE'
+    | 'ENG_FILE'
+    | 'ENG_FOLDER'
   readonly text: TextSublayerNode
   readonly cornerRadius?: number
 
@@ -1095,9 +1184,23 @@ interface ShapeWithTextNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalB
 }
 
 interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
-  readonly type: "CODE_BLOCK"
+  readonly type: 'CODE_BLOCK'
   code: string
-  codeLanguage: 'TYPESCRIPT' | 'CPP' | 'RUBY' | 'CSS' | 'JAVASCRIPT' | 'HTML' | 'JSON' | 'GRAPHQL' | 'PYTHON' | 'GO' | 'SQL' | 'SWIFT' | 'KOTLIN' | 'RUST'
+  codeLanguage:
+    | 'TYPESCRIPT'
+    | 'CPP'
+    | 'RUBY'
+    | 'CSS'
+    | 'JAVASCRIPT'
+    | 'HTML'
+    | 'JSON'
+    | 'GRAPHQL'
+    | 'PYTHON'
+    | 'GO'
+    | 'SQL'
+    | 'SWIFT'
+    | 'KOTLIN'
+    | 'RUST'
   clone(): CodeBlockNode
 }
 
@@ -1106,7 +1209,7 @@ interface LayerSublayerNode {
 }
 
 interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrokesMixin {
-  readonly type: "CONNECTOR"
+  readonly type: 'CONNECTOR'
   readonly text: TextSublayerNode
   readonly textBackground: LayerSublayerNode
   readonly cornerRadius?: number
@@ -1130,84 +1233,81 @@ interface WidgetNode extends OpaqueNodeMixin {
 }
 
 interface EmbedData {
-  srcUrl: string;
-  canonicalUrl: string | null;
-  title: string | null;
-  description: string | null;
-  provider: string | null;
+  srcUrl: string
+  canonicalUrl: string | null
+  title: string | null
+  description: string | null
+  provider: string | null
 }
 interface EmbedNode extends OpaqueNodeMixin, SceneNodeMixin {
-  readonly type: "EMBED"
-  readonly embedData: EmbedData;
+  readonly type: 'EMBED'
+  readonly embedData: EmbedData
   clone(): EmbedNode
 }
 
 interface LinkUnfurlData {
-  url: string;
-  title: string | null;
-  description: string | null;
-  provider: string | null;
+  url: string
+  title: string | null
+  description: string | null
+  provider: string | null
 }
 interface LinkUnfurlNode extends OpaqueNodeMixin, SceneNodeMixin {
-  readonly type: "LINK_UNFURL"
-  readonly linkUnfurlData: LinkUnfurlData;
+  readonly type: 'LINK_UNFURL'
+  readonly linkUnfurlData: LinkUnfurlData
   clone(): LinkUnfurlNode
 }
 
 interface MediaData {
-  hash: string;
+  hash: string
 }
 interface MediaNode extends OpaqueNodeMixin {
-  readonly type: "MEDIA";
-  readonly mediaData: MediaData;
+  readonly type: 'MEDIA'
+  readonly mediaData: MediaData
 
-  resize(width: number, height: number): void;
-  resizeWithoutConstraints(width: number, height: number): void;
-  clone(): MediaNode;
+  resize(width: number, height: number): void
+  resizeWithoutConstraints(width: number, height: number): void
+  clone(): MediaNode
 }
 
 interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
-  readonly type: "SECTION";
-  clone(): SectionNode;
-  resizeWithoutConstraints(width: number, height: number): void;
+  readonly type: 'SECTION'
+  clone(): SectionNode
+  resizeWithoutConstraints(width: number, height: number): void
 }
 
-type BaseNode =
-  DocumentNode |
-  PageNode |
-  SceneNode
+type BaseNode = DocumentNode | PageNode | SceneNode
 
 type SceneNode =
-  SliceNode |
-  FrameNode |
-  GroupNode |
-  ComponentSetNode |
-  ComponentNode |
-  InstanceNode |
-  BooleanOperationNode |
-  VectorNode |
-  StarNode |
-  LineNode |
-  EllipseNode |
-  PolygonNode |
-  RectangleNode |
-  TextNode |
-  StickyNode |
-  ConnectorNode |
-  ShapeWithTextNode |
-  CodeBlockNode |
-  StampNode |
-  WidgetNode |
-  EmbedNode |
-  LinkUnfurlNode |
-  MediaNode | 
-  SectionNode
+  | SliceNode
+  | FrameNode
+  | GroupNode
+  | ComponentSetNode
+  | ComponentNode
+  | InstanceNode
+  | BooleanOperationNode
+  | VectorNode
+  | StarNode
+  | LineNode
+  | EllipseNode
+  | PolygonNode
+  | RectangleNode
+  | TextNode
+  | StickyNode
+  | ConnectorNode
+  | ShapeWithTextNode
+  | CodeBlockNode
+  | StampNode
+  | WidgetNode
+  | EmbedNode
+  | LinkUnfurlNode
+  | MediaNode
+  | SectionNode
 
 type NodeType = BaseNode['type']
 
 ////////////////////////////////////////////////////////////////////////////////
 // Styles
-type StyleType = "PAINT" | "TEXT" | "EFFECT" | "GRID"
+type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 
 interface BaseStyle extends PublishableMixin, PluginDataMixin {
   readonly id: string
@@ -1217,12 +1317,12 @@ interface BaseStyle extends PublishableMixin, PluginDataMixin {
 }
 
 interface PaintStyle extends BaseStyle {
-  type: "PAINT"
+  type: 'PAINT'
   paints: ReadonlyArray<Paint>
 }
 
 interface TextStyle extends BaseStyle {
-  type: "TEXT"
+  type: 'TEXT'
   fontSize: number
   textDecoration: TextDecoration
   fontName: FontName
@@ -1234,12 +1334,12 @@ interface TextStyle extends BaseStyle {
 }
 
 interface EffectStyle extends BaseStyle {
-  type: "EFFECT"
+  type: 'EFFECT'
   effects: ReadonlyArray<Effect>
 }
 
 interface GridStyle extends BaseStyle {
-  type: "GRID"
+  type: 'GRID'
   layoutGrids: ReadonlyArray<LayoutGrid>
 }
 
