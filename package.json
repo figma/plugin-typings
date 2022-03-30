@@ -5,7 +5,7 @@
   "main": "",
   "scripts": {
     "prettier": "npm run prettier-path -- '**/*.{ts,js}'",
-    "prettier:check": "npm run prettier-path:check -- '**/*.{ts,tsx,js,jsx,css,rb}'",
+    "prettier:check": "npm run prettier-path:check -- '**/*.{ts,js}'",
     "prettier-path": "prettier --write",
     "prettier-path:check": "prettier --check",
     "test": "tsc"
