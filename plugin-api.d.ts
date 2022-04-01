@@ -740,7 +740,7 @@ interface SceneNodeMixin {
 }
 
 interface StickableMixin {
-  stuckTo?: SceneNode | null
+  stuckTo: SceneNode | null
 }
 
 interface ChildrenMixin {
