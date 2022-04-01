@@ -736,6 +736,11 @@ interface PluginDataMixin {
 interface SceneNodeMixin {
   visible: boolean
   locked: boolean
+  stuckNodes: SceneNode[]
+}
+
+interface StickableMixin {
+  stuckTo?: SceneNode | null
 }
 
 interface ChildrenMixin {
@@ -1151,7 +1156,7 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
   clone(): StickyNode
 }
 
-interface StampNode extends DefaultShapeMixin, ConstraintMixin {
+interface StampNode extends DefaultShapeMixin, ConstraintMixin, StickableMixin {
   readonly type: 'STAMP'
   clone(): StampNode
 }
@@ -1221,7 +1226,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   clone(): ConnectorNode
 }
 
-interface WidgetNode extends OpaqueNodeMixin {
+interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
   readonly type: 'WIDGET'
   readonly widgetId: string
   readonly widgetSyncedState: { [key: string]: any }
