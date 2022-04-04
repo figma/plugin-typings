@@ -859,6 +859,11 @@ interface FramePrototypingMixin {
   readonly overlayBackgroundInteraction: OverlayBackgroundInteraction
 }
 
+interface VectorLikeMixin {
+  vectorNetwork: VectorNetwork
+  vectorPaths: VectorPaths
+  handleMirroring: HandleMirroring | PluginAPI['mixed']
+}
 interface ReactionMixin {
   reactions: ReadonlyArray<Reaction>
 }
@@ -1097,12 +1102,9 @@ interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
   innerRadius: number
 }
 
-interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, VectorLikeMixin {
   readonly type: 'VECTOR'
   clone(): VectorNode
-  vectorNetwork: VectorNetwork
-  vectorPaths: VectorPaths
-  handleMirroring: HandleMirroring | PluginAPI['mixed']
 }
 
 interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode {
@@ -1159,6 +1161,22 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
 interface StampNode extends DefaultShapeMixin, ConstraintMixin, StickableMixin {
   readonly type: 'STAMP'
   clone(): StampNode
+}
+
+interface HighlightNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    CornerMixin,
+    ReactionMixin,
+    VectorLikeMixin,
+    StickableMixin {
+  readonly type: 'HIGHLIGHT'
+  clone(): HighlightNode
+}
+
+interface WashiTapeNode extends DefaultShapeMixin, StickableMixin {
+  readonly type: 'WASHI_TAPE'
+  clone(): WashiTapeNode
 }
 
 interface ShapeWithTextNode
@@ -1307,6 +1325,8 @@ type SceneNode =
   | LinkUnfurlNode
   | MediaNode
   | SectionNode
+  | HighlightNode
+  | WashiTapeNode
 
 type NodeType = BaseNode['type']
 
