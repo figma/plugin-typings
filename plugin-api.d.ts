@@ -705,6 +705,7 @@ type ConnectorStrokeCap =
   | 'ARROW_LINES'
   | 'TRIANGLE_FILLED'
   | 'DIAMOND_FILLED'
+  | 'CIRCLE_FILLED'
 
 ////////////////////////////////////////////////////////////////////////////////
 // Mixins
