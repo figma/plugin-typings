@@ -1156,6 +1156,8 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
   readonly text: TextSublayerNode
   authorVisible: boolean
   authorName: string
+  resize(width: number, height: number): void
+  rescale(scale: number): void
   clone(): StickyNode
 }
 
