@@ -43,7 +43,7 @@ interface PluginAPI {
   readonly parameters: ParametersAPI
 
   getNodeById(id: string): BaseNode | null
-  getStyleById(id: string): BaseStyle | null
+  getStyleById(id: string): TextStyle | PaintStyle | EffectStyle | GridStyle | null
 
   readonly root: DocumentNode
   currentPage: PageNode
