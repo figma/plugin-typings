@@ -768,6 +768,8 @@ interface ChildrenMixin {
   findAllWithCriteria<T extends NodeType[]>(criteria: {
     types: T
   }): Array<{ type: T[number] } & SceneNode>
+
+  findWidgetNodesByWidgetId(widgetId: string): Array<WidgetNode>
 }
 
 interface ConstraintMixin {
@@ -1256,6 +1258,11 @@ interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
     syncedStateOverrides: { [name: string]: any },
     syncedMapOverrides?: { [mapName: string]: { [key: string]: any } },
   ): WidgetNode
+
+  setWidgetSyncedState(
+    syncedState: { [name: string]: any },
+    syncedMap?: { [mapName: string]: { [key: string]: any } },
+  ): void
 }
 
 interface EmbedData {
