@@ -190,6 +190,7 @@ interface ShowUIOptions {
   width?: number
   height?: number
   position?: { x: number; y: number }
+  themeColors?: boolean
 }
 
 interface UIPostMessageOptions {
