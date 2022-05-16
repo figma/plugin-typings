@@ -155,6 +155,8 @@ interface PluginAPI {
     index?: number,
   ): BooleanOperationNode
 
+  ungroup(node: SceneNode & ChildrenMixin): Array<SceneNode>
+
   base64Encode(data: Uint8Array): string
   base64Decode(data: string): Uint8Array
 
