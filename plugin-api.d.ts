@@ -791,8 +791,10 @@ interface LayoutMixin {
   readonly absoluteRenderBounds: Rect | null
   constrainProportions: boolean
 
-  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT' // applicable only inside auto-layout frames
+  // applicable only inside auto-layout frames
+  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
   layoutGrow: number
+  layoutPositioning: 'AUTO' | 'ABSOLUTE'
 
   resize(width: number, height: number): void
   resizeWithoutConstraints(width: number, height: number): void
@@ -912,13 +914,15 @@ interface BaseFrameMixin
   counterAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
 
   primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN' // applicable only if layoutMode != "NONE"
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' // applicable only if layoutMode != "NONE"
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE' // applicable only if layoutMode != "NONE"
 
   paddingLeft: number // applicable only if layoutMode != "NONE"
   paddingRight: number // applicable only if layoutMode != "NONE"
   paddingTop: number // applicable only if layoutMode != "NONE"
   paddingBottom: number // applicable only if layoutMode != "NONE"
   itemSpacing: number // applicable only if layoutMode != "NONE"
+  itemReverseZIndex: boolean // applicable only if layoutMode != "NONE"
+  strokesIncludedInLayout: boolean // applicable only if layoutMode != "NONE"
 
   horizontalPadding: number // DEPRECATED: use the individual paddings
   verticalPadding: number // DEPRECATED: use the individual paddings
@@ -1119,7 +1123,7 @@ interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode 
 
   textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
   textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM'
-  textAutoResize: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT'
+  textAutoResize: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT' | 'TRUNCATE'
   autoRename: boolean
 
   textStyleId: string | PluginAPI['mixed']
