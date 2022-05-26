@@ -829,7 +829,7 @@ interface MinimalStrokesMixin {
   strokeGeometry: VectorPaths
 }
 
-interface IndependentStrokesMixin {
+interface IndividualStrokesMixin {
   strokeTopWeight: number
   strokeBottomWeight: number
   strokeLeftWeight: number
@@ -916,7 +916,7 @@ interface BaseFrameMixin
     ConstraintMixin,
     LayoutMixin,
     ExportMixin,
-    IndependentStrokesMixin {
+    IndividualStrokesMixin {
   layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
   primaryAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
   counterAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
@@ -1092,7 +1092,7 @@ interface RectangleNode
     ConstraintMixin,
     CornerMixin,
     RectangleCornerMixin,
-    IndependentStrokesMixin {
+    IndividualStrokesMixin {
   readonly type: 'RECTANGLE'
   clone(): RectangleNode
 }
