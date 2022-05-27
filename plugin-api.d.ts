@@ -829,6 +829,13 @@ interface MinimalStrokesMixin {
   strokeGeometry: VectorPaths
 }
 
+interface IndividualStrokesMixin {
+  strokeTopWeight: number
+  strokeBottomWeight: number
+  strokeLeftWeight: number
+  strokeRightWeight: number
+}
+
 interface MinimalFillsMixin {
   fills: ReadonlyArray<Paint> | PluginAPI['mixed']
   fillStyleId: string | PluginAPI['mixed']
@@ -908,7 +915,8 @@ interface BaseFrameMixin
     BlendMixin,
     ConstraintMixin,
     LayoutMixin,
-    ExportMixin {
+    ExportMixin,
+    IndividualStrokesMixin {
   layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
   primaryAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
   counterAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
@@ -1083,7 +1091,8 @@ interface RectangleNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
-    RectangleCornerMixin {
+    RectangleCornerMixin,
+    IndividualStrokesMixin {
   readonly type: 'RECTANGLE'
   clone(): RectangleNode
 }
