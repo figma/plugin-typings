@@ -1219,6 +1219,7 @@ interface ShapeWithTextNode
     | 'ENG_FOLDER'
   readonly text: TextSublayerNode
   readonly cornerRadius?: number
+  rotation: number
 
   resize(width: number, height: number): void
   rescale(scale: number): void
@@ -1260,6 +1261,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   connectorEnd: ConnectorEndpoint
   connectorStartStrokeCap: ConnectorStrokeCap
   connectorEndStrokeCap: ConnectorStrokeCap
+  rotation: number
   clone(): ConnectorNode
 }
 
