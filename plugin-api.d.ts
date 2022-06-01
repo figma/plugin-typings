@@ -841,7 +841,7 @@ interface MinimalFillsMixin {
   fillStyleId: string | PluginAPI['mixed']
 }
 
-interface GeometryMixin extends MinimalStrokesMixin {
+interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   strokeCap: StrokeCap | PluginAPI['mixed']
   strokeMiterLimit: number
   outlineStroke(): VectorNode | null
