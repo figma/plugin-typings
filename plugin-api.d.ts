@@ -839,10 +839,12 @@ interface IndividualStrokesMixin {
 interface MinimalFillsMixin {
   fills: ReadonlyArray<Paint> | PluginAPI['mixed']
   fillStyleId: string | PluginAPI['mixed']
+}
+interface FillsGeometryMixin extends MinimalFillsMixin {
   fillGeometry: VectorPaths
 }
 
-interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
+interface GeometryMixin extends MinimalStrokesMixin, FillsGeometryMixin {
   strokeCap: StrokeCap | PluginAPI['mixed']
   strokeMiterLimit: number
   outlineStroke(): VectorNode | null
@@ -961,7 +963,7 @@ interface VariantMixin {
   readonly variantProperties: { [property: string]: string } | null
 }
 
-interface TextSublayerNode {
+interface TextSublayerNode extends MinimalFillsMixin {
   readonly hasMissingFont: boolean
 
   paragraphIndent: number
@@ -1169,7 +1171,7 @@ interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerM
   expanded: boolean
 }
 
-interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin {
+interface StickyNode extends OpaqueNodeMixin, FillsGeometryMixin, MinimalBlendMixin {
   readonly type: 'STICKY'
   readonly text: TextSublayerNode
   authorVisible: boolean
@@ -1200,7 +1202,7 @@ interface WashiTapeNode extends DefaultShapeMixin, StickableMixin {
 
 interface ShapeWithTextNode
   extends OpaqueNodeMixin,
-    MinimalFillsMixin,
+    FillsGeometryMixin,
     MinimalBlendMixin,
     MinimalStrokesMixin {
   readonly type: 'SHAPE_WITH_TEXT'
@@ -1318,7 +1320,7 @@ interface MediaNode extends OpaqueNodeMixin {
   clone(): MediaNode
 }
 
-interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
+interface SectionNode extends ChildrenMixin, FillsGeometryMixin, OpaqueNodeMixin {
   readonly type: 'SECTION'
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
