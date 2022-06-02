@@ -839,13 +839,13 @@ interface IndividualStrokesMixin {
 interface MinimalFillsMixin {
   fills: ReadonlyArray<Paint> | PluginAPI['mixed']
   fillStyleId: string | PluginAPI['mixed']
-  fillGeometry: VectorPaths
 }
 
 interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   strokeCap: StrokeCap | PluginAPI['mixed']
   strokeMiterLimit: number
   outlineStroke(): VectorNode | null
+  fillGeometry: VectorPaths
 }
 
 interface CornerMixin {
@@ -961,7 +961,7 @@ interface VariantMixin {
   readonly variantProperties: { [property: string]: string } | null
 }
 
-interface TextSublayerNode {
+interface TextSublayerNode extends MinimalFillsMixin {
   readonly hasMissingFont: boolean
 
   paragraphIndent: number
