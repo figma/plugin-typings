@@ -550,6 +550,7 @@ type TextListOptions = {
 }
 
 type BlendMode =
+  | 'PASS_THROUGH'
   | 'NORMAL'
   | 'DARKEN'
   | 'MULTIPLY'
@@ -801,9 +802,7 @@ interface LayoutMixin {
   rescale(scale: number): void
 }
 
-interface BlendMixin {
-  opacity: number
-  blendMode: 'PASS_THROUGH' | BlendMode
+interface BlendMixin extends MinimalBlendMixin {
   isMask: boolean
   effects: ReadonlyArray<Effect>
   effectStyleId: string
@@ -953,8 +952,8 @@ interface OpaqueNodeMixin extends BaseNodeMixin, SceneNodeMixin, ExportMixin {
 }
 
 interface MinimalBlendMixin {
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
+  opacity: number
+  blendMode: BlendMode
 }
 
 interface VariantMixin {
