@@ -654,7 +654,13 @@ interface Easing {
     | 'EASE_OUT_BACK'
     | 'EASE_IN_AND_OUT_BACK'
     | 'CUSTOM_CUBIC_BEZIER'
+    | 'GENTLE'
+    | 'QUICK'
+    | 'BOUNCY'
+    | 'SLOW'
+    | 'CUSTOM_SPRING'
   readonly easingFunctionCubicBezier?: EasingFunctionBezier
+  readonly easingFunctionSpring?: { mass: number, stiffness: number, damping: number, initialVelocity: number }
 }
 
 interface EasingFunctionBezier {
