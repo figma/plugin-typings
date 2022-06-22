@@ -742,6 +742,11 @@ interface SceneNodeMixin {
   visible: boolean
   locked: boolean
   stuckNodes: SceneNode[]
+  componentPropertyReferences:
+    | {
+        [nodeProperty in 'visible' | 'characters' | 'mainComponent']: string
+      }
+    | null
 }
 
 interface StickableMixin {
@@ -960,6 +965,20 @@ interface VariantMixin {
   readonly variantProperties: { [property: string]: string } | null
 }
 
+interface ComponentPropertiesMixin {
+  readonly componentPropertyDefinitions: ComponentPropertyDefinitions
+  addComponentProperty(
+    propertyName: string,
+    type: ComponentPropertyType,
+    defaultValue: string | boolean,
+  ): string
+  editComponentProperty(
+    propertyName: string,
+    newValue: { name?: string; defaultValue?: string | boolean },
+  ): string
+  deleteComponentProperty(propertyName: string): void
+}
+
 interface TextSublayerNode extends MinimalFillsMixin {
   readonly hasMissingFont: boolean
 
@@ -1137,17 +1156,38 @@ interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode 
   textStyleId: string | PluginAPI['mixed']
 }
 
-interface ComponentSetNode extends BaseFrameMixin, PublishableMixin {
+type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
+
+type ComponentPropertyDefinitions = {
+  [propertyName: string]: {
+    type: ComponentPropertyType
+    defaultValue: string | boolean
+    variantOptions?: string[]
+  }
+}
+
+interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPropertiesMixin {
   readonly type: 'COMPONENT_SET'
   clone(): ComponentSetNode
   readonly defaultVariant: ComponentNode
   readonly variantGroupProperties: { [property: string]: { values: string[] } }
 }
 
-interface ComponentNode extends DefaultFrameMixin, PublishableMixin, VariantMixin {
+interface ComponentNode
+  extends DefaultFrameMixin,
+    PublishableMixin,
+    VariantMixin,
+    ComponentPropertiesMixin {
   readonly type: 'COMPONENT'
   clone(): ComponentNode
   createInstance(): InstanceNode
+}
+
+type ComponentProperties = {
+  [propertyName: string]: {
+    type: ComponentPropertyType
+    value: string | boolean
+  }
 }
 
 interface InstanceNode extends DefaultFrameMixin, VariantMixin {
@@ -1155,7 +1195,8 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   clone(): InstanceNode
   mainComponent: ComponentNode | null
   swapComponent(componentNode: ComponentNode): void
-  setProperties(properties: { [property: string]: string }): void
+  setProperties(properties: { [propertyName: string]: string | boolean }): void
+  readonly componentProperties: ComponentProperties
   detachInstance(): FrameNode
   scaleFactor: number
 }
