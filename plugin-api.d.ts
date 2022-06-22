@@ -743,10 +743,10 @@ interface SceneNodeMixin {
   locked: boolean
   stuckNodes: SceneNode[]
   componentPropertyReferences:
-  | {
-      [nodeProperty in 'visible' | 'characters' | 'mainComponent']: string
-    }
-  | null
+    | {
+        [nodeProperty in 'visible' | 'characters' | 'mainComponent']: string
+      }
+    | null
 }
 
 interface StickableMixin {
@@ -974,10 +974,9 @@ interface ComponentPropertiesMixin {
   ): string
   editComponentProperty(
     propertyName: string,
-    newValue: { name?: string; defaultValue?: string | boolean},
+    newValue: { name?: string; defaultValue?: string | boolean },
   ): string
   deleteComponentProperty(propertyName: string): void
-
 }
 
 interface TextSublayerNode extends MinimalFillsMixin {
@@ -1167,14 +1166,18 @@ type ComponentPropertyDefinitions = {
   }
 }
 
-interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPropertiesMixin{
+interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPropertiesMixin {
   readonly type: 'COMPONENT_SET'
   clone(): ComponentSetNode
   readonly defaultVariant: ComponentNode
   readonly variantGroupProperties: { [property: string]: { values: string[] } }
 }
 
-interface ComponentNode extends DefaultFrameMixin, PublishableMixin, VariantMixin, ComponentPropertiesMixin{
+interface ComponentNode
+  extends DefaultFrameMixin,
+    PublishableMixin,
+    VariantMixin,
+    ComponentPropertiesMixin {
   readonly type: 'COMPONENT'
   clone(): ComponentNode
   createInstance(): InstanceNode
