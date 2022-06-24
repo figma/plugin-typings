@@ -1287,14 +1287,14 @@ interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
   clone(): CodeBlockNode
 }
 
-interface LayerSublayerNode {
+interface LabelSublayerNode {
   fills: Paint[] | PluginAPI['mixed']
 }
 
 interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrokesMixin {
   readonly type: 'CONNECTOR'
   readonly text: TextSublayerNode
-  readonly textBackground: LayerSublayerNode
+  readonly textBackground: LabelSublayerNode
   readonly cornerRadius?: number
   connectorLineType: 'ELBOWED' | 'STRAIGHT'
   connectorStart: ConnectorEndpoint
