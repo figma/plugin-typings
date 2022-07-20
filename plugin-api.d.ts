@@ -741,7 +741,8 @@ interface PluginDataMixin {
 interface SceneNodeMixin {
   visible: boolean
   locked: boolean
-  stuckNodes: SceneNode[]
+  readonly stuckNodes: SceneNode[]
+  readonly attachedConnectors: ConnectorNode[]
   componentPropertyReferences:
     | {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']: string
