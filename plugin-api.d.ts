@@ -1220,6 +1220,7 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
 interface StampNode extends DefaultShapeMixin, ConstraintMixin, StickableMixin {
   readonly type: 'STAMP'
   clone(): StampNode
+  getAuthorAsync(): Promise<BaseUser | null>
 }
 
 interface HighlightNode
@@ -1442,11 +1443,13 @@ interface Image {
   getBytesAsync(): Promise<Uint8Array>
 }
 
-interface User {
+interface BaseUser {
   readonly id: string | null
   readonly name: string
   readonly photoUrl: string | null
+}
 
+interface User extends BaseUser {
   // The current user's multiplayer color. This will match the color of their
   // dot stamps and cursor.
   readonly color: string
