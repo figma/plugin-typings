@@ -796,6 +796,7 @@ interface LayoutMixin {
   readonly width: number
   readonly height: number
   readonly absoluteRenderBounds: Rect | null
+  readonly absoluteBoundingBox: Rect | null
   constrainProportions: boolean
 
   // applicable only inside auto-layout frames
