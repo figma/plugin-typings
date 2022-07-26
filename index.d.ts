@@ -8,7 +8,9 @@ declare global {
   const __uiFiles__: {
     [key: string]: string
   }
-  const console: Console
+
+  // Using var so TypeScript can merge this with @types/node and "lib": ["DOM"]
+  var console: Console
 
   // The plugin environment exposes the browser console API,
   // so expected calls like console.log() still work.
