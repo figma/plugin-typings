@@ -1287,6 +1287,7 @@ interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
     | 'SWIFT'
     | 'KOTLIN'
     | 'RUST'
+    | 'BASH'
   clone(): CodeBlockNode
 }
 
