@@ -82,7 +82,7 @@ function testNotify() {
   })
 
   figma.notify("onDequeue", {
-    onDequeue: (reason: VisualBellDequeueReason) => {
+    onDequeue: (reason: NotifyDequeueReason) => {
       switch (reason) {
         case 'timeout':
           break;
