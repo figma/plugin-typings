@@ -60,6 +60,47 @@ function testFn1(node: SceneNode): node is FrameNode {
 function testFn(paint: SolidPaint | GradientPaint | ImagePaint | null): boolean {
   return !!paint
 }
+
+function testNotify() {
+  figma.notify("normal")
+  figma.notify("error", {error: true})
+  figma.notify("timeout", {timeout: 10000})
+  figma.notify("Infinity", {timeout: Infinity})
+
+  figma.notify("button", {button: {
+    text: "button",
+    action: () => {
+      return false
+    }
+  }})
+
+  figma.notify("button", {
+    button: {
+      text: "button",
+      action: () => {},
+    }
+  })
+
+  figma.notify("onDequeue", {
+    onDequeue: (reason: VisualBellDequeueReason) => {
+      switch (reason) {
+        case 'timeout':
+          break;
+        case 'dismiss':
+          break;
+        case 'action_button_click':
+          break;
+        default:
+          function assertNever(x: never): never {
+            throw new Error("Unexpected object: " + x);
+          }
+          assertNever(reason);
+          break;
+      }
+    }
+  })
+
+}
 EOF
 
 

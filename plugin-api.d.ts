@@ -180,7 +180,14 @@ interface ClientStorageAPI {
 interface NotificationOptions {
   timeout?: number
   error?: boolean
+  onDequeue?: (reason: VisualBellDequeueReason) => void
+  button?: {
+    text: string
+    action: () => boolean | void
+  }
 }
+
+type VisualBellDequeueReason = 'timeout' | 'dismiss' | 'action_button_click'
 
 interface NotificationHandler {
   cancel: () => void
