@@ -51,14 +51,17 @@ interface PluginAPI {
   on(type: ArgFreeEventType, callback: () => void): void
   on(type: 'run', callback: (event: RunEvent) => void): void
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
+  on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
 
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
+  once(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
 
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
+  off(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
 
   readonly mixed: unique symbol
 
@@ -305,6 +308,34 @@ interface DropFile {
   getBytesAsync(): Promise<Uint8Array>
   getTextAsync(): Promise<string>
 }
+
+interface NodeChangeEvent {
+  nodeChanges: NodeChange[]
+}
+
+interface BaseNodeChange {
+  id: string
+  origin: 'LOCAL' | 'REMOTE'
+}
+
+interface CreateChange extends BaseNodeChange {
+  type: 'CREATE'
+}
+
+interface DeleteChange extends BaseNodeChange {
+  type: 'DELETE'
+}
+
+interface PropertyChange extends BaseNodeChange {
+  type: 'PROPERTY_CHANGE'
+  properties: string[]
+}
+
+interface ReparentChange extends BaseNodeChange {
+  type: 'REPARENT'
+}
+
+type NodeChange = CreateChange | DeleteChange | PropertyChange | ReparentChange
 
 ////////////////////////////////////////////////////////////////////////////////
 // Datatypes
