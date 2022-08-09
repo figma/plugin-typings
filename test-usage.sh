@@ -15,6 +15,7 @@ cat > tsconfig.json << EOF
   "compilerOptions": {
     "target": "es6",
     "lib": ["es6"],
+    "strict": true,
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@figma"
