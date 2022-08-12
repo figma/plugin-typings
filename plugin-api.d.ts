@@ -314,7 +314,10 @@ interface NodeChangeEvent {
 interface BaseNodeChange {
   id: string
   origin: 'LOCAL' | 'REMOTE' | 'COMPONENT'
+  node: SceneNode | RemovedNode
 }
+
+type RemovedNode = { readonly removed: true; readonly type: NodeType; readonly id: string }
 
 interface CreateChange extends BaseNodeChange {
   type: 'CREATE'
