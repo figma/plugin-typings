@@ -980,10 +980,15 @@ interface ComponentPropertiesMixin {
     propertyName: string,
     type: ComponentPropertyType,
     defaultValue: string | boolean,
+    options?: ComponentPropertyOptions,
   ): string
   editComponentProperty(
     propertyName: string,
-    newValue: { name?: string; defaultValue?: string | boolean },
+    newValue: {
+      name?: string
+      defaultValue?: string | boolean
+      preferredValues?: InstanceSwapPreferredValue[]
+    },
   ): string
   deleteComponentProperty(propertyName: string): void
 }
@@ -1166,11 +1171,16 @@ interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode 
 }
 
 type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
+type InstanceSwapPreferredValue = { type: 'COMPONENT' | 'COMPONENT_SET'; key: string }
+type ComponentPropertyOptions = {
+  preferredValues?: InstanceSwapPreferredValue[]
+}
 
 type ComponentPropertyDefinitions = {
   [propertyName: string]: {
     type: ComponentPropertyType
     defaultValue: string | boolean
+    preferredValues?: InstanceSwapPreferredValue[]
     variantOptions?: string[]
   }
 }
