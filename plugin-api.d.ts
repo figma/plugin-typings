@@ -1206,6 +1206,7 @@ type ComponentProperties = {
   [propertyName: string]: {
     type: ComponentPropertyType
     value: string | boolean
+    preferredValues?: InstanceSwapPreferredValue[]
   }
 }
 
