@@ -1002,6 +1002,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
 
   fontSize: number | PluginAPI['mixed']
   fontName: FontName | PluginAPI['mixed']
+  readonly fontWeight: number | PluginAPI['mixed']
   textCase: TextCase | PluginAPI['mixed']
   textDecoration: TextDecoration | PluginAPI['mixed']
   letterSpacing: LetterSpacing | PluginAPI['mixed']
