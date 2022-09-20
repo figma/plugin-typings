@@ -1220,6 +1220,8 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   readonly componentProperties: ComponentProperties
   detachInstance(): FrameNode
   scaleFactor: number
+  readonly exposedInstances: InstanceNode[]
+  isExposedInstance: boolean
 }
 
 interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
