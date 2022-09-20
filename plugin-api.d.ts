@@ -1002,6 +1002,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
 
   fontSize: number | PluginAPI['mixed']
   fontName: FontName | PluginAPI['mixed']
+  readonly fontWeight: number | PluginAPI['mixed']
   textCase: TextCase | PluginAPI['mixed']
   textDecoration: TextDecoration | PluginAPI['mixed']
   letterSpacing: LetterSpacing | PluginAPI['mixed']
@@ -1016,6 +1017,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
   setRangeFontSize(start: number, end: number, value: number): void
   getRangeFontName(start: number, end: number): FontName | PluginAPI['mixed']
   setRangeFontName(start: number, end: number, value: FontName): void
+  getRangeFontWeight(start: number, end: number): number | PluginAPI['mixed']
   getRangeAllFontNames(start: number, end: number): FontName[]
   getRangeTextCase(start: number, end: number): TextCase | PluginAPI['mixed']
   setRangeTextCase(start: number, end: number, value: TextCase): void
