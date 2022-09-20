@@ -587,7 +587,7 @@ interface StyledTextSegment {
   end: number
   fontSize: number
   fontName: FontName
-  fontWeight: number
+  readonly fontWeight: number
   textDecoration: TextDecoration
   textCase: TextCase
   lineHeight: LineHeight
