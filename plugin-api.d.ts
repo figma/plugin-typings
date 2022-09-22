@@ -315,7 +315,7 @@ interface NodeChangeEvent {
 
 interface BaseNodeChange {
   id: string
-  origin: 'LOCAL' | 'REMOTE'
+  origin: 'LOCAL' | 'REMOTE' | 'COMPONENT'
 }
 
 interface CreateChange extends BaseNodeChange {
