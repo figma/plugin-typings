@@ -1205,6 +1205,7 @@ interface ComponentNode
   readonly type: 'COMPONENT'
   clone(): ComponentNode
   createInstance(): InstanceNode
+  readonly instances: InstanceNode[]
 }
 
 type ComponentProperties = {
