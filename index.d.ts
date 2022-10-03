@@ -49,18 +49,6 @@ declare global {
     arrayBuffer(): Promise<ArrayBuffer>
     text(): Promise<string>
   }
-
-  type FigmaVirtualNode<T> = { __type: T }
-
-  type FigmaDeclarativeChildren<T> =
-    | FigmaVirtualNode<T>
-    | FigmaDeclarativeChildren<T>[]
-    | string
-    | null
-    | undefined
-    | false
-
-  type FigmaDeclarativeNode = FigmaDeclarativeChildren<any>
 } // declare global
 
 export {}
