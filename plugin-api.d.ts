@@ -78,7 +78,7 @@ interface PluginAPI {
   createShapeWithText(): ShapeWithTextNode
   createCodeBlock(): CodeBlockNode
   createSection(): SectionNode
-  createNodeFromJSXAsync(jsx: FigmaDeclarativeNode): Promise<SceneNode>
+  createNodeFromJSXAsync(jsx: any): Promise<SceneNode>
 
   /**
    * [DEPRECATED]: This API often fails to create a valid boolean operation. Use figma.union, figma.subtract, figma.intersect and figma.exclude instead.
