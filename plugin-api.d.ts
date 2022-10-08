@@ -51,17 +51,17 @@ interface PluginAPI {
   on(type: ArgFreeEventType, callback: () => void): void
   on(type: 'run', callback: (event: RunEvent) => void): void
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
-  on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
+  on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
 
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
-  once(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
+  once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
 
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
-  off(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
+  off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
 
   readonly mixed: unique symbol
 
@@ -307,13 +307,15 @@ interface DropFile {
   getTextAsync(): Promise<string>
 }
 
-interface NodeChangeEvent {
-  nodeChanges: NodeChange[]
+interface DocumentChangeEvent {
+  documentChanges: DocumentChange[]
 }
 
-interface BaseNodeChange {
+interface BaseDocumentChange {
   id: string
-  origin: 'LOCAL' | 'REMOTE' | 'COMPONENT'
+  origin: 'LOCAL' | 'REMOTE'
+}
+interface BaseNodeChange extends BaseDocumentChange{
   node: SceneNode | RemovedNode
 }
 
@@ -329,12 +331,17 @@ interface DeleteChange extends BaseNodeChange {
 
 interface PropertyChange extends BaseNodeChange {
   type: 'PROPERTY_CHANGE'
-  properties: NodeChangeProperty[]
+  properties: DocumentChangeProperty[]
+}
+interface StyleChange extends BaseDocumentChange {
+  type: 'STYLE_CHANGE'
+  style: BaseStyle
+  properties: DocumentChangeProperty[]
 }
 
-type NodeChange = CreateChange | DeleteChange | PropertyChange
+type DocumentChange = CreateChange | DeleteChange | PropertyChange | StyleChange
 
-type NodeChangeProperty =
+type DocumentChangeProperty =
   | 'pointCount'
   | 'name'
   | 'width'
@@ -446,6 +453,9 @@ type NodeChangeProperty =
   | 'authorName'
   | 'code'
   | 'textBackground'
+  | 'paint'
+  | 'remote'
+  | 'documentationLinks'
 
 ////////////////////////////////////////////////////////////////////////////////
 // Datatypes
