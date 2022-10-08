@@ -313,7 +313,7 @@ interface DocumentChangeEvent {
 
 interface BaseDocumentChange {
   id: string
-  origin: 'LOCAL' | 'REMOTE'
+  origin: 'LOCAL' | 'REMOTE' | 'COMPONENT'
 }
 interface BaseNodeChange extends BaseDocumentChange{
   node: SceneNode | RemovedNode
