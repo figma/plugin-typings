@@ -981,7 +981,7 @@ interface ComponentPropertiesMixin {
   readonly componentPropertyDefinitions: ComponentPropertyDefinitions
   addComponentProperty(
     propertyName: string,
-    type: ComponentPropertyType,
+    type: Exclude<ComponentPropertyType, 'VARIANT'>,
     defaultValue: string | boolean,
     options?: ComponentPropertyOptions,
   ): string
