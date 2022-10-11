@@ -315,9 +315,10 @@ interface DocumentChangeEvent {
 
 interface BaseDocumentChange {
   id: string
-  origin: 'LOCAL' | 'REMOTE' | 'COMPONENT'
+  origin: 'LOCAL' | 'REMOTE'
 }
-interface BaseNodeChange extends BaseDocumentChange{
+
+interface BaseNodeChange extends BaseDocumentChange {
   node: SceneNode | RemovedNode
 }
 
@@ -333,17 +334,18 @@ interface DeleteChange extends BaseNodeChange {
 
 interface PropertyChange extends BaseNodeChange {
   type: 'PROPERTY_CHANGE'
-  properties: DocumentChangeProperty[]
+  properties: NodeChangeProperty[]
 }
+
 interface StyleChange extends BaseDocumentChange {
   type: 'STYLE_CHANGE'
   style: BaseStyle
-  properties: DocumentChangeProperty[]
+  properties: StyleChangeProperty[]
 }
 
 type DocumentChange = CreateChange | DeleteChange | PropertyChange | StyleChange
 
-type DocumentChangeProperty =
+type NodeChangeProperty =
   | 'pointCount'
   | 'name'
   | 'width'
@@ -455,9 +457,24 @@ type DocumentChangeProperty =
   | 'authorName'
   | 'code'
   | 'textBackground'
-  | 'paint'
+
+type StyleChangeProperty =
+  | 'name'
+  | 'pluginData'
+  | 'type'
+  | 'description'
   | 'remote'
   | 'documentationLinks'
+  | 'fontSize'
+  | 'textDecoration'
+  | 'letterSpacing'
+  | 'lineHeight'
+  | 'paragraphIndent'
+  | 'paragraphSpacing'
+  | 'textCase'
+  | 'paint'
+  | 'effects'
+  | 'layoutGrids'
 
 ////////////////////////////////////////////////////////////////////////////////
 // Datatypes
