@@ -352,7 +352,13 @@ interface StyleChange extends BaseStyleChange {
   properties: StyleChangeProperty[]
 }
 
-type DocumentChange = CreateChange | DeleteChange | PropertyChange | StyleCreateChange | StyleDeleteChange | StyleChange
+type DocumentChange =
+  | CreateChange
+  | DeleteChange
+  | PropertyChange
+  | StyleCreateChange
+  | StyleDeleteChange
+  | StyleChange
 
 type NodeChangeProperty =
   | 'pointCount'
