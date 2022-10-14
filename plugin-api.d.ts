@@ -51,14 +51,17 @@ interface PluginAPI {
   on(type: ArgFreeEventType, callback: () => void): void
   on(type: 'run', callback: (event: RunEvent) => void): void
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
+  on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
 
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
+  once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
 
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
+  off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
 
   readonly mixed: unique symbol
 
@@ -305,6 +308,194 @@ interface DropFile {
   getBytesAsync(): Promise<Uint8Array>
   getTextAsync(): Promise<string>
 }
+
+interface DocumentChangeEvent {
+  documentChanges: DocumentChange[]
+}
+
+interface BaseDocumentChange {
+  id: string
+  origin: 'LOCAL' | 'REMOTE'
+}
+
+interface BaseNodeChange extends BaseDocumentChange {
+  node: SceneNode | RemovedNode
+}
+
+interface RemovedNode {
+  readonly removed: true
+  readonly type: NodeType
+  readonly id: string
+}
+
+interface CreateChange extends BaseNodeChange {
+  type: 'CREATE'
+}
+
+interface DeleteChange extends BaseNodeChange {
+  type: 'DELETE'
+}
+
+interface PropertyChange extends BaseNodeChange {
+  type: 'PROPERTY_CHANGE'
+  properties: NodeChangeProperty[]
+}
+
+interface BaseStyleChange extends BaseDocumentChange {
+  style: BaseStyle
+}
+
+interface StyleCreateChange extends BaseStyleChange {
+  type: 'STYLE_CREATE'
+}
+
+interface StyleDeleteChange extends BaseStyleChange {
+  type: 'STYLE_DELETE'
+}
+
+interface StylePropertyChange extends BaseStyleChange {
+  type: 'STYLE_PROPERTY_CHANGE'
+  properties: StyleChangeProperty[]
+}
+
+type DocumentChange =
+  | CreateChange
+  | DeleteChange
+  | PropertyChange
+  | StyleCreateChange
+  | StyleDeleteChange
+  | StylePropertyChange
+
+type NodeChangeProperty =
+  | 'pointCount'
+  | 'name'
+  | 'width'
+  | 'height'
+  | 'parent'
+  | 'pluginData'
+  | 'constraints'
+  | 'locked'
+  | 'visible'
+  | 'opacity'
+  | 'blendMode'
+  | 'layoutGrids'
+  | 'guides'
+  | 'characters'
+  | 'styledTextSegments'
+  | 'vectorNetwork'
+  | 'effects'
+  | 'exportSettings'
+  | 'arcData'
+  | 'autoRename'
+  | 'fontName'
+  | 'innerRadius'
+  | 'fontSize'
+  | 'lineHeight'
+  | 'paragraphIndent'
+  | 'paragraphSpacing'
+  | 'letterSpacing'
+  | 'textAlignHorizontal'
+  | 'textAlignVertical'
+  | 'textCase'
+  | 'textDecoration'
+  | 'textAutoResize'
+  | 'fills'
+  | 'topLeftRadius'
+  | 'topRightRadius'
+  | 'bottomLeftRadius'
+  | 'bottomRightRadius'
+  | 'constrainProportions'
+  | 'strokes'
+  | 'strokeWeight'
+  | 'strokeAlign'
+  | 'strokeCap'
+  | 'strokeJoin'
+  | 'strokeMiterLimit'
+  | 'booleanOperation'
+  | 'overflowDirection'
+  | 'dashPattern'
+  | 'backgrounds'
+  | 'handleMirroring'
+  | 'cornerRadius'
+  | 'cornerSmoothing'
+  | 'relativeTransform'
+  | 'x'
+  | 'y'
+  | 'rotation'
+  | 'isMask'
+  | 'clipsContents'
+  | 'type'
+  | 'overlayPositionType'
+  | 'overlayInteraction'
+  | 'overlayBackground'
+  | 'prototypeStartNode'
+  | 'prototypeBackground'
+  | 'expanded'
+  | 'fillStyleId'
+  | 'strokeStyleId'
+  | 'backgroundStyleId'
+  | 'textStyleId'
+  | 'effectStyleId'
+  | 'gridStyleId'
+  | 'description'
+  | 'layoutMode'
+  | 'paddingLeft'
+  | 'paddingTop'
+  | 'paddingRight'
+  | 'paddingBottom'
+  | 'itemSpacing'
+  | 'layoutAlign'
+  | 'counterAxisSizingMode'
+  | 'primaryAxisSizingMode'
+  | 'primaryAlignItems'
+  | 'counterAxisAlignItems'
+  | 'layoutGrow'
+  | 'layoutPositioning'
+  | 'itemReverseZIndex'
+  | 'hyperlink'
+  | 'mediaData'
+  | 'stokeTopWeight'
+  | 'strokeBottomWeight'
+  | 'strokeLeftWeight'
+  | 'strokeRightWeight'
+  | 'prototypeInteractions'
+  | 'flowStartingPoints'
+  | 'shapeType'
+  | 'connectorStart'
+  | 'connectorEnd'
+  | 'connectorLineType'
+  | 'connectorStartStrokeCap'
+  | 'connectorEndStrokeCap'
+  | 'codeLanguage'
+  | 'widgetSyncedState'
+  | 'componentPropertyDefinitions'
+  | 'componentPropertyReferences'
+  | 'componentProperties'
+  | 'embedData'
+  | 'linkUnfurlData'
+  | 'text'
+  | 'authorVisible'
+  | 'authorName'
+  | 'code'
+  | 'textBackground'
+
+type StyleChangeProperty =
+  | 'name'
+  | 'pluginData'
+  | 'type'
+  | 'description'
+  | 'remote'
+  | 'documentationLinks'
+  | 'fontSize'
+  | 'textDecoration'
+  | 'letterSpacing'
+  | 'lineHeight'
+  | 'paragraphIndent'
+  | 'paragraphSpacing'
+  | 'textCase'
+  | 'paint'
+  | 'effects'
+  | 'layoutGrids'
 
 ////////////////////////////////////////////////////////////////////////////////
 // Datatypes
