@@ -1419,7 +1419,7 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   readonly exposedInstances: InstanceNode[]
   isExposedInstance: boolean
   readonly overrides: NodeChangeProperty[]
-  resetOverrides(): undefined
+  resetOverrides(): void
 }
 
 interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
