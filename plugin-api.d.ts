@@ -349,8 +349,8 @@ interface StyleDeleteChange extends BaseStyleChange {
   type: 'STYLE_DELETE'
 }
 
-interface StyleChange extends BaseStyleChange {
-  type: 'STYLE_CHANGE'
+interface StylePropertyChange extends BaseStyleChange {
+  type: 'STYLE_PROPERTY_CHANGE'
   properties: StyleChangeProperty[]
 }
 
@@ -360,7 +360,7 @@ type DocumentChange =
   | PropertyChange
   | StyleCreateChange
   | StyleDeleteChange
-  | StyleChange
+  | StylePropertyChange
 
 type NodeChangeProperty =
   | 'pointCount'
