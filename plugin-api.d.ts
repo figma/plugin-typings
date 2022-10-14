@@ -337,13 +337,30 @@ interface PropertyChange extends BaseNodeChange {
   properties: NodeChangeProperty[]
 }
 
-interface StyleChange extends BaseDocumentChange {
-  type: 'STYLE_CHANGE'
+interface BaseStyleChange extends BaseDocumentChange {
   style: BaseStyle
+}
+
+interface StyleCreateChange extends BaseStyleChange {
+  type: 'STYLE_CREATE'
+}
+
+interface StyleDeleteChange extends BaseStyleChange {
+  type: 'STYLE_DELETE'
+}
+
+interface StyleChange extends BaseStyleChange {
+  type: 'STYLE_CHANGE'
   properties: StyleChangeProperty[]
 }
 
-type DocumentChange = CreateChange | DeleteChange | PropertyChange | StyleChange
+type DocumentChange =
+  | CreateChange
+  | DeleteChange
+  | PropertyChange
+  | StyleCreateChange
+  | StyleDeleteChange
+  | StyleChange
 
 type NodeChangeProperty =
   | 'pointCount'
