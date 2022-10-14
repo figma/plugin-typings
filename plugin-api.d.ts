@@ -322,7 +322,11 @@ interface BaseNodeChange extends BaseDocumentChange {
   node: SceneNode | RemovedNode
 }
 
-type RemovedNode = { readonly removed: true; readonly type: NodeType; readonly id: string }
+interface RemovedNode {
+  readonly removed: true
+  readonly type: NodeType
+  readonly id: string
+}
 
 interface CreateChange extends BaseNodeChange {
   type: 'CREATE'
