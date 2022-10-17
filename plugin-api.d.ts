@@ -349,7 +349,7 @@ interface StyleCreateChange extends BaseStyleChange {
   type: 'STYLE_CREATE'
 }
 
-interface StyleDeleteChange extends BaseStyleChange{
+interface StyleDeleteChange extends BaseStyleChange {
   type: 'STYLE_DELETE'
   style: null
 }
