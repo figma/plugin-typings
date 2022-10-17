@@ -342,14 +342,14 @@ interface PropertyChange extends BaseNodeChange {
 }
 
 interface BaseStyleChange extends BaseDocumentChange {
-  style: BaseStyle
+  style: PaintStyle | TextStyle | GridStyle | EffectStyle | null
 }
 
 interface StyleCreateChange extends BaseStyleChange {
   type: 'STYLE_CREATE'
 }
 
-interface StyleDeleteChange extends Omit<BaseStyleChange, 'style'> {
+interface StyleDeleteChange extends BaseStyleChange{
   type: 'STYLE_DELETE'
   style: null
 }
