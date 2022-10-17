@@ -349,8 +349,9 @@ interface StyleCreateChange extends BaseStyleChange {
   type: 'STYLE_CREATE'
 }
 
-interface StyleDeleteChange extends BaseStyleChange {
+interface StyleDeleteChange extends Omit<BaseStyleChange, 'style'> {
   type: 'STYLE_DELETE'
+  style: null
 }
 
 interface StylePropertyChange extends BaseStyleChange {
