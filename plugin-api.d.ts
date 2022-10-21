@@ -52,16 +52,19 @@ interface PluginAPI {
   on(type: 'run', callback: (event: RunEvent) => void): void
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
   on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  on(type: 'textreview', callback: (event: TextReviewEvent) => Promise<TextReviewRange[]>): void
 
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
   once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  once(type: 'textreview', callback: (event: TextReviewEvent) => Promise<TextReviewRange[]>): void
 
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
   off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  off(type: 'textreview', callback: (event: TextReviewEvent) => Promise<TextReviewRange[]>): void
 
   readonly mixed: unique symbol
 
@@ -499,6 +502,16 @@ type StyleChangeProperty =
   | 'paint'
   | 'effects'
   | 'layoutGrids'
+
+type TextReviewEvent = {
+  text: string
+}
+
+type TextReviewRange = {
+  start: number
+  end: number
+  suggestions: string[]
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Datatypes
