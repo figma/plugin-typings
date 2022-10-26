@@ -815,9 +815,9 @@ type Action =
   | { readonly type: 'BACK' | 'CLOSE' }
   | { readonly type: 'URL'; url: string }
   | {
-    readonly type: 'UPDATE_MEDIA_RUNTIME'
-    readonly mediaAction: 'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE'
-  }
+      readonly type: 'UPDATE_MEDIA_RUNTIME'
+      readonly mediaAction: 'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE'
+    }
   | {
       readonly type: 'NODE'
       readonly destinationId: string | null
