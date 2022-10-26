@@ -123,6 +123,8 @@ interface PluginAPI {
   createImage(data: Uint8Array): Image
   getImageByHash(hash: string): Image | null
 
+  createVideo(data: Uint8Array): Video
+
   createLinkPreviewAsync(url: string): Promise<EmbedNode | LinkUnfurlNode>
 
   createGif(hash: string): MediaNode
@@ -627,7 +629,20 @@ interface ImagePaint {
   readonly blendMode?: BlendMode
 }
 
-type Paint = SolidPaint | GradientPaint | ImagePaint
+interface VideoPaint {
+  readonly type: 'VIDEO'
+  readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
+  readonly videoHash: string | null
+  readonly videoTransform?: Transform // setting for "CROP"
+  readonly scalingFactor?: number // setting for "TILE"
+  readonly rotation?: number // setting for "TILE" | "FILL" | "FIT"
+  readonly filters?: ImageFilters
+  readonly visible?: boolean
+  readonly opacity?: number
+  readonly blendMode?: BlendMode
+}
+
+type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint
 
 interface Guide {
   readonly axis: 'X' | 'Y'
@@ -800,6 +815,10 @@ type Action =
   | { readonly type: 'BACK' | 'CLOSE' }
   | { readonly type: 'URL'; url: string }
   | {
+    readonly type: 'UPDATE_MEDIA_RUNTIME'
+    readonly mediaAction: 'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE'
+  }
+  | {
       readonly type: 'NODE'
       readonly destinationId: string | null
       readonly navigation: Navigation
@@ -809,6 +828,7 @@ type Action =
       // Only present if navigation == "OVERLAY" and the destination uses
       // overlay position type "RELATIVE"
       readonly overlayRelativePosition?: Vector
+      readonly resetVideoPosition?: boolean
     }
 
 interface SimpleTransition {
@@ -1664,6 +1684,9 @@ interface GridStyle extends BaseStyle {
 interface Image {
   readonly hash: string
   getBytesAsync(): Promise<Uint8Array>
+}
+interface Video {
+  readonly hash: string
 }
 
 interface BaseUser {
