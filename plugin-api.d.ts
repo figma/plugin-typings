@@ -123,7 +123,7 @@ interface PluginAPI {
   createImage(data: Uint8Array): Image
   getImageByHash(hash: string): Image | null
 
-  createVideo(data: Uint8Array): Video
+  createVideoAsync(data: Uint8Array): Promise<Video>
 
   createLinkPreviewAsync(url: string): Promise<EmbedNode | LinkUnfurlNode>
 
