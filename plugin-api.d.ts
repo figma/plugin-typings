@@ -511,6 +511,7 @@ type TextReviewRange = {
   start: number
   end: number
   suggestions: string[]
+  color?: 'RED' | 'GREEN' | 'BLUE'
 }
 
 ////////////////////////////////////////////////////////////////////////////////
