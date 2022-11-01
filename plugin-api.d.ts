@@ -1,4 +1,5 @@
 type ArgFreeEventType =
+  | 'documentchange'
   | 'selectionchange'
   | 'currentpagechange'
   | 'close'
