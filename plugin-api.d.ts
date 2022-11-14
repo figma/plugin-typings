@@ -863,6 +863,7 @@ type Trigger =
       readonly device: 'KEYBOARD' | 'XBOX_ONE' | 'PS4' | 'SWITCH_PRO' | 'UNKNOWN_CONTROLLER'
       readonly keyCodes: ReadonlyArray<number>
     }
+  | { readonly type: 'ON_VIDEO_HIT'; readonly videoHitTime: number }
 
 type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
 
