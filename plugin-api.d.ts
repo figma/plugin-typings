@@ -1050,7 +1050,7 @@ type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
 interface MinimalStrokesMixin {
   strokes: ReadonlyArray<Paint>
   strokeStyleId: string
-  strokeWeight: number
+  strokeWeight: number | PluginAPI['mixed']
   strokeJoin: StrokeJoin | PluginAPI['mixed']
   strokeAlign: 'CENTER' | 'INSIDE' | 'OUTSIDE'
   dashPattern: ReadonlyArray<number>
