@@ -26,6 +26,8 @@ interface PluginAPI {
   readonly currentUser: User | null
   readonly activeUsers: ActiveUser[]
 
+  readonly textreview?: TextReviewAPI
+
   closePlugin(message?: string): void
 
   notify(message: string, options?: NotificationOptions): NotificationHandler
@@ -251,6 +253,11 @@ interface ViewportAPI {
   zoom: number
   scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
   readonly bounds: Rect
+}
+
+interface TextReviewAPI {
+  requestToBeEnabledAsync(): Promise<void>
+  readonly isEnabled: boolean
 }
 
 interface ParameterValues {
