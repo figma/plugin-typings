@@ -1193,7 +1193,7 @@ interface ComponentPropertiesMixin {
   readonly componentPropertyDefinitions: ComponentPropertyDefinitions
   addComponentProperty(
     propertyName: string,
-    type: Exclude<ComponentPropertyType, 'VARIANT'>,
+    type: ComponentPropertyType,
     defaultValue: string | boolean,
     options?: ComponentPropertyOptions,
   ): string
