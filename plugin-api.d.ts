@@ -266,6 +266,7 @@ interface ViewportAPI {
 
 interface TextReviewAPI {
   requestToBeEnabledAsync(): Promise<void>
+  requestToBeDisabledAsync(): Promise<void>
   readonly isEnabled: boolean
 }
 
