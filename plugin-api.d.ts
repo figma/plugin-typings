@@ -1209,6 +1209,7 @@ interface OpaqueNodeMixin extends BaseNodeMixin, SceneNodeMixin, ExportMixin {
   y: number
   readonly width: number
   readonly height: number
+  readonly absoluteBoundingBox: Rect | null
 }
 
 interface MinimalBlendMixin {
