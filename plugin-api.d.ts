@@ -1676,11 +1676,17 @@ type NodeType = BaseNode['type']
 // Styles
 type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 
+interface StyleConsumers {
+  node: SceneNode
+  fields: string[]
+}
+
 interface BaseStyle extends PublishableMixin, PluginDataMixin {
   readonly id: string
   readonly type: StyleType
   name: string
   remove(): void
+  readonly consumers: StyleConsumers[]
 }
 
 interface PaintStyle extends BaseStyle {
