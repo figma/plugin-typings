@@ -29,8 +29,12 @@ declare global {
 
   interface FetchOptions {
     method?: string
+    headers?: { [name: string]: string }
+    /**
+     * @deprecated use headers instead
+     */
     headersObject?: { [name: string]: string }
-    body?: Uint8Array
+    body?: Uint8Array | string
     credentials?: string
     cache?: string
     redirect?: string
@@ -48,6 +52,7 @@ declare global {
     url: string
     arrayBuffer(): Promise<ArrayBuffer>
     text(): Promise<string>
+    json(): Promise<any>
   }
 } // declare global
 
