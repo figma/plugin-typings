@@ -1676,7 +1676,14 @@ type NodeType = BaseNode['type']
 // Styles
 type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 
-type InheritedStyleField = 'fillStyleId' | 'strokeStyleId' | 'backgroundStyleId' | 'textStyleId' | 'effectStyleId' | 'gridStyleId' | 'strokeStyleId'
+type InheritedStyleField =
+  | 'fillStyleId'
+  | 'strokeStyleId'
+  | 'backgroundStyleId'
+  | 'textStyleId'
+  | 'effectStyleId'
+  | 'gridStyleId'
+  | 'strokeStyleId'
 interface StyleConsumers {
   node: SceneNode
   fields: InheritedStyleField[]
