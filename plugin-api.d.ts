@@ -526,7 +526,6 @@ type TextReviewRange = {
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
 
-
 type Transform = [[number, number, number], [number, number, number]]
 
 interface Vector {
@@ -849,8 +848,6 @@ type Action =
       readonly transition: Transition | null
       readonly preserveScrollPosition: boolean
 
-
-
       readonly overlayRelativePosition?: Vector
       readonly resetVideoPosition?: boolean
     }
@@ -957,7 +954,6 @@ type ConnectorStrokeCap =
   | 'DIAMOND_FILLED'
   | 'CIRCLE_FILLED'
 
-
 interface BaseNodeMixin extends PluginDataMixin {
   readonly id: string
   readonly parent: (BaseNode & ChildrenMixin) | null
@@ -974,8 +970,6 @@ interface PluginDataMixin {
   getPluginData(key: string): string
   setPluginData(key: string, value: string): void
   getPluginDataKeys(): string[]
-
-
 
   getSharedPluginData(namespace: string, key: string): string
   setSharedPluginData(namespace: string, key: string, value: string): void
@@ -1042,7 +1036,6 @@ interface LayoutMixin {
   readonly absoluteRenderBounds: Rect | null
   readonly absoluteBoundingBox: Rect | null
   constrainProportions: boolean
-
 
   layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
   layoutGrow: number
@@ -1289,7 +1282,6 @@ interface TextSublayerNode extends MinimalFillsMixin {
     Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>
   >
 }
-
 
 interface DocumentNode extends BaseNodeMixin {
   readonly type: 'DOCUMENT'
@@ -1697,7 +1689,6 @@ interface GridStyle extends BaseStyle {
   layoutGrids: ReadonlyArray<LayoutGrid>
 }
 
-
 interface Image {
   readonly hash: string
   getBytesAsync(): Promise<Uint8Array>
@@ -1713,8 +1704,6 @@ interface BaseUser {
 }
 
 interface User extends BaseUser {
-
-
   readonly color: string
   readonly sessionId: number
 }
