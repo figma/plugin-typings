@@ -1001,16 +1001,8 @@ interface ChildrenMixin {
   findChildren(callback?: (node: SceneNode) => boolean): SceneNode[]
   findChild(callback: (node: SceneNode) => boolean): SceneNode | null
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.filter(callback) or node.findChildren(callback)
-   */
   findAll(callback?: (node: SceneNode) => boolean): SceneNode[]
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.find(callback) or node.findChild(callback)
-   */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
 
   findAllWithCriteria<T extends NodeType[]>(criteria: {
@@ -1293,16 +1285,8 @@ interface DocumentNode extends BaseNodeMixin {
   findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>
   findChild(callback: (node: PageNode) => boolean): PageNode | null
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.filter(callback) or node.findChildren(callback)
-   */
   findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.find(callback) or node.findChild(callback)
-   */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
 
   findAllWithCriteria<T extends NodeType[]>(criteria: {
