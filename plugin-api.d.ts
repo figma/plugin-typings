@@ -1,1511 +1,1148 @@
-/// <reference no-default-lib="true"/>
-/// <reference lib="es6" />
-declare type ArgFreeEventType =
-  | 'selectionchange'
-  | 'currentpagechange'
-  | 'close'
-  | 'timerstart'
-  | 'timerstop'
-  | 'timerpause'
-  | 'timerresume'
-  | 'timeradjust'
-  | 'timerdone'
+/* plugin-typings are auto-generated. Do not update them directly. See plugin-docs/ for instructions. */
+declare type ArgFreeEventType = 'selectionchange' | 'currentpagechange' | 'close' | 'timerstart' | 'timerstop' | 'timerpause' | 'timerresume' | 'timeradjust' | 'timerdone';
 interface PluginAPI {
-  readonly apiVersion: '1.0.0'
-  readonly command: string
-  readonly editorType: 'figma' | 'figjam'
-  readonly pluginId?: string
-  readonly widgetId?: string
-  readonly fileKey: string | undefined
-  skipInvisibleInstanceChildren: boolean
-  readonly timer?: TimerAPI
-  readonly viewport: ViewportAPI
-  readonly currentUser: User | null
-  readonly activeUsers: ActiveUser[]
-  readonly textreview?: TextReviewAPI
-  closePlugin(message?: string): void
-  notify(message: string, options?: NotificationOptions): NotificationHandler
-  commitUndo(): void
-  triggerUndo(): void
-  saveVersionHistoryAsync(title: string, description?: string): Promise<VersionHistoryResult>
-  showUI(html: string, options?: ShowUIOptions): void
-  readonly ui: UIAPI
-  readonly clientStorage: ClientStorageAPI
-  readonly parameters: ParametersAPI
-  getNodeById(id: string): BaseNode | null
-  getStyleById(id: string): BaseStyle | null
-  readonly root: DocumentNode
-  currentPage: PageNode
-  on(type: ArgFreeEventType, callback: () => void): void
-  on(type: 'run', callback: (event: RunEvent) => void): void
-  on(type: 'drop', callback: (event: DropEvent) => boolean): void
-  on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
-  on(
-    type: 'textreview',
-    callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
-  ): void
-  once(type: ArgFreeEventType, callback: () => void): void
-  once(type: 'run', callback: (event: RunEvent) => void): void
-  once(type: 'drop', callback: (event: DropEvent) => boolean): void
-  once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
-  once(
-    type: 'textreview',
-    callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
-  ): void
-  off(type: ArgFreeEventType, callback: () => void): void
-  off(type: 'run', callback: (event: RunEvent) => void): void
-  off(type: 'drop', callback: (event: DropEvent) => boolean): void
-  off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
-  off(
-    type: 'textreview',
-    callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
-  ): void
-  readonly mixed: unique symbol
-  createRectangle(): RectangleNode
-  createLine(): LineNode
-  createEllipse(): EllipseNode
-  createPolygon(): PolygonNode
-  createStar(): StarNode
-  createVector(): VectorNode
-  createText(): TextNode
-  createFrame(): FrameNode
-  createComponent(): ComponentNode
-  createPage(): PageNode
-  createSlice(): SliceNode
-  createSticky(): StickyNode
-  createConnector(): ConnectorNode
-  createShapeWithText(): ShapeWithTextNode
-  createCodeBlock(): CodeBlockNode
-  createSection(): SectionNode
-  createNodeFromJSXAsync(jsx: any): Promise<SceneNode>
-  createBooleanOperation(): BooleanOperationNode
-  createPaintStyle(): PaintStyle
-  createTextStyle(): TextStyle
-  createEffectStyle(): EffectStyle
-  createGridStyle(): GridStyle
-  getLocalPaintStyles(): PaintStyle[]
-  getLocalTextStyles(): TextStyle[]
-  getLocalEffectStyles(): EffectStyle[]
-  getLocalGridStyles(): GridStyle[]
-  moveLocalPaintStyleAfter(targetNode: PaintStyle, reference: PaintStyle | null): void
-  moveLocalTextStyleAfter(targetNode: TextStyle, reference: TextStyle | null): void
-  moveLocalEffectStyleAfter(targetNode: EffectStyle, reference: EffectStyle | null): void
-  moveLocalGridStyleAfter(targetNode: GridStyle, reference: GridStyle | null): void
-  moveLocalPaintFolderAfter(targetFolder: string, reference: string | null): void
-  moveLocalTextFolderAfter(targetFolder: string, reference: string | null): void
-  moveLocalEffectFolderAfter(targetFolder: string, reference: string | null): void
-  moveLocalGridFolderAfter(targetFolder: string, reference: string | null): void
-  importComponentByKeyAsync(key: string): Promise<ComponentNode>
-  importComponentSetByKeyAsync(key: string): Promise<ComponentSetNode>
-  importStyleByKeyAsync(key: string): Promise<BaseStyle>
-  listAvailableFontsAsync(): Promise<Font[]>
-  loadFontAsync(fontName: FontName): Promise<void>
-  readonly hasMissingFont: boolean
-  createNodeFromSvg(svg: string): FrameNode
-  createImage(data: Uint8Array): Image
-  getImageByHash(hash: string): Image | null
-  createVideoAsync(data: Uint8Array): Promise<Video>
-  createLinkPreviewAsync(url: string): Promise<EmbedNode | LinkUnfurlNode>
-  createGif(hash: string): MediaNode
-  combineAsVariants(
-    nodes: ReadonlyArray<ComponentNode>,
-    parent: BaseNode & ChildrenMixin,
-    index?: number,
-  ): ComponentSetNode
-  group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
-  flatten(
-    nodes: ReadonlyArray<BaseNode>,
-    parent?: BaseNode & ChildrenMixin,
-    index?: number,
-  ): VectorNode
-  union(
-    nodes: ReadonlyArray<BaseNode>,
-    parent: BaseNode & ChildrenMixin,
-    index?: number,
-  ): BooleanOperationNode
-  subtract(
-    nodes: ReadonlyArray<BaseNode>,
-    parent: BaseNode & ChildrenMixin,
-    index?: number,
-  ): BooleanOperationNode
-  intersect(
-    nodes: ReadonlyArray<BaseNode>,
-    parent: BaseNode & ChildrenMixin,
-    index?: number,
-  ): BooleanOperationNode
-  exclude(
-    nodes: ReadonlyArray<BaseNode>,
-    parent: BaseNode & ChildrenMixin,
-    index?: number,
-  ): BooleanOperationNode
-  ungroup(node: SceneNode & ChildrenMixin): Array<SceneNode>
-  base64Encode(data: Uint8Array): string
-  base64Decode(data: string): Uint8Array
-  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
-  setFileThumbnailNodeAsync(
-    node: FrameNode | ComponentNode | ComponentSetNode | null,
-  ): Promise<void>
+    readonly apiVersion: '1.0.0';
+    readonly command: string;
+    readonly editorType: 'figma' | 'figjam';
+    readonly pluginId?: string;
+    readonly widgetId?: string;
+    readonly fileKey: string | undefined;
+    skipInvisibleInstanceChildren: boolean;
+    readonly timer?: TimerAPI;
+    readonly viewport: ViewportAPI;
+    readonly currentUser: User | null;
+    readonly activeUsers: ActiveUser[];
+    readonly textreview?: TextReviewAPI;
+    closePlugin(message?: string): void;
+    notify(message: string, options?: NotificationOptions): NotificationHandler;
+    commitUndo(): void;
+    triggerUndo(): void;
+    saveVersionHistoryAsync(title: string, description?: string): Promise<VersionHistoryResult>;
+    showUI(html: string, options?: ShowUIOptions): void;
+    readonly ui: UIAPI;
+    readonly clientStorage: ClientStorageAPI;
+    readonly parameters: ParametersAPI;
+    getNodeById(id: string): BaseNode | null;
+    getStyleById(id: string): BaseStyle | null;
+    readonly root: DocumentNode;
+    currentPage: PageNode;
+    on(type: ArgFreeEventType, callback: () => void): void;
+    on(type: 'run', callback: (event: RunEvent) => void): void;
+    on(type: 'drop', callback: (event: DropEvent) => boolean): void;
+    on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void;
+    on(type: 'textreview', callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[]): void;
+    once(type: ArgFreeEventType, callback: () => void): void;
+    once(type: 'run', callback: (event: RunEvent) => void): void;
+    once(type: 'drop', callback: (event: DropEvent) => boolean): void;
+    once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void;
+    once(type: 'textreview', callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[]): void;
+    off(type: ArgFreeEventType, callback: () => void): void;
+    off(type: 'run', callback: (event: RunEvent) => void): void;
+    off(type: 'drop', callback: (event: DropEvent) => boolean): void;
+    off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void;
+    off(type: 'textreview', callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[]): void;
+    readonly mixed: unique symbol;
+    createRectangle(): RectangleNode;
+    createLine(): LineNode;
+    createEllipse(): EllipseNode;
+    createPolygon(): PolygonNode;
+    createStar(): StarNode;
+    createVector(): VectorNode;
+    createText(): TextNode;
+    createFrame(): FrameNode;
+    createComponent(): ComponentNode;
+    createPage(): PageNode;
+    createSlice(): SliceNode;
+    createSticky(): StickyNode;
+    createConnector(): ConnectorNode;
+    createShapeWithText(): ShapeWithTextNode;
+    createCodeBlock(): CodeBlockNode;
+    createSection(): SectionNode;
+    createNodeFromJSXAsync(jsx: any): Promise<SceneNode>;
+    createBooleanOperation(): BooleanOperationNode;
+    createPaintStyle(): PaintStyle;
+    createTextStyle(): TextStyle;
+    createEffectStyle(): EffectStyle;
+    createGridStyle(): GridStyle;
+    getLocalPaintStyles(): PaintStyle[];
+    getLocalTextStyles(): TextStyle[];
+    getLocalEffectStyles(): EffectStyle[];
+    getLocalGridStyles(): GridStyle[];
+    moveLocalPaintStyleAfter(targetNode: PaintStyle, reference: PaintStyle | null): void;
+    moveLocalTextStyleAfter(targetNode: TextStyle, reference: TextStyle | null): void;
+    moveLocalEffectStyleAfter(targetNode: EffectStyle, reference: EffectStyle | null): void;
+    moveLocalGridStyleAfter(targetNode: GridStyle, reference: GridStyle | null): void;
+    moveLocalPaintFolderAfter(targetFolder: string, reference: string | null): void;
+    moveLocalTextFolderAfter(targetFolder: string, reference: string | null): void;
+    moveLocalEffectFolderAfter(targetFolder: string, reference: string | null): void;
+    moveLocalGridFolderAfter(targetFolder: string, reference: string | null): void;
+    importComponentByKeyAsync(key: string): Promise<ComponentNode>;
+    importComponentSetByKeyAsync(key: string): Promise<ComponentSetNode>;
+    importStyleByKeyAsync(key: string): Promise<BaseStyle>;
+    listAvailableFontsAsync(): Promise<Font[]>;
+    loadFontAsync(fontName: FontName): Promise<void>;
+    readonly hasMissingFont: boolean;
+    createNodeFromSvg(svg: string): FrameNode;
+    createImage(data: Uint8Array): Image;
+    getImageByHash(hash: string): Image | null;
+    createVideoAsync(data: Uint8Array): Promise<Video>;
+    createLinkPreviewAsync(url: string): Promise<EmbedNode | LinkUnfurlNode>;
+    createGif(hash: string): MediaNode;
+    combineAsVariants(nodes: ReadonlyArray<ComponentNode>, parent: BaseNode & ChildrenMixin, index?: number): ComponentSetNode;
+    group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode;
+    flatten(nodes: ReadonlyArray<BaseNode>, parent?: BaseNode & ChildrenMixin, index?: number): VectorNode;
+    union(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode;
+    subtract(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode;
+    intersect(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode;
+    exclude(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): BooleanOperationNode;
+    ungroup(node: SceneNode & ChildrenMixin): Array<SceneNode>;
+    base64Encode(data: Uint8Array): string;
+    base64Decode(data: string): Uint8Array;
+    getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null;
+    setFileThumbnailNodeAsync(node: FrameNode | ComponentNode | ComponentSetNode | null): Promise<void>;
 }
 interface VersionHistoryResult {
-  id: string
+    id: string;
 }
 interface ClientStorageAPI {
-  getAsync(key: string): Promise<any | undefined>
-  setAsync(key: string, value: any): Promise<void>
-  deleteAsync(key: string): Promise<void>
-  keysAsync(): Promise<string[]>
+    getAsync(key: string): Promise<any | undefined>;
+    setAsync(key: string, value: any): Promise<void>;
+    deleteAsync(key: string): Promise<void>;
+    keysAsync(): Promise<string[]>;
 }
 interface NotificationOptions {
-  timeout?: number
-  error?: boolean
-  onDequeue?: (reason: NotifyDequeueReason) => void
-  button?: {
-    text: string
-    action: () => boolean | void
-  }
+    timeout?: number;
+    error?: boolean;
+    onDequeue?: (reason: NotifyDequeueReason) => void;
+    button?: {
+        text: string;
+        action: () => boolean | void;
+    };
 }
-declare type NotifyDequeueReason = 'timeout' | 'dismiss' | 'action_button_click'
+declare type NotifyDequeueReason = 'timeout' | 'dismiss' | 'action_button_click';
 interface NotificationHandler {
-  cancel: () => void
+    cancel: () => void;
 }
 interface ShowUIOptions {
-  visible?: boolean
-  title?: string
-  width?: number
-  height?: number
-  position?: {
-    x: number
-    y: number
-  }
-  themeColors?: boolean
+    visible?: boolean;
+    title?: string;
+    width?: number;
+    height?: number;
+    position?: {
+        x: number;
+        y: number;
+    };
+    themeColors?: boolean;
 }
 interface UIPostMessageOptions {
-  origin?: string
+    origin?: string;
 }
 interface OnMessageProperties {
-  origin: string
+    origin: string;
 }
-declare type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
+declare type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void;
 interface UIAPI {
-  show(): void
-  hide(): void
-  resize(width: number, height: number): void
-  close(): void
-  postMessage(pluginMessage: any, options?: UIPostMessageOptions): void
-  onmessage: MessageEventHandler | undefined
-  on(type: 'message', callback: MessageEventHandler): void
-  once(type: 'message', callback: MessageEventHandler): void
-  off(type: 'message', callback: MessageEventHandler): void
+    show(): void;
+    hide(): void;
+    resize(width: number, height: number): void;
+    close(): void;
+    postMessage(pluginMessage: any, options?: UIPostMessageOptions): void;
+    onmessage: MessageEventHandler | undefined;
+    on(type: 'message', callback: MessageEventHandler): void;
+    once(type: 'message', callback: MessageEventHandler): void;
+    off(type: 'message', callback: MessageEventHandler): void;
 }
 interface TimerAPI {
-  readonly remaining: number
-  readonly total: number
-  readonly state: 'STOPPED' | 'PAUSED' | 'RUNNING'
-  pause: () => void
-  resume: () => void
-  start: (seconds: number) => void
-  stop: () => void
+    readonly remaining: number;
+    readonly total: number;
+    readonly state: 'STOPPED' | 'PAUSED' | 'RUNNING';
+    pause: () => void;
+    resume: () => void;
+    start: (seconds: number) => void;
+    stop: () => void;
 }
 interface ViewportAPI {
-  center: Vector
-  zoom: number
-  scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
-  readonly bounds: Rect
+    center: Vector;
+    zoom: number;
+    scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void;
+    readonly bounds: Rect;
 }
 interface TextReviewAPI {
-  requestToBeEnabledAsync(): Promise<void>
-  requestToBeDisabledAsync(): Promise<void>
-  readonly isEnabled: boolean
+    requestToBeEnabledAsync(): Promise<void>;
+    requestToBeDisabledAsync(): Promise<void>;
+    readonly isEnabled: boolean;
 }
 interface ParameterValues {
-  [key: string]: any
+    [key: string]: any;
 }
 interface SuggestionResults {
-  setSuggestions(
-    suggestions: Array<
-      | string
-      | {
-          name: string
-          data?: any
-          icon?: string | Uint8Array
-          iconUrl?: string
-        }
-    >,
-  ): void
-  setError(message: string): void
-  setLoadingMessage(message: string): void
+    setSuggestions(suggestions: Array<string | {
+        name: string;
+        data?: any;
+        icon?: string | Uint8Array;
+        iconUrl?: string;
+    }>): void;
+    setError(message: string): void;
+    setLoadingMessage(message: string): void;
 }
 declare type ParameterInputEvent<ParametersType = ParameterValues> = {
-  query: string
-  key: string
-  parameters: Partial<ParametersType>
-  result: SuggestionResults
-}
+    query: string;
+    key: string;
+    parameters: Partial<ParametersType>;
+    result: SuggestionResults;
+};
 interface ParametersAPI {
-  on(type: 'input', callback: (event: ParameterInputEvent) => void): void
-  once(type: 'input', callback: (event: ParameterInputEvent) => void): void
-  off(type: 'input', callback: (event: ParameterInputEvent) => void): void
+    on(type: 'input', callback: (event: ParameterInputEvent) => void): void;
+    once(type: 'input', callback: (event: ParameterInputEvent) => void): void;
+    off(type: 'input', callback: (event: ParameterInputEvent) => void): void;
 }
 interface RunEvent<ParametersType = ParameterValues | undefined> {
-  command: string
-  parameters: ParametersType
+    command: string;
+    parameters: ParametersType;
 }
 interface DropEvent {
-  node: BaseNode | SceneNode
-  x: number
-  y: number
-  absoluteX: number
-  absoluteY: number
-  items: DropItem[]
-  files: DropFile[]
-  dropMetadata?: any
+    node: BaseNode | SceneNode;
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    items: DropItem[];
+    files: DropFile[];
+    dropMetadata?: any;
 }
 interface DropItem {
-  type: string
-  data: string
+    type: string;
+    data: string;
 }
 interface DropFile {
-  name: string
-  type: string
-  getBytesAsync(): Promise<Uint8Array>
-  getTextAsync(): Promise<string>
+    name: string;
+    type: string;
+    getBytesAsync(): Promise<Uint8Array>;
+    getTextAsync(): Promise<string>;
 }
 interface DocumentChangeEvent {
-  documentChanges: DocumentChange[]
+    documentChanges: DocumentChange[];
 }
 interface BaseDocumentChange {
-  id: string
-  origin: 'LOCAL' | 'REMOTE'
+    id: string;
+    origin: 'LOCAL' | 'REMOTE';
 }
 interface BaseNodeChange extends BaseDocumentChange {
-  node: SceneNode | RemovedNode
+    node: SceneNode | RemovedNode;
 }
 interface RemovedNode {
-  readonly removed: true
-  readonly type: NodeType
-  readonly id: string
+    readonly removed: true;
+    readonly type: NodeType;
+    readonly id: string;
 }
 interface CreateChange extends BaseNodeChange {
-  type: 'CREATE'
+    type: 'CREATE';
 }
 interface DeleteChange extends BaseNodeChange {
-  type: 'DELETE'
+    type: 'DELETE';
 }
 interface PropertyChange extends BaseNodeChange {
-  type: 'PROPERTY_CHANGE'
-  properties: NodeChangeProperty[]
+    type: 'PROPERTY_CHANGE';
+    properties: NodeChangeProperty[];
 }
 interface BaseStyleChange extends BaseDocumentChange {
-  style: PaintStyle | TextStyle | GridStyle | EffectStyle | null
+    style: PaintStyle | TextStyle | GridStyle | EffectStyle | null;
 }
 interface StyleCreateChange extends BaseStyleChange {
-  type: 'STYLE_CREATE'
+    type: 'STYLE_CREATE';
 }
 interface StyleDeleteChange extends BaseStyleChange {
-  type: 'STYLE_DELETE'
-  style: null
+    type: 'STYLE_DELETE';
+    style: null;
 }
 interface StylePropertyChange extends BaseStyleChange {
-  type: 'STYLE_PROPERTY_CHANGE'
-  properties: StyleChangeProperty[]
+    type: 'STYLE_PROPERTY_CHANGE';
+    properties: StyleChangeProperty[];
 }
-declare type DocumentChange =
-  | CreateChange
-  | DeleteChange
-  | PropertyChange
-  | StyleCreateChange
-  | StyleDeleteChange
-  | StylePropertyChange
-declare type NodeChangeProperty =
-  | 'pointCount'
-  | 'name'
-  | 'width'
-  | 'height'
-  | 'parent'
-  | 'pluginData'
-  | 'constraints'
-  | 'locked'
-  | 'visible'
-  | 'opacity'
-  | 'blendMode'
-  | 'layoutGrids'
-  | 'guides'
-  | 'characters'
-  | 'styledTextSegments'
-  | 'vectorNetwork'
-  | 'effects'
-  | 'exportSettings'
-  | 'arcData'
-  | 'autoRename'
-  | 'fontName'
-  | 'innerRadius'
-  | 'fontSize'
-  | 'lineHeight'
-  | 'paragraphIndent'
-  | 'paragraphSpacing'
-  | 'letterSpacing'
-  | 'textAlignHorizontal'
-  | 'textAlignVertical'
-  | 'textCase'
-  | 'textDecoration'
-  | 'textAutoResize'
-  | 'fills'
-  | 'topLeftRadius'
-  | 'topRightRadius'
-  | 'bottomLeftRadius'
-  | 'bottomRightRadius'
-  | 'constrainProportions'
-  | 'strokes'
-  | 'strokeWeight'
-  | 'strokeAlign'
-  | 'strokeCap'
-  | 'strokeJoin'
-  | 'strokeMiterLimit'
-  | 'booleanOperation'
-  | 'overflowDirection'
-  | 'dashPattern'
-  | 'backgrounds'
-  | 'handleMirroring'
-  | 'cornerRadius'
-  | 'cornerSmoothing'
-  | 'relativeTransform'
-  | 'x'
-  | 'y'
-  | 'rotation'
-  | 'isMask'
-  | 'clipsContent'
-  | 'type'
-  | 'overlayPositionType'
-  | 'overlayBackgroundInteraction'
-  | 'overlayBackground'
-  | 'prototypeStartNode'
-  | 'prototypeBackgrounds'
-  | 'expanded'
-  | 'fillStyleId'
-  | 'strokeStyleId'
-  | 'backgroundStyleId'
-  | 'textStyleId'
-  | 'effectStyleId'
-  | 'gridStyleId'
-  | 'description'
-  | 'layoutMode'
-  | 'paddingLeft'
-  | 'paddingTop'
-  | 'paddingRight'
-  | 'paddingBottom'
-  | 'itemSpacing'
-  | 'layoutAlign'
-  | 'counterAxisSizingMode'
-  | 'primaryAxisSizingMode'
-  | 'primaryAxisAlignItems'
-  | 'counterAxisAlignItems'
-  | 'layoutGrow'
-  | 'layoutPositioning'
-  | 'itemReverseZIndex'
-  | 'hyperlink'
-  | 'mediaData'
-  | 'stokeTopWeight'
-  | 'strokeBottomWeight'
-  | 'strokeLeftWeight'
-  | 'strokeRightWeight'
-  | 'reactions'
-  | 'flowStartingPoints'
-  | 'shapeType'
-  | 'connectorStart'
-  | 'connectorEnd'
-  | 'connectorLineType'
-  | 'connectorStartStrokeCap'
-  | 'connectorEndStrokeCap'
-  | 'codeLanguage'
-  | 'widgetSyncedState'
-  | 'componentPropertyDefinitions'
-  | 'componentPropertyReferences'
-  | 'componentProperties'
-  | 'embedData'
-  | 'linkUnfurlData'
-  | 'text'
-  | 'authorVisible'
-  | 'authorName'
-  | 'code'
-  | 'textBackground'
-declare type StyleChangeProperty =
-  | 'name'
-  | 'pluginData'
-  | 'type'
-  | 'description'
-  | 'remote'
-  | 'documentationLinks'
-  | 'fontSize'
-  | 'textDecoration'
-  | 'letterSpacing'
-  | 'lineHeight'
-  | 'paragraphIndent'
-  | 'paragraphSpacing'
-  | 'textCase'
-  | 'paint'
-  | 'effects'
-  | 'layoutGrids'
+declare type DocumentChange = CreateChange | DeleteChange | PropertyChange | StyleCreateChange | StyleDeleteChange | StylePropertyChange;
+declare type NodeChangeProperty = 'pointCount' | 'name' | 'width' | 'height' | 'parent' | 'pluginData' | 'constraints' | 'locked' | 'visible' | 'opacity' | 'blendMode' | 'layoutGrids' | 'guides' | 'characters' | 'styledTextSegments' | 'vectorNetwork' | 'effects' | 'exportSettings' | 'arcData' | 'autoRename' | 'fontName' | 'innerRadius' | 'fontSize' | 'lineHeight' | 'paragraphIndent' | 'paragraphSpacing' | 'letterSpacing' | 'textAlignHorizontal' | 'textAlignVertical' | 'textCase' | 'textDecoration' | 'textAutoResize' | 'fills' | 'topLeftRadius' | 'topRightRadius' | 'bottomLeftRadius' | 'bottomRightRadius' | 'constrainProportions' | 'strokes' | 'strokeWeight' | 'strokeAlign' | 'strokeCap' | 'strokeJoin' | 'strokeMiterLimit' | 'booleanOperation' | 'overflowDirection' | 'dashPattern' | 'backgrounds' | 'handleMirroring' | 'cornerRadius' | 'cornerSmoothing' | 'relativeTransform' | 'x' | 'y' | 'rotation' | 'isMask' | 'clipsContent' | 'type' | 'overlayPositionType' | 'overlayBackgroundInteraction' | 'overlayBackground' | 'prototypeStartNode' | 'prototypeBackgrounds' | 'expanded' | 'fillStyleId' | 'strokeStyleId' | 'backgroundStyleId' | 'textStyleId' | 'effectStyleId' | 'gridStyleId' | 'description' | 'layoutMode' | 'paddingLeft' | 'paddingTop' | 'paddingRight' | 'paddingBottom' | 'itemSpacing' | 'layoutAlign' | 'counterAxisSizingMode' | 'primaryAxisSizingMode' | 'primaryAxisAlignItems' | 'counterAxisAlignItems' | 'layoutGrow' | 'layoutPositioning' | 'itemReverseZIndex' | 'hyperlink' | 'mediaData' | 'stokeTopWeight' | 'strokeBottomWeight' | 'strokeLeftWeight' | 'strokeRightWeight' | 'reactions' | 'flowStartingPoints' | 'shapeType' | 'connectorStart' | 'connectorEnd' | 'connectorLineType' | 'connectorStartStrokeCap' | 'connectorEndStrokeCap' | 'codeLanguage' | 'widgetSyncedState' | 'componentPropertyDefinitions' | 'componentPropertyReferences' | 'componentProperties' | 'embedData' | 'linkUnfurlData' | 'text' | 'authorVisible' | 'authorName' | 'code' | 'textBackground';
+declare type StyleChangeProperty = 'name' | 'pluginData' | 'type' | 'description' | 'remote' | 'documentationLinks' | 'fontSize' | 'textDecoration' | 'letterSpacing' | 'lineHeight' | 'paragraphIndent' | 'paragraphSpacing' | 'textCase' | 'paint' | 'effects' | 'layoutGrids';
 declare type TextReviewEvent = {
-  text: string
-}
+    text: string;
+};
 declare type TextReviewRange = {
-  start: number
-  end: number
-  suggestions: string[]
-  color?: 'RED' | 'GREEN' | 'BLUE'
-}
-declare type Transform = [[number, number, number], [number, number, number]]
+    start: number;
+    end: number;
+    suggestions: string[];
+    color?: 'RED' | 'GREEN' | 'BLUE';
+};
+declare type Transform = [[number, number, number], [number, number, number]];
 interface Vector {
-  readonly x: number
-  readonly y: number
+    readonly x: number;
+    readonly y: number;
 }
 interface Rect {
-  readonly x: number
-  readonly y: number
-  readonly width: number
-  readonly height: number
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
 }
 interface RGB {
-  readonly r: number
-  readonly g: number
-  readonly b: number
+    readonly r: number;
+    readonly g: number;
+    readonly b: number;
 }
 interface RGBA {
-  readonly r: number
-  readonly g: number
-  readonly b: number
-  readonly a: number
+    readonly r: number;
+    readonly g: number;
+    readonly b: number;
+    readonly a: number;
 }
 interface FontName {
-  readonly family: string
-  readonly style: string
+    readonly family: string;
+    readonly style: string;
 }
-declare type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE'
-declare type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
+declare type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE';
+declare type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH';
 interface ArcData {
-  readonly startingAngle: number
-  readonly endingAngle: number
-  readonly innerRadius: number
+    readonly startingAngle: number;
+    readonly endingAngle: number;
+    readonly innerRadius: number;
 }
 interface DropShadowEffect {
-  readonly type: 'DROP_SHADOW'
-  readonly color: RGBA
-  readonly offset: Vector
-  readonly radius: number
-  readonly spread?: number
-  readonly visible: boolean
-  readonly blendMode: BlendMode
-  readonly showShadowBehindNode?: boolean
+    readonly type: 'DROP_SHADOW';
+    readonly color: RGBA;
+    readonly offset: Vector;
+    readonly radius: number;
+    readonly spread?: number;
+    readonly visible: boolean;
+    readonly blendMode: BlendMode;
+    readonly showShadowBehindNode?: boolean;
 }
 interface InnerShadowEffect {
-  readonly type: 'INNER_SHADOW'
-  readonly color: RGBA
-  readonly offset: Vector
-  readonly radius: number
-  readonly spread?: number
-  readonly visible: boolean
-  readonly blendMode: BlendMode
+    readonly type: 'INNER_SHADOW';
+    readonly color: RGBA;
+    readonly offset: Vector;
+    readonly radius: number;
+    readonly spread?: number;
+    readonly visible: boolean;
+    readonly blendMode: BlendMode;
 }
 interface BlurEffect {
-  readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
-  readonly radius: number
-  readonly visible: boolean
+    readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR';
+    readonly radius: number;
+    readonly visible: boolean;
 }
-declare type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
-declare type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
+declare type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect;
+declare type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE';
 interface Constraints {
-  readonly horizontal: ConstraintType
-  readonly vertical: ConstraintType
+    readonly horizontal: ConstraintType;
+    readonly vertical: ConstraintType;
 }
 interface ColorStop {
-  readonly position: number
-  readonly color: RGBA
+    readonly position: number;
+    readonly color: RGBA;
 }
 interface ImageFilters {
-  readonly exposure?: number
-  readonly contrast?: number
-  readonly saturation?: number
-  readonly temperature?: number
-  readonly tint?: number
-  readonly highlights?: number
-  readonly shadows?: number
+    readonly exposure?: number;
+    readonly contrast?: number;
+    readonly saturation?: number;
+    readonly temperature?: number;
+    readonly tint?: number;
+    readonly highlights?: number;
+    readonly shadows?: number;
 }
 interface SolidPaint {
-  readonly type: 'SOLID'
-  readonly color: RGB
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
+    readonly type: 'SOLID';
+    readonly color: RGB;
+    readonly visible?: boolean;
+    readonly opacity?: number;
+    readonly blendMode?: BlendMode;
 }
 interface GradientPaint {
-  readonly type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND'
-  readonly gradientTransform: Transform
-  readonly gradientStops: ReadonlyArray<ColorStop>
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
+    readonly type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND';
+    readonly gradientTransform: Transform;
+    readonly gradientStops: ReadonlyArray<ColorStop>;
+    readonly visible?: boolean;
+    readonly opacity?: number;
+    readonly blendMode?: BlendMode;
 }
 interface ImagePaint {
-  readonly type: 'IMAGE'
-  readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
-  readonly imageHash: string | null
-  readonly imageTransform?: Transform
-  readonly scalingFactor?: number
-  readonly rotation?: number
-  readonly filters?: ImageFilters
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
+    readonly type: 'IMAGE';
+    readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE';
+    readonly imageHash: string | null;
+    readonly imageTransform?: Transform;
+    readonly scalingFactor?: number;
+    readonly rotation?: number;
+    readonly filters?: ImageFilters;
+    readonly visible?: boolean;
+    readonly opacity?: number;
+    readonly blendMode?: BlendMode;
 }
 interface VideoPaint {
-  readonly type: 'VIDEO'
-  readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
-  readonly videoHash: string | null
-  readonly videoTransform?: Transform
-  readonly scalingFactor?: number
-  readonly rotation?: number
-  readonly filters?: ImageFilters
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
+    readonly type: 'VIDEO';
+    readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE';
+    readonly videoHash: string | null;
+    readonly videoTransform?: Transform;
+    readonly scalingFactor?: number;
+    readonly rotation?: number;
+    readonly filters?: ImageFilters;
+    readonly visible?: boolean;
+    readonly opacity?: number;
+    readonly blendMode?: BlendMode;
 }
-declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint
+declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint;
 interface Guide {
-  readonly axis: 'X' | 'Y'
-  readonly offset: number
+    readonly axis: 'X' | 'Y';
+    readonly offset: number;
 }
 interface RowsColsLayoutGrid {
-  readonly pattern: 'ROWS' | 'COLUMNS'
-  readonly alignment: 'MIN' | 'MAX' | 'STRETCH' | 'CENTER'
-  readonly gutterSize: number
-  readonly count: number
-  readonly sectionSize?: number
-  readonly offset?: number
-  readonly visible?: boolean
-  readonly color?: RGBA
+    readonly pattern: 'ROWS' | 'COLUMNS';
+    readonly alignment: 'MIN' | 'MAX' | 'STRETCH' | 'CENTER';
+    readonly gutterSize: number;
+    readonly count: number;
+    readonly sectionSize?: number;
+    readonly offset?: number;
+    readonly visible?: boolean;
+    readonly color?: RGBA;
 }
 interface GridLayoutGrid {
-  readonly pattern: 'GRID'
-  readonly sectionSize: number
-  readonly visible?: boolean
-  readonly color?: RGBA
+    readonly pattern: 'GRID';
+    readonly sectionSize: number;
+    readonly visible?: boolean;
+    readonly color?: RGBA;
 }
-declare type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
+declare type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid;
 interface ExportSettingsConstraints {
-  readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT'
-  readonly value: number
+    readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT';
+    readonly value: number;
 }
 interface ExportSettingsImage {
-  readonly format: 'JPG' | 'PNG'
-  readonly contentsOnly?: boolean
-  readonly useAbsoluteBounds?: boolean
-  readonly suffix?: string
-  readonly constraint?: ExportSettingsConstraints
+    readonly format: 'JPG' | 'PNG';
+    readonly contentsOnly?: boolean;
+    readonly useAbsoluteBounds?: boolean;
+    readonly suffix?: string;
+    readonly constraint?: ExportSettingsConstraints;
 }
 interface ExportSettingsSVG {
-  readonly format: 'SVG'
-  readonly contentsOnly?: boolean
-  readonly useAbsoluteBounds?: boolean
-  readonly suffix?: string
-  readonly svgOutlineText?: boolean
-  readonly svgIdAttribute?: boolean
-  readonly svgSimplifyStroke?: boolean
+    readonly format: 'SVG';
+    readonly contentsOnly?: boolean;
+    readonly useAbsoluteBounds?: boolean;
+    readonly suffix?: string;
+    readonly svgOutlineText?: boolean;
+    readonly svgIdAttribute?: boolean;
+    readonly svgSimplifyStroke?: boolean;
 }
 interface ExportSettingsPDF {
-  readonly format: 'PDF'
-  readonly contentsOnly?: boolean
-  readonly useAbsoluteBounds?: boolean
-  readonly suffix?: string
+    readonly format: 'PDF';
+    readonly contentsOnly?: boolean;
+    readonly useAbsoluteBounds?: boolean;
+    readonly suffix?: string;
 }
-declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
-declare type WindingRule = 'NONZERO' | 'EVENODD'
+declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF;
+declare type WindingRule = 'NONZERO' | 'EVENODD';
 interface VectorVertex {
-  readonly x: number
-  readonly y: number
-  readonly strokeCap?: StrokeCap
-  readonly strokeJoin?: StrokeJoin
-  readonly cornerRadius?: number
-  readonly handleMirroring?: HandleMirroring
+    readonly x: number;
+    readonly y: number;
+    readonly strokeCap?: StrokeCap;
+    readonly strokeJoin?: StrokeJoin;
+    readonly cornerRadius?: number;
+    readonly handleMirroring?: HandleMirroring;
 }
 interface VectorSegment {
-  readonly start: number
-  readonly end: number
-  readonly tangentStart?: Vector
-  readonly tangentEnd?: Vector
+    readonly start: number;
+    readonly end: number;
+    readonly tangentStart?: Vector;
+    readonly tangentEnd?: Vector;
 }
 interface VectorRegion {
-  readonly windingRule: WindingRule
-  readonly loops: ReadonlyArray<ReadonlyArray<number>>
-  readonly fills?: ReadonlyArray<Paint>
-  readonly fillStyleId?: string
+    readonly windingRule: WindingRule;
+    readonly loops: ReadonlyArray<ReadonlyArray<number>>;
+    readonly fills?: ReadonlyArray<Paint>;
+    readonly fillStyleId?: string;
 }
 interface VectorNetwork {
-  readonly vertices: ReadonlyArray<VectorVertex>
-  readonly segments: ReadonlyArray<VectorSegment>
-  readonly regions?: ReadonlyArray<VectorRegion>
+    readonly vertices: ReadonlyArray<VectorVertex>;
+    readonly segments: ReadonlyArray<VectorSegment>;
+    readonly regions?: ReadonlyArray<VectorRegion>;
 }
 interface VectorPath {
-  readonly windingRule: WindingRule | 'NONE'
-  readonly data: string
+    readonly windingRule: WindingRule | 'NONE';
+    readonly data: string;
 }
-declare type VectorPaths = ReadonlyArray<VectorPath>
+declare type VectorPaths = ReadonlyArray<VectorPath>;
 interface LetterSpacing {
-  readonly value: number
-  readonly unit: 'PIXELS' | 'PERCENT'
+    readonly value: number;
+    readonly unit: 'PIXELS' | 'PERCENT';
 }
-declare type LineHeight =
-  | {
-      readonly value: number
-      readonly unit: 'PIXELS' | 'PERCENT'
-    }
-  | {
-      readonly unit: 'AUTO'
-    }
+declare type LineHeight = {
+    readonly value: number;
+    readonly unit: 'PIXELS' | 'PERCENT';
+} | {
+    readonly unit: 'AUTO';
+};
 declare type HyperlinkTarget = {
-  type: 'URL' | 'NODE'
-  value: string
-}
+    type: 'URL' | 'NODE';
+    value: string;
+};
 declare type TextListOptions = {
-  type: 'ORDERED' | 'UNORDERED' | 'NONE'
-}
-declare type BlendMode =
-  | 'PASS_THROUGH'
-  | 'NORMAL'
-  | 'DARKEN'
-  | 'MULTIPLY'
-  | 'LINEAR_BURN'
-  | 'COLOR_BURN'
-  | 'LIGHTEN'
-  | 'SCREEN'
-  | 'LINEAR_DODGE'
-  | 'COLOR_DODGE'
-  | 'OVERLAY'
-  | 'SOFT_LIGHT'
-  | 'HARD_LIGHT'
-  | 'DIFFERENCE'
-  | 'EXCLUSION'
-  | 'HUE'
-  | 'SATURATION'
-  | 'COLOR'
-  | 'LUMINOSITY'
+    type: 'ORDERED' | 'UNORDERED' | 'NONE';
+};
+declare type BlendMode = 'PASS_THROUGH' | 'NORMAL' | 'DARKEN' | 'MULTIPLY' | 'LINEAR_BURN' | 'COLOR_BURN' | 'LIGHTEN' | 'SCREEN' | 'LINEAR_DODGE' | 'COLOR_DODGE' | 'OVERLAY' | 'SOFT_LIGHT' | 'HARD_LIGHT' | 'DIFFERENCE' | 'EXCLUSION' | 'HUE' | 'SATURATION' | 'COLOR' | 'LUMINOSITY';
 interface Font {
-  fontName: FontName
+    fontName: FontName;
 }
 interface StyledTextSegment {
-  characters: string
-  start: number
-  end: number
-  fontSize: number
-  fontName: FontName
-  fontWeight: number
-  textDecoration: TextDecoration
-  textCase: TextCase
-  lineHeight: LineHeight
-  letterSpacing: LetterSpacing
-  fills: Paint[]
-  textStyleId: string
-  fillStyleId: string
-  listOptions: TextListOptions
-  indentation: number
-  hyperlink: HyperlinkTarget | null
+    characters: string;
+    start: number;
+    end: number;
+    fontSize: number;
+    fontName: FontName;
+    fontWeight: number;
+    textDecoration: TextDecoration;
+    textCase: TextCase;
+    lineHeight: LineHeight;
+    letterSpacing: LetterSpacing;
+    fills: Paint[];
+    textStyleId: string;
+    fillStyleId: string;
+    listOptions: TextListOptions;
+    indentation: number;
+    hyperlink: HyperlinkTarget | null;
 }
 declare type Reaction = {
-  action: Action | null
-  trigger: Trigger | null
-}
-declare type Action =
-  | {
-      readonly type: 'BACK' | 'CLOSE'
-    }
-  | {
-      readonly type: 'URL'
-      url: string
-    }
-  | {
-      readonly type: 'UPDATE_MEDIA_RUNTIME'
-      readonly mediaAction: 'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE'
-    }
-  | {
-      readonly type: 'NODE'
-      readonly destinationId: string | null
-      readonly navigation: Navigation
-      readonly transition: Transition | null
-      readonly preserveScrollPosition: boolean
-      readonly overlayRelativePosition?: Vector
-      readonly resetVideoPosition?: boolean
-    }
+    action: Action | null;
+    trigger: Trigger | null;
+};
+declare type Action = {
+    readonly type: 'BACK' | 'CLOSE';
+} | {
+    readonly type: 'URL';
+    url: string;
+} | {
+    readonly type: 'UPDATE_MEDIA_RUNTIME';
+    readonly mediaAction: 'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE';
+} | {
+    readonly type: 'NODE';
+    readonly destinationId: string | null;
+    readonly navigation: Navigation;
+    readonly transition: Transition | null;
+    readonly preserveScrollPosition: boolean;
+    readonly overlayRelativePosition?: Vector;
+    readonly resetVideoPosition?: boolean;
+};
 interface SimpleTransition {
-  readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
-  readonly easing: Easing
-  readonly duration: number
+    readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE';
+    readonly easing: Easing;
+    readonly duration: number;
 }
 interface DirectionalTransition {
-  readonly type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT'
-  readonly direction: 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
-  readonly matchLayers: boolean
-  readonly easing: Easing
-  readonly duration: number
+    readonly type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT';
+    readonly direction: 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM';
+    readonly matchLayers: boolean;
+    readonly easing: Easing;
+    readonly duration: number;
 }
-declare type Transition = SimpleTransition | DirectionalTransition
-declare type Trigger =
-  | {
-      readonly type: 'ON_CLICK' | 'ON_HOVER' | 'ON_PRESS' | 'ON_DRAG'
-    }
-  | {
-      readonly type: 'AFTER_TIMEOUT'
-      readonly timeout: number
-    }
-  | {
-      readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE' | 'MOUSE_UP' | 'MOUSE_DOWN'
-      readonly delay: number
-    }
-  | {
-      readonly type: 'ON_KEY_DOWN'
-      readonly device: 'KEYBOARD' | 'XBOX_ONE' | 'PS4' | 'SWITCH_PRO' | 'UNKNOWN_CONTROLLER'
-      readonly keyCodes: ReadonlyArray<number>
-    }
-declare type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
+declare type Transition = SimpleTransition | DirectionalTransition;
+declare type Trigger = {
+    readonly type: 'ON_CLICK' | 'ON_HOVER' | 'ON_PRESS' | 'ON_DRAG';
+} | {
+    readonly type: 'AFTER_TIMEOUT';
+    readonly timeout: number;
+} | {
+    readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE' | 'MOUSE_UP' | 'MOUSE_DOWN';
+    readonly delay: number;
+} | {
+    readonly type: 'ON_KEY_DOWN';
+    readonly device: 'KEYBOARD' | 'XBOX_ONE' | 'PS4' | 'SWITCH_PRO' | 'UNKNOWN_CONTROLLER';
+    readonly keyCodes: ReadonlyArray<number>;
+};
+declare type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO';
 interface Easing {
-  readonly type:
-    | 'EASE_IN'
-    | 'EASE_OUT'
-    | 'EASE_IN_AND_OUT'
-    | 'LINEAR'
-    | 'EASE_IN_BACK'
-    | 'EASE_OUT_BACK'
-    | 'EASE_IN_AND_OUT_BACK'
-    | 'CUSTOM_CUBIC_BEZIER'
-  readonly easingFunctionCubicBezier?: EasingFunctionBezier
+    readonly type: 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_AND_OUT' | 'LINEAR' | 'EASE_IN_BACK' | 'EASE_OUT_BACK' | 'EASE_IN_AND_OUT_BACK' | 'CUSTOM_CUBIC_BEZIER';
+    readonly easingFunctionCubicBezier?: EasingFunctionBezier;
 }
 interface EasingFunctionBezier {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
 }
-declare type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
-declare type OverlayPositionType =
-  | 'CENTER'
-  | 'TOP_LEFT'
-  | 'TOP_CENTER'
-  | 'TOP_RIGHT'
-  | 'BOTTOM_LEFT'
-  | 'BOTTOM_CENTER'
-  | 'BOTTOM_RIGHT'
-  | 'MANUAL'
-declare type OverlayBackground =
-  | {
-      readonly type: 'NONE'
-    }
-  | {
-      readonly type: 'SOLID_COLOR'
-      readonly color: RGBA
-    }
-declare type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
-declare type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
+declare type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH';
+declare type OverlayPositionType = 'CENTER' | 'TOP_LEFT' | 'TOP_CENTER' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_CENTER' | 'BOTTOM_RIGHT' | 'MANUAL';
+declare type OverlayBackground = {
+    readonly type: 'NONE';
+} | {
+    readonly type: 'SOLID_COLOR';
+    readonly color: RGBA;
+};
+declare type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE';
+declare type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED';
 interface ConnectorEndpointPosition {
-  position: {
-    x: number
-    y: number
-  }
+    position: {
+        x: number;
+        y: number;
+    };
 }
 interface ConnectorEndpointPositionAndEndpointNodeId {
-  position: {
-    x: number
-    y: number
-  }
-  endpointNodeId: string
+    position: {
+        x: number;
+        y: number;
+    };
+    endpointNodeId: string;
 }
 interface ConnectorEndpointEndpointNodeIdAndMagnet {
-  endpointNodeId: string
-  magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT'
+    endpointNodeId: string;
+    magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT';
 }
-declare type ConnectorEndpoint =
-  | ConnectorEndpointPosition
-  | ConnectorEndpointEndpointNodeIdAndMagnet
-  | ConnectorEndpointPositionAndEndpointNodeId
-declare type ConnectorStrokeCap =
-  | 'NONE'
-  | 'ARROW_EQUILATERAL'
-  | 'ARROW_LINES'
-  | 'TRIANGLE_FILLED'
-  | 'DIAMOND_FILLED'
-  | 'CIRCLE_FILLED'
+declare type ConnectorEndpoint = ConnectorEndpointPosition | ConnectorEndpointEndpointNodeIdAndMagnet | ConnectorEndpointPositionAndEndpointNodeId;
+declare type ConnectorStrokeCap = 'NONE' | 'ARROW_EQUILATERAL' | 'ARROW_LINES' | 'TRIANGLE_FILLED' | 'DIAMOND_FILLED' | 'CIRCLE_FILLED';
 interface BaseNodeMixin extends PluginDataMixin {
-  readonly id: string
-  readonly parent: (BaseNode & ChildrenMixin) | null
-  name: string
-  readonly removed: boolean
-  toString(): string
-  remove(): void
-  setRelaunchData(data: { [command: string]: string }): void
-  getRelaunchData(): {
-    [command: string]: string
-  }
+    readonly id: string;
+    readonly parent: (BaseNode & ChildrenMixin) | null;
+    name: string;
+    readonly removed: boolean;
+    toString(): string;
+    remove(): void;
+    setRelaunchData(data: {
+        [command: string]: string;
+    }): void;
+    getRelaunchData(): {
+        [command: string]: string;
+    };
 }
 interface PluginDataMixin {
-  getPluginData(key: string): string
-  setPluginData(key: string, value: string): void
-  getPluginDataKeys(): string[]
-  getSharedPluginData(namespace: string, key: string): string
-  setSharedPluginData(namespace: string, key: string, value: string): void
-  getSharedPluginDataKeys(namespace: string): string[]
+    getPluginData(key: string): string;
+    setPluginData(key: string, value: string): void;
+    getPluginDataKeys(): string[];
+    getSharedPluginData(namespace: string, key: string): string;
+    setSharedPluginData(namespace: string, key: string, value: string): void;
+    getSharedPluginDataKeys(namespace: string): string[];
 }
 interface SceneNodeMixin {
-  visible: boolean
-  locked: boolean
-  readonly stuckNodes: SceneNode[]
-  readonly attachedConnectors: ConnectorNode[]
-  componentPropertyReferences:
-    | {
-        [nodeProperty in 'visible' | 'characters' | 'mainComponent']: string
-      }
-    | null
+    visible: boolean;
+    locked: boolean;
+    readonly stuckNodes: SceneNode[];
+    readonly attachedConnectors: ConnectorNode[];
+    componentPropertyReferences: {
+        [nodeProperty in 'visible' | 'characters' | 'mainComponent']: string;
+    } | null;
 }
 interface StickableMixin {
-  stuckTo: SceneNode | null
+    stuckTo: SceneNode | null;
 }
 interface ChildrenMixin {
-  readonly children: ReadonlyArray<SceneNode>
-  appendChild(child: SceneNode): void
-  insertChild(index: number, child: SceneNode): void
-  findChildren(callback?: (node: SceneNode) => boolean): SceneNode[]
-  findChild(callback: (node: SceneNode) => boolean): SceneNode | null
-  findAll(callback?: (node: SceneNode) => boolean): SceneNode[]
-  findOne(callback: (node: SceneNode) => boolean): SceneNode | null
-  findAllWithCriteria<T extends NodeType[]>(criteria: {
-    types: T
-  }): Array<
-    {
-      type: T[number]
-    } & SceneNode
-  >
-  findWidgetNodesByWidgetId(widgetId: string): Array<WidgetNode>
+    readonly children: ReadonlyArray<SceneNode>;
+    appendChild(child: SceneNode): void;
+    insertChild(index: number, child: SceneNode): void;
+    findChildren(callback?: (node: SceneNode) => boolean): SceneNode[];
+    findChild(callback: (node: SceneNode) => boolean): SceneNode | null;
+    findAll(callback?: (node: SceneNode) => boolean): SceneNode[];
+    findOne(callback: (node: SceneNode) => boolean): SceneNode | null;
+    findAllWithCriteria<T extends NodeType[]>(criteria: {
+        types: T;
+    }): Array<{
+        type: T[number];
+    } & SceneNode>;
+    findWidgetNodesByWidgetId(widgetId: string): Array<WidgetNode>;
 }
 interface ConstraintMixin {
-  constraints: Constraints
+    constraints: Constraints;
 }
 interface LayoutMixin {
-  readonly absoluteTransform: Transform
-  relativeTransform: Transform
-  x: number
-  y: number
-  rotation: number
-  readonly width: number
-  readonly height: number
-  readonly absoluteRenderBounds: Rect | null
-  readonly absoluteBoundingBox: Rect | null
-  constrainProportions: boolean
-  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
-  layoutGrow: number
-  layoutPositioning: 'AUTO' | 'ABSOLUTE'
-  resize(width: number, height: number): void
-  resizeWithoutConstraints(width: number, height: number): void
-  rescale(scale: number): void
+    readonly absoluteTransform: Transform;
+    relativeTransform: Transform;
+    x: number;
+    y: number;
+    rotation: number;
+    readonly width: number;
+    readonly height: number;
+    readonly absoluteRenderBounds: Rect | null;
+    readonly absoluteBoundingBox: Rect | null;
+    constrainProportions: boolean;
+    layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT';
+    layoutGrow: number;
+    layoutPositioning: 'AUTO' | 'ABSOLUTE';
+    resize(width: number, height: number): void;
+    resizeWithoutConstraints(width: number, height: number): void;
+    rescale(scale: number): void;
 }
 interface BlendMixin extends MinimalBlendMixin {
-  isMask: boolean
-  effects: ReadonlyArray<Effect>
-  effectStyleId: string
+    isMask: boolean;
+    effects: ReadonlyArray<Effect>;
+    effectStyleId: string;
 }
 interface ContainerMixin {
-  expanded: boolean
-  backgrounds: ReadonlyArray<Paint>
-  backgroundStyleId: string
+    expanded: boolean;
+    backgrounds: ReadonlyArray<Paint>;
+    backgroundStyleId: string;
 }
-declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
-declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
-declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
+declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL';
+declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND';
+declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH';
 interface MinimalStrokesMixin {
-  strokes: ReadonlyArray<Paint>
-  strokeStyleId: string
-  strokeWeight: number | PluginAPI['mixed']
-  strokeJoin: StrokeJoin | PluginAPI['mixed']
-  strokeAlign: 'CENTER' | 'INSIDE' | 'OUTSIDE'
-  dashPattern: ReadonlyArray<number>
-  strokeGeometry: VectorPaths
+    strokes: ReadonlyArray<Paint>;
+    strokeStyleId: string;
+    strokeWeight: number | PluginAPI['mixed'];
+    strokeJoin: StrokeJoin | PluginAPI['mixed'];
+    strokeAlign: 'CENTER' | 'INSIDE' | 'OUTSIDE';
+    dashPattern: ReadonlyArray<number>;
+    strokeGeometry: VectorPaths;
 }
 interface IndividualStrokesMixin {
-  strokeTopWeight: number
-  strokeBottomWeight: number
-  strokeLeftWeight: number
-  strokeRightWeight: number
+    strokeTopWeight: number;
+    strokeBottomWeight: number;
+    strokeLeftWeight: number;
+    strokeRightWeight: number;
 }
 interface MinimalFillsMixin {
-  fills: ReadonlyArray<Paint> | PluginAPI['mixed']
-  fillStyleId: string | PluginAPI['mixed']
+    fills: ReadonlyArray<Paint> | PluginAPI['mixed'];
+    fillStyleId: string | PluginAPI['mixed'];
 }
 interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
-  strokeCap: StrokeCap | PluginAPI['mixed']
-  strokeMiterLimit: number
-  outlineStroke(): VectorNode | null
-  fillGeometry: VectorPaths
+    strokeCap: StrokeCap | PluginAPI['mixed'];
+    strokeMiterLimit: number;
+    outlineStroke(): VectorNode | null;
+    fillGeometry: VectorPaths;
 }
 interface CornerMixin {
-  cornerRadius: number | PluginAPI['mixed']
-  cornerSmoothing: number
+    cornerRadius: number | PluginAPI['mixed'];
+    cornerSmoothing: number;
 }
 interface RectangleCornerMixin {
-  topLeftRadius: number
-  topRightRadius: number
-  bottomLeftRadius: number
-  bottomRightRadius: number
+    topLeftRadius: number;
+    topRightRadius: number;
+    bottomLeftRadius: number;
+    bottomRightRadius: number;
 }
 interface ExportMixin {
-  exportSettings: ReadonlyArray<ExportSettings>
-  exportAsync(settings?: ExportSettings): Promise<Uint8Array>
+    exportSettings: ReadonlyArray<ExportSettings>;
+    exportAsync(settings?: ExportSettings): Promise<Uint8Array>;
 }
 interface FramePrototypingMixin {
-  overflowDirection: OverflowDirection
-  numberOfFixedChildren: number
-  readonly overlayPositionType: OverlayPositionType
-  readonly overlayBackground: OverlayBackground
-  readonly overlayBackgroundInteraction: OverlayBackgroundInteraction
+    overflowDirection: OverflowDirection;
+    numberOfFixedChildren: number;
+    readonly overlayPositionType: OverlayPositionType;
+    readonly overlayBackground: OverlayBackground;
+    readonly overlayBackgroundInteraction: OverlayBackgroundInteraction;
 }
 interface VectorLikeMixin {
-  vectorNetwork: VectorNetwork
-  vectorPaths: VectorPaths
-  handleMirroring: HandleMirroring | PluginAPI['mixed']
+    vectorNetwork: VectorNetwork;
+    vectorPaths: VectorPaths;
+    handleMirroring: HandleMirroring | PluginAPI['mixed'];
 }
 interface ReactionMixin {
-  reactions: ReadonlyArray<Reaction>
+    reactions: ReadonlyArray<Reaction>;
 }
 interface DocumentationLink {
-  readonly uri: string
+    readonly uri: string;
 }
 interface PublishableMixin {
-  description: string
-  documentationLinks: ReadonlyArray<DocumentationLink>
-  readonly remote: boolean
-  readonly key: string
-  getPublishStatusAsync(): Promise<PublishStatus>
+    description: string;
+    documentationLinks: ReadonlyArray<DocumentationLink>;
+    readonly remote: boolean;
+    readonly key: string;
+    getPublishStatusAsync(): Promise<PublishStatus>;
 }
-interface DefaultShapeMixin
-  extends BaseNodeMixin,
-    SceneNodeMixin,
-    ReactionMixin,
-    BlendMixin,
-    GeometryMixin,
-    LayoutMixin,
-    ExportMixin {}
-interface BaseFrameMixin
-  extends BaseNodeMixin,
-    SceneNodeMixin,
-    ChildrenMixin,
-    ContainerMixin,
-    GeometryMixin,
-    CornerMixin,
-    RectangleCornerMixin,
-    BlendMixin,
-    ConstraintMixin,
-    LayoutMixin,
-    ExportMixin,
-    IndividualStrokesMixin {
-  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  primaryAxisSizingMode: 'FIXED' | 'AUTO'
-  counterAxisSizingMode: 'FIXED' | 'AUTO'
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
-  paddingLeft: number
-  paddingRight: number
-  paddingTop: number
-  paddingBottom: number
-  itemSpacing: number
-  itemReverseZIndex: boolean
-  strokesIncludedInLayout: boolean
-  horizontalPadding: number
-  verticalPadding: number
-  layoutGrids: ReadonlyArray<LayoutGrid>
-  gridStyleId: string
-  clipsContent: boolean
-  guides: ReadonlyArray<Guide>
+interface DefaultShapeMixin extends BaseNodeMixin, SceneNodeMixin, ReactionMixin, BlendMixin, GeometryMixin, LayoutMixin, ExportMixin {
 }
-interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
+interface BaseFrameMixin extends BaseNodeMixin, SceneNodeMixin, ChildrenMixin, ContainerMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, BlendMixin, ConstraintMixin, LayoutMixin, ExportMixin, IndividualStrokesMixin {
+    layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL';
+    primaryAxisSizingMode: 'FIXED' | 'AUTO';
+    counterAxisSizingMode: 'FIXED' | 'AUTO';
+    primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN';
+    counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE';
+    paddingLeft: number;
+    paddingRight: number;
+    paddingTop: number;
+    paddingBottom: number;
+    itemSpacing: number;
+    itemReverseZIndex: boolean;
+    strokesIncludedInLayout: boolean;
+    horizontalPadding: number;
+    verticalPadding: number;
+    layoutGrids: ReadonlyArray<LayoutGrid>;
+    gridStyleId: string;
+    clipsContent: boolean;
+    guides: ReadonlyArray<Guide>;
+}
+interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {
+}
 interface OpaqueNodeMixin extends BaseNodeMixin, SceneNodeMixin, ExportMixin {
-  readonly absoluteTransform: Transform
-  relativeTransform: Transform
-  x: number
-  y: number
-  readonly width: number
-  readonly height: number
-  readonly absoluteBoundingBox: Rect | null
+    readonly absoluteTransform: Transform;
+    relativeTransform: Transform;
+    x: number;
+    y: number;
+    readonly width: number;
+    readonly height: number;
+    readonly absoluteBoundingBox: Rect | null;
 }
 interface MinimalBlendMixin {
-  opacity: number
-  blendMode: BlendMode
+    opacity: number;
+    blendMode: BlendMode;
 }
 interface VariantMixin {
-  readonly variantProperties: {
-    [property: string]: string
-  } | null
+    readonly variantProperties: {
+        [property: string]: string;
+    } | null;
 }
 interface ComponentPropertiesMixin {
-  readonly componentPropertyDefinitions: ComponentPropertyDefinitions
-  addComponentProperty(
-    propertyName: string,
-    type: ComponentPropertyType,
-    defaultValue: string | boolean,
-    options?: ComponentPropertyOptions,
-  ): string
-  editComponentProperty(
-    propertyName: string,
-    newValue: {
-      name?: string
-      defaultValue?: string | boolean
-      preferredValues?: InstanceSwapPreferredValue[]
-    },
-  ): string
-  deleteComponentProperty(propertyName: string): void
+    readonly componentPropertyDefinitions: ComponentPropertyDefinitions;
+    addComponentProperty(propertyName: string, type: ComponentPropertyType, defaultValue: string | boolean, options?: ComponentPropertyOptions): string;
+    editComponentProperty(propertyName: string, newValue: {
+        name?: string;
+        defaultValue?: string | boolean;
+        preferredValues?: InstanceSwapPreferredValue[];
+    }): string;
+    deleteComponentProperty(propertyName: string): void;
 }
 interface TextSublayerNode extends MinimalFillsMixin {
-  readonly hasMissingFont: boolean
-  paragraphIndent: number
-  paragraphSpacing: number
-  fontSize: number | PluginAPI['mixed']
-  fontName: FontName | PluginAPI['mixed']
-  readonly fontWeight: number | PluginAPI['mixed']
-  textCase: TextCase | PluginAPI['mixed']
-  textDecoration: TextDecoration | PluginAPI['mixed']
-  letterSpacing: LetterSpacing | PluginAPI['mixed']
-  lineHeight: LineHeight | PluginAPI['mixed']
-  hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
-  characters: string
-  insertCharacters(start: number, characters: string, useStyle?: 'BEFORE' | 'AFTER'): void
-  deleteCharacters(start: number, end: number): void
-  getRangeFontSize(start: number, end: number): number | PluginAPI['mixed']
-  setRangeFontSize(start: number, end: number, value: number): void
-  getRangeFontName(start: number, end: number): FontName | PluginAPI['mixed']
-  setRangeFontName(start: number, end: number, value: FontName): void
-  getRangeFontWeight(start: number, end: number): number | PluginAPI['mixed']
-  getRangeAllFontNames(start: number, end: number): FontName[]
-  getRangeTextCase(start: number, end: number): TextCase | PluginAPI['mixed']
-  setRangeTextCase(start: number, end: number, value: TextCase): void
-  getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
-  setRangeTextDecoration(start: number, end: number, value: TextDecoration): void
-  getRangeLetterSpacing(start: number, end: number): LetterSpacing | PluginAPI['mixed']
-  setRangeLetterSpacing(start: number, end: number, value: LetterSpacing): void
-  getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
-  setRangeLineHeight(start: number, end: number, value: LineHeight): void
-  getRangeHyperlink(start: number, end: number): HyperlinkTarget | null | PluginAPI['mixed']
-  setRangeHyperlink(start: number, end: number, value: HyperlinkTarget | null): void
-  getRangeFills(start: number, end: number): Paint[] | PluginAPI['mixed']
-  setRangeFills(start: number, end: number, value: Paint[]): void
-  getRangeTextStyleId(start: number, end: number): string | PluginAPI['mixed']
-  setRangeTextStyleId(start: number, end: number, value: string): void
-  getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
-  setRangeFillStyleId(start: number, end: number, value: string): void
-  getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
-  setRangeListOptions(start: number, end: number, value: TextListOptions): void
-  getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
-  setRangeIndentation(start: number, end: number, value: number): void
-  getStyledTextSegments<
-    StyledTextSegmentFields extends (keyof Omit<
-      StyledTextSegment,
-      'characters' | 'start' | 'end'
-    >)[],
-  >(
-    fields: StyledTextSegmentFields,
-    start?: number,
-    end?: number,
-  ): Array<
-    Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>
-  >
+    readonly hasMissingFont: boolean;
+    paragraphIndent: number;
+    paragraphSpacing: number;
+    fontSize: number | PluginAPI['mixed'];
+    fontName: FontName | PluginAPI['mixed'];
+    readonly fontWeight: number | PluginAPI['mixed'];
+    textCase: TextCase | PluginAPI['mixed'];
+    textDecoration: TextDecoration | PluginAPI['mixed'];
+    letterSpacing: LetterSpacing | PluginAPI['mixed'];
+    lineHeight: LineHeight | PluginAPI['mixed'];
+    hyperlink: HyperlinkTarget | null | PluginAPI['mixed'];
+    characters: string;
+    insertCharacters(start: number, characters: string, useStyle?: 'BEFORE' | 'AFTER'): void;
+    deleteCharacters(start: number, end: number): void;
+    getRangeFontSize(start: number, end: number): number | PluginAPI['mixed'];
+    setRangeFontSize(start: number, end: number, value: number): void;
+    getRangeFontName(start: number, end: number): FontName | PluginAPI['mixed'];
+    setRangeFontName(start: number, end: number, value: FontName): void;
+    getRangeFontWeight(start: number, end: number): number | PluginAPI['mixed'];
+    getRangeAllFontNames(start: number, end: number): FontName[];
+    getRangeTextCase(start: number, end: number): TextCase | PluginAPI['mixed'];
+    setRangeTextCase(start: number, end: number, value: TextCase): void;
+    getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed'];
+    setRangeTextDecoration(start: number, end: number, value: TextDecoration): void;
+    getRangeLetterSpacing(start: number, end: number): LetterSpacing | PluginAPI['mixed'];
+    setRangeLetterSpacing(start: number, end: number, value: LetterSpacing): void;
+    getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed'];
+    setRangeLineHeight(start: number, end: number, value: LineHeight): void;
+    getRangeHyperlink(start: number, end: number): HyperlinkTarget | null | PluginAPI['mixed'];
+    setRangeHyperlink(start: number, end: number, value: HyperlinkTarget | null): void;
+    getRangeFills(start: number, end: number): Paint[] | PluginAPI['mixed'];
+    setRangeFills(start: number, end: number, value: Paint[]): void;
+    getRangeTextStyleId(start: number, end: number): string | PluginAPI['mixed'];
+    setRangeTextStyleId(start: number, end: number, value: string): void;
+    getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed'];
+    setRangeFillStyleId(start: number, end: number, value: string): void;
+    getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed'];
+    setRangeListOptions(start: number, end: number, value: TextListOptions): void;
+    getRangeIndentation(start: number, end: number): number | PluginAPI['mixed'];
+    setRangeIndentation(start: number, end: number, value: number): void;
+    getStyledTextSegments<StyledTextSegmentFields extends (keyof Omit<StyledTextSegment, 'characters' | 'start' | 'end'>)[]>(fields: StyledTextSegmentFields, start?: number, end?: number): Array<Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>>;
 }
 interface DocumentNode extends BaseNodeMixin {
-  readonly type: 'DOCUMENT'
-  readonly children: ReadonlyArray<PageNode>
-  appendChild(child: PageNode): void
-  insertChild(index: number, child: PageNode): void
-  findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>
-  findChild(callback: (node: PageNode) => boolean): PageNode | null
-  findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>
-  findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
-  findAllWithCriteria<T extends NodeType[]>(criteria: {
-    types: T
-  }): Array<
-    {
-      type: T[number]
-    } & (PageNode | SceneNode)
-  >
+    readonly type: 'DOCUMENT';
+    readonly children: ReadonlyArray<PageNode>;
+    appendChild(child: PageNode): void;
+    insertChild(index: number, child: PageNode): void;
+    findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>;
+    findChild(callback: (node: PageNode) => boolean): PageNode | null;
+    findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>;
+    findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null;
+    findAllWithCriteria<T extends NodeType[]>(criteria: {
+        types: T;
+    }): Array<{
+        type: T[number];
+    } & (PageNode | SceneNode)>;
 }
 interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
-  readonly type: 'PAGE'
-  clone(): PageNode
-  guides: ReadonlyArray<Guide>
-  selection: ReadonlyArray<SceneNode>
-  selectedTextRange: {
-    node: TextNode
-    start: number
-    end: number
-  } | null
-  flowStartingPoints: ReadonlyArray<{
-    nodeId: string
-    name: string
-  }>
-  backgrounds: ReadonlyArray<Paint>
-  prototypeBackgrounds: ReadonlyArray<Paint>
-  readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null
+    readonly type: 'PAGE';
+    clone(): PageNode;
+    guides: ReadonlyArray<Guide>;
+    selection: ReadonlyArray<SceneNode>;
+    selectedTextRange: {
+        node: TextNode;
+        start: number;
+        end: number;
+    } | null;
+    flowStartingPoints: ReadonlyArray<{
+        nodeId: string;
+        name: string;
+    }>;
+    backgrounds: ReadonlyArray<Paint>;
+    prototypeBackgrounds: ReadonlyArray<Paint>;
+    readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null;
 }
 interface FrameNode extends DefaultFrameMixin {
-  readonly type: 'FRAME'
-  clone(): FrameNode
+    readonly type: 'FRAME';
+    clone(): FrameNode;
 }
-interface GroupNode
-  extends BaseNodeMixin,
-    SceneNodeMixin,
-    ReactionMixin,
-    ChildrenMixin,
-    ContainerMixin,
-    BlendMixin,
-    LayoutMixin,
-    ExportMixin {
-  readonly type: 'GROUP'
-  clone(): GroupNode
+interface GroupNode extends BaseNodeMixin, SceneNodeMixin, ReactionMixin, ChildrenMixin, ContainerMixin, BlendMixin, LayoutMixin, ExportMixin {
+    readonly type: 'GROUP';
+    clone(): GroupNode;
 }
 interface SliceNode extends BaseNodeMixin, SceneNodeMixin, LayoutMixin, ExportMixin {
-  readonly type: 'SLICE'
-  clone(): SliceNode
+    readonly type: 'SLICE';
+    clone(): SliceNode;
 }
-interface RectangleNode
-  extends DefaultShapeMixin,
-    ConstraintMixin,
-    CornerMixin,
-    RectangleCornerMixin,
-    IndividualStrokesMixin {
-  readonly type: 'RECTANGLE'
-  clone(): RectangleNode
+interface RectangleNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, RectangleCornerMixin, IndividualStrokesMixin {
+    readonly type: 'RECTANGLE';
+    clone(): RectangleNode;
 }
 interface LineNode extends DefaultShapeMixin, ConstraintMixin {
-  readonly type: 'LINE'
-  clone(): LineNode
+    readonly type: 'LINE';
+    clone(): LineNode;
 }
 interface EllipseNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
-  readonly type: 'ELLIPSE'
-  clone(): EllipseNode
-  arcData: ArcData
+    readonly type: 'ELLIPSE';
+    clone(): EllipseNode;
+    arcData: ArcData;
 }
 interface PolygonNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
-  readonly type: 'POLYGON'
-  clone(): PolygonNode
-  pointCount: number
+    readonly type: 'POLYGON';
+    clone(): PolygonNode;
+    pointCount: number;
 }
 interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
-  readonly type: 'STAR'
-  clone(): StarNode
-  pointCount: number
-  innerRadius: number
+    readonly type: 'STAR';
+    clone(): StarNode;
+    pointCount: number;
+    innerRadius: number;
 }
 interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, VectorLikeMixin {
-  readonly type: 'VECTOR'
-  clone(): VectorNode
+    readonly type: 'VECTOR';
+    clone(): VectorNode;
 }
 interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode {
-  readonly type: 'TEXT'
-  clone(): TextNode
-  textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
-  textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM'
-  textAutoResize: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT' | 'TRUNCATE'
-  autoRename: boolean
-  textStyleId: string | PluginAPI['mixed']
+    readonly type: 'TEXT';
+    clone(): TextNode;
+    textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED';
+    textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM';
+    textAutoResize: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT' | 'TRUNCATE';
+    autoRename: boolean;
+    textStyleId: string | PluginAPI['mixed'];
 }
-declare type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
+declare type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT';
 declare type InstanceSwapPreferredValue = {
-  type: 'COMPONENT' | 'COMPONENT_SET'
-  key: string
-}
+    type: 'COMPONENT' | 'COMPONENT_SET';
+    key: string;
+};
 declare type ComponentPropertyOptions = {
-  preferredValues?: InstanceSwapPreferredValue[]
-}
+    preferredValues?: InstanceSwapPreferredValue[];
+};
 declare type ComponentPropertyDefinitions = {
-  [propertyName: string]: {
-    type: ComponentPropertyType
-    defaultValue: string | boolean
-    preferredValues?: InstanceSwapPreferredValue[]
-    variantOptions?: string[]
-  }
-}
+    [propertyName: string]: {
+        type: ComponentPropertyType;
+        defaultValue: string | boolean;
+        preferredValues?: InstanceSwapPreferredValue[];
+        variantOptions?: string[];
+    };
+};
 interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPropertiesMixin {
-  readonly type: 'COMPONENT_SET'
-  clone(): ComponentSetNode
-  readonly defaultVariant: ComponentNode
-  readonly variantGroupProperties: {
-    [property: string]: {
-      values: string[]
-    }
-  }
+    readonly type: 'COMPONENT_SET';
+    clone(): ComponentSetNode;
+    readonly defaultVariant: ComponentNode;
+    readonly variantGroupProperties: {
+        [property: string]: {
+            values: string[];
+        };
+    };
 }
-interface ComponentNode
-  extends DefaultFrameMixin,
-    PublishableMixin,
-    VariantMixin,
-    ComponentPropertiesMixin {
-  readonly type: 'COMPONENT'
-  clone(): ComponentNode
-  createInstance(): InstanceNode
-  readonly instances: InstanceNode[]
+interface ComponentNode extends DefaultFrameMixin, PublishableMixin, VariantMixin, ComponentPropertiesMixin {
+    readonly type: 'COMPONENT';
+    clone(): ComponentNode;
+    createInstance(): InstanceNode;
+    readonly instances: InstanceNode[];
 }
 declare type ComponentProperties = {
-  [propertyName: string]: {
-    type: ComponentPropertyType
-    value: string | boolean
-    preferredValues?: InstanceSwapPreferredValue[]
-  }
-}
+    [propertyName: string]: {
+        type: ComponentPropertyType;
+        value: string | boolean;
+        preferredValues?: InstanceSwapPreferredValue[];
+    };
+};
 interface InstanceNode extends DefaultFrameMixin, VariantMixin {
-  readonly type: 'INSTANCE'
-  clone(): InstanceNode
-  mainComponent: ComponentNode | null
-  swapComponent(componentNode: ComponentNode): void
-  setProperties(properties: { [propertyName: string]: string | boolean }): void
-  readonly componentProperties: ComponentProperties
-  detachInstance(): FrameNode
-  scaleFactor: number
-  readonly exposedInstances: InstanceNode[]
-  isExposedInstance: boolean
-  readonly overrides: {
-    id: string
-    overriddenFields: NodeChangeProperty[]
-  }[]
-  resetOverrides(): void
+    readonly type: 'INSTANCE';
+    clone(): InstanceNode;
+    mainComponent: ComponentNode | null;
+    swapComponent(componentNode: ComponentNode): void;
+    setProperties(properties: {
+        [propertyName: string]: string | boolean;
+    }): void;
+    readonly componentProperties: ComponentProperties;
+    detachInstance(): FrameNode;
+    scaleFactor: number;
+    readonly exposedInstances: InstanceNode[];
+    isExposedInstance: boolean;
+    readonly overrides: {
+        id: string;
+        overriddenFields: NodeChangeProperty[];
+    }[];
+    resetOverrides(): void;
 }
 interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
-  readonly type: 'BOOLEAN_OPERATION'
-  clone(): BooleanOperationNode
-  booleanOperation: 'UNION' | 'INTERSECT' | 'SUBTRACT' | 'EXCLUDE'
-  expanded: boolean
+    readonly type: 'BOOLEAN_OPERATION';
+    clone(): BooleanOperationNode;
+    booleanOperation: 'UNION' | 'INTERSECT' | 'SUBTRACT' | 'EXCLUDE';
+    expanded: boolean;
 }
 interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin {
-  readonly type: 'STICKY'
-  readonly text: TextSublayerNode
-  authorVisible: boolean
-  authorName: string
-  clone(): StickyNode
+    readonly type: 'STICKY';
+    readonly text: TextSublayerNode;
+    authorVisible: boolean;
+    authorName: string;
+    clone(): StickyNode;
 }
 interface StampNode extends DefaultShapeMixin, ConstraintMixin, StickableMixin {
-  readonly type: 'STAMP'
-  clone(): StampNode
-  getAuthorAsync(): Promise<BaseUser | null>
+    readonly type: 'STAMP';
+    clone(): StampNode;
+    getAuthorAsync(): Promise<BaseUser | null>;
 }
-interface HighlightNode
-  extends DefaultShapeMixin,
-    ConstraintMixin,
-    CornerMixin,
-    ReactionMixin,
-    VectorLikeMixin,
-    StickableMixin {
-  readonly type: 'HIGHLIGHT'
-  clone(): HighlightNode
+interface HighlightNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, ReactionMixin, VectorLikeMixin, StickableMixin {
+    readonly type: 'HIGHLIGHT';
+    clone(): HighlightNode;
 }
 interface WashiTapeNode extends DefaultShapeMixin, StickableMixin {
-  readonly type: 'WASHI_TAPE'
-  clone(): WashiTapeNode
+    readonly type: 'WASHI_TAPE';
+    clone(): WashiTapeNode;
 }
-interface ShapeWithTextNode
-  extends OpaqueNodeMixin,
-    MinimalFillsMixin,
-    MinimalBlendMixin,
-    MinimalStrokesMixin {
-  readonly type: 'SHAPE_WITH_TEXT'
-  shapeType:
-    | 'SQUARE'
-    | 'ELLIPSE'
-    | 'ROUNDED_RECTANGLE'
-    | 'DIAMOND'
-    | 'TRIANGLE_UP'
-    | 'TRIANGLE_DOWN'
-    | 'PARALLELOGRAM_RIGHT'
-    | 'PARALLELOGRAM_LEFT'
-    | 'ENG_DATABASE'
-    | 'ENG_QUEUE'
-    | 'ENG_FILE'
-    | 'ENG_FOLDER'
-  readonly text: TextSublayerNode
-  readonly cornerRadius?: number
-  rotation: number
-  resize(width: number, height: number): void
-  rescale(scale: number): void
-  clone(): ShapeWithTextNode
+interface ShapeWithTextNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin {
+    readonly type: 'SHAPE_WITH_TEXT';
+    shapeType: 'SQUARE' | 'ELLIPSE' | 'ROUNDED_RECTANGLE' | 'DIAMOND' | 'TRIANGLE_UP' | 'TRIANGLE_DOWN' | 'PARALLELOGRAM_RIGHT' | 'PARALLELOGRAM_LEFT' | 'ENG_DATABASE' | 'ENG_QUEUE' | 'ENG_FILE' | 'ENG_FOLDER';
+    readonly text: TextSublayerNode;
+    readonly cornerRadius?: number;
+    rotation: number;
+    resize(width: number, height: number): void;
+    rescale(scale: number): void;
+    clone(): ShapeWithTextNode;
 }
 interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
-  readonly type: 'CODE_BLOCK'
-  code: string
-  codeLanguage:
-    | 'TYPESCRIPT'
-    | 'CPP'
-    | 'RUBY'
-    | 'CSS'
-    | 'JAVASCRIPT'
-    | 'HTML'
-    | 'JSON'
-    | 'GRAPHQL'
-    | 'PYTHON'
-    | 'GO'
-    | 'SQL'
-    | 'SWIFT'
-    | 'KOTLIN'
-    | 'RUST'
-    | 'BASH'
-  clone(): CodeBlockNode
+    readonly type: 'CODE_BLOCK';
+    code: string;
+    codeLanguage: 'TYPESCRIPT' | 'CPP' | 'RUBY' | 'CSS' | 'JAVASCRIPT' | 'HTML' | 'JSON' | 'GRAPHQL' | 'PYTHON' | 'GO' | 'SQL' | 'SWIFT' | 'KOTLIN' | 'RUST' | 'BASH';
+    clone(): CodeBlockNode;
 }
 interface LabelSublayerNode {
-  fills: Paint[] | PluginAPI['mixed']
+    fills: Paint[] | PluginAPI['mixed'];
 }
 interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrokesMixin {
-  readonly type: 'CONNECTOR'
-  readonly text: TextSublayerNode
-  readonly textBackground: LabelSublayerNode
-  readonly cornerRadius?: number
-  connectorLineType: 'ELBOWED' | 'STRAIGHT'
-  connectorStart: ConnectorEndpoint
-  connectorEnd: ConnectorEndpoint
-  connectorStartStrokeCap: ConnectorStrokeCap
-  connectorEndStrokeCap: ConnectorStrokeCap
-  rotation: number
-  clone(): ConnectorNode
+    readonly type: 'CONNECTOR';
+    readonly text: TextSublayerNode;
+    readonly textBackground: LabelSublayerNode;
+    readonly cornerRadius?: number;
+    connectorLineType: 'ELBOWED' | 'STRAIGHT';
+    connectorStart: ConnectorEndpoint;
+    connectorEnd: ConnectorEndpoint;
+    connectorStartStrokeCap: ConnectorStrokeCap;
+    connectorEndStrokeCap: ConnectorStrokeCap;
+    rotation: number;
+    clone(): ConnectorNode;
 }
 interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
-  readonly type: 'WIDGET'
-  readonly widgetId: string
-  readonly widgetSyncedState: {
-    [key: string]: any
-  }
-  clone(): WidgetNode
-  cloneWidget(
-    syncedStateOverrides: {
-      [name: string]: any
-    },
-    syncedMapOverrides?: {
-      [mapName: string]: {
-        [key: string]: any
-      }
-    },
-  ): WidgetNode
-  setWidgetSyncedState(
-    syncedState: {
-      [name: string]: any
-    },
-    syncedMap?: {
-      [mapName: string]: {
-        [key: string]: any
-      }
-    },
-  ): void
+    readonly type: 'WIDGET';
+    readonly widgetId: string;
+    readonly widgetSyncedState: {
+        [key: string]: any;
+    };
+    clone(): WidgetNode;
+    cloneWidget(syncedStateOverrides: {
+        [name: string]: any;
+    }, syncedMapOverrides?: {
+        [mapName: string]: {
+            [key: string]: any;
+        };
+    }): WidgetNode;
+    setWidgetSyncedState(syncedState: {
+        [name: string]: any;
+    }, syncedMap?: {
+        [mapName: string]: {
+            [key: string]: any;
+        };
+    }): void;
 }
 interface EmbedData {
-  srcUrl: string
-  canonicalUrl: string | null
-  title: string | null
-  description: string | null
-  provider: string | null
+    srcUrl: string;
+    canonicalUrl: string | null;
+    title: string | null;
+    description: string | null;
+    provider: string | null;
 }
 interface EmbedNode extends OpaqueNodeMixin, SceneNodeMixin {
-  readonly type: 'EMBED'
-  readonly embedData: EmbedData
-  clone(): EmbedNode
+    readonly type: 'EMBED';
+    readonly embedData: EmbedData;
+    clone(): EmbedNode;
 }
 interface LinkUnfurlData {
-  url: string
-  title: string | null
-  description: string | null
-  provider: string | null
+    url: string;
+    title: string | null;
+    description: string | null;
+    provider: string | null;
 }
 interface LinkUnfurlNode extends OpaqueNodeMixin, SceneNodeMixin {
-  readonly type: 'LINK_UNFURL'
-  readonly linkUnfurlData: LinkUnfurlData
-  clone(): LinkUnfurlNode
+    readonly type: 'LINK_UNFURL';
+    readonly linkUnfurlData: LinkUnfurlData;
+    clone(): LinkUnfurlNode;
 }
 interface MediaData {
-  hash: string
+    hash: string;
 }
 interface MediaNode extends OpaqueNodeMixin {
-  readonly type: 'MEDIA'
-  readonly mediaData: MediaData
-  resize(width: number, height: number): void
-  resizeWithoutConstraints(width: number, height: number): void
-  clone(): MediaNode
+    readonly type: 'MEDIA';
+    readonly mediaData: MediaData;
+    resize(width: number, height: number): void;
+    resizeWithoutConstraints(width: number, height: number): void;
+    clone(): MediaNode;
 }
 interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
-  readonly type: 'SECTION'
-  clone(): SectionNode
-  resizeWithoutConstraints(width: number, height: number): void
+    readonly type: 'SECTION';
+    clone(): SectionNode;
+    resizeWithoutConstraints(width: number, height: number): void;
 }
-declare type BaseNode = DocumentNode | PageNode | SceneNode
-declare type SceneNode =
-  | SliceNode
-  | FrameNode
-  | GroupNode
-  | ComponentSetNode
-  | ComponentNode
-  | InstanceNode
-  | BooleanOperationNode
-  | VectorNode
-  | StarNode
-  | LineNode
-  | EllipseNode
-  | PolygonNode
-  | RectangleNode
-  | TextNode
-  | StickyNode
-  | ConnectorNode
-  | ShapeWithTextNode
-  | CodeBlockNode
-  | StampNode
-  | WidgetNode
-  | EmbedNode
-  | LinkUnfurlNode
-  | MediaNode
-  | SectionNode
-  | HighlightNode
-  | WashiTapeNode
-declare type NodeType = BaseNode['type']
-declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
+declare type BaseNode = DocumentNode | PageNode | SceneNode;
+declare type SceneNode = SliceNode | FrameNode | GroupNode | ComponentSetNode | ComponentNode | InstanceNode | BooleanOperationNode | VectorNode | StarNode | LineNode | EllipseNode | PolygonNode | RectangleNode | TextNode | StickyNode | ConnectorNode | ShapeWithTextNode | CodeBlockNode | StampNode | WidgetNode | EmbedNode | LinkUnfurlNode | MediaNode | SectionNode | HighlightNode | WashiTapeNode;
+declare type NodeType = BaseNode['type'];
+declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID';
 interface BaseStyle extends PublishableMixin, PluginDataMixin {
-  readonly id: string
-  readonly type: StyleType
-  name: string
-  remove(): void
+    readonly id: string;
+    readonly type: StyleType;
+    name: string;
+    remove(): void;
 }
 interface PaintStyle extends BaseStyle {
-  type: 'PAINT'
-  paints: ReadonlyArray<Paint>
+    type: 'PAINT';
+    paints: ReadonlyArray<Paint>;
 }
 interface TextStyle extends BaseStyle {
-  type: 'TEXT'
-  fontSize: number
-  textDecoration: TextDecoration
-  fontName: FontName
-  letterSpacing: LetterSpacing
-  lineHeight: LineHeight
-  paragraphIndent: number
-  paragraphSpacing: number
-  textCase: TextCase
+    type: 'TEXT';
+    fontSize: number;
+    textDecoration: TextDecoration;
+    fontName: FontName;
+    letterSpacing: LetterSpacing;
+    lineHeight: LineHeight;
+    paragraphIndent: number;
+    paragraphSpacing: number;
+    textCase: TextCase;
 }
 interface EffectStyle extends BaseStyle {
-  type: 'EFFECT'
-  effects: ReadonlyArray<Effect>
+    type: 'EFFECT';
+    effects: ReadonlyArray<Effect>;
 }
 interface GridStyle extends BaseStyle {
-  type: 'GRID'
-  layoutGrids: ReadonlyArray<LayoutGrid>
+    type: 'GRID';
+    layoutGrids: ReadonlyArray<LayoutGrid>;
 }
 interface Image {
-  readonly hash: string
-  getBytesAsync(): Promise<Uint8Array>
+    readonly hash: string;
+    getBytesAsync(): Promise<Uint8Array>;
 }
 interface Video {
-  readonly hash: string
+    readonly hash: string;
 }
 interface BaseUser {
-  readonly id: string | null
-  readonly name: string
-  readonly photoUrl: string | null
+    readonly id: string | null;
+    readonly name: string;
+    readonly photoUrl: string | null;
 }
 interface User extends BaseUser {
-  readonly color: string
-  readonly sessionId: number
+    readonly color: string;
+    readonly sessionId: number;
 }
 interface ActiveUser extends User {
-  readonly position: Vector | null
-  readonly viewport: Rect
-  readonly selection: string[]
+    readonly position: Vector | null;
+    readonly viewport: Rect;
+    readonly selection: string[];
 }
