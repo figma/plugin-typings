@@ -1,4 +1,4 @@
-/*! plugin-typings are auto-generated. Do not update them directly. See plugin-docs/ for instructions. */
+/* plugin-typings are auto-generated. Do not update them directly. See plugin-docs/tests/ for instructions. */
 declare type ArgFreeEventType =
   | 'selectionchange'
   | 'currentpagechange'
@@ -315,6 +315,7 @@ declare type DocumentChange =
   | StyleCreateChange
   | StyleDeleteChange
   | StylePropertyChange
+declare type Hello = 'hello'
 declare type NodeChangeProperty =
   | 'pointCount'
   | 'name'
