@@ -962,8 +962,8 @@ interface BaseNodeMixin extends PluginDataMixin {
   toString(): string
   remove(): void
 
-  setRelaunchData(data: { [command: string]: /* description */ string }): void
-  getRelaunchData(): { [command: string]: /* description */ string }
+  setRelaunchData(data: { [command: string]: string }): void
+  getRelaunchData(): { [command: string]: string }
 }
 
 interface PluginDataMixin {
