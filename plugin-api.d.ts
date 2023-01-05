@@ -97,9 +97,6 @@ interface PluginAPI {
   createSection(): SectionNode
   createNodeFromJSXAsync(jsx: any): Promise<SceneNode>
 
-  /**
-   * [DEPRECATED]: This API often fails to create a valid boolean operation. Use figma.union, figma.subtract, figma.intersect and figma.exclude instead.
-   */
   createBooleanOperation(): BooleanOperationNode
 
   createPaintStyle(): PaintStyle
@@ -107,8 +104,6 @@ interface PluginAPI {
   createEffectStyle(): EffectStyle
   createGridStyle(): GridStyle
 
-  // The styles are returned in the same order as displayed in the UI. Only
-  // local styles are returned. Never styles from team library.
   getLocalPaintStyles(): PaintStyle[]
   getLocalTextStyles(): TextStyle[]
   getLocalEffectStyles(): EffectStyle[]
@@ -531,9 +526,6 @@ type TextReviewRange = {
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Datatypes
-
 type Transform = [[number, number, number], [number, number, number]]
 
 interface Vector {
@@ -650,9 +642,9 @@ interface ImagePaint {
   readonly type: 'IMAGE'
   readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
   readonly imageHash: string | null
-  readonly imageTransform?: Transform // setting for "CROP"
-  readonly scalingFactor?: number // setting for "TILE"
-  readonly rotation?: number // setting for "FILL" | "FIT" | "TILE"
+  readonly imageTransform?: Transform
+  readonly scalingFactor?: number
+  readonly rotation?: number
   readonly filters?: ImageFilters
 
   readonly visible?: boolean
@@ -664,9 +656,9 @@ interface VideoPaint {
   readonly type: 'VIDEO'
   readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
   readonly videoHash: string | null
-  readonly videoTransform?: Transform // setting for "CROP"
-  readonly scalingFactor?: number // setting for "TILE"
-  readonly rotation?: number // setting for "TILE" | "FILL" | "FIT"
+  readonly videoTransform?: Transform
+  readonly scalingFactor?: number
+  readonly rotation?: number
   readonly filters?: ImageFilters
   readonly visible?: boolean
   readonly opacity?: number
@@ -685,9 +677,9 @@ interface RowsColsLayoutGrid {
   readonly alignment: 'MIN' | 'MAX' | 'STRETCH' | 'CENTER'
   readonly gutterSize: number
 
-  readonly count: number // Infinity when "Auto" is set in the UI
-  readonly sectionSize?: number // Not set for alignment: "STRETCH"
-  readonly offset?: number // Not set for alignment: "CENTER"
+  readonly count: number
+  readonly sectionSize?: number
+  readonly offset?: number
 
   readonly visible?: boolean
   readonly color?: RGBA
@@ -710,26 +702,26 @@ interface ExportSettingsConstraints {
 
 interface ExportSettingsImage {
   readonly format: 'JPG' | 'PNG'
-  readonly contentsOnly?: boolean // defaults to true
-  readonly useAbsoluteBounds?: boolean // defaults to false
+  readonly contentsOnly?: boolean
+  readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
   readonly constraint?: ExportSettingsConstraints
 }
 
 interface ExportSettingsSVG {
   readonly format: 'SVG'
-  readonly contentsOnly?: boolean // defaults to true
-  readonly useAbsoluteBounds?: boolean // defaults to false
+  readonly contentsOnly?: boolean
+  readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
-  readonly svgOutlineText?: boolean // defaults to true
-  readonly svgIdAttribute?: boolean // defaults to false
-  readonly svgSimplifyStroke?: boolean // defaults to true
+  readonly svgOutlineText?: boolean
+  readonly svgIdAttribute?: boolean
+  readonly svgSimplifyStroke?: boolean
 }
 
 interface ExportSettingsPDF {
   readonly format: 'PDF'
-  readonly contentsOnly?: boolean // defaults to true
-  readonly useAbsoluteBounds?: boolean // defaults to false
+  readonly contentsOnly?: boolean
+  readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
 }
 
@@ -749,8 +741,8 @@ interface VectorVertex {
 interface VectorSegment {
   readonly start: number
   readonly end: number
-  readonly tangentStart?: Vector // Defaults to { x: 0, y: 0 }
-  readonly tangentEnd?: Vector // Defaults to { x: 0, y: 0 }
+  readonly tangentStart?: Vector
+  readonly tangentEnd?: Vector
 }
 
 interface VectorRegion {
@@ -763,7 +755,7 @@ interface VectorRegion {
 interface VectorNetwork {
   readonly vertices: ReadonlyArray<VectorVertex>
   readonly segments: ReadonlyArray<VectorSegment>
-  readonly regions?: ReadonlyArray<VectorRegion> // Defaults to []
+  readonly regions?: ReadonlyArray<VectorRegion>
 }
 
 interface VectorPath {
@@ -856,8 +848,6 @@ type Action =
       readonly transition: Transition | null
       readonly preserveScrollPosition: boolean
 
-      // Only present if navigation == "OVERLAY" and the destination uses
-      // overlay position type "RELATIVE"
       readonly overlayRelativePosition?: Vector
       readonly resetVideoPosition?: boolean
     }
@@ -964,19 +954,16 @@ type ConnectorStrokeCap =
   | 'DIAMOND_FILLED'
   | 'CIRCLE_FILLED'
 
-////////////////////////////////////////////////////////////////////////////////
-// Mixins
-
 interface BaseNodeMixin extends PluginDataMixin {
   readonly id: string
   readonly parent: (BaseNode & ChildrenMixin) | null
-  name: string // Note: setting this also sets `autoRename` to false on TextNodes
+  name: string
   readonly removed: boolean
   toString(): string
   remove(): void
 
-  setRelaunchData(data: { [command: string]: /* description */ string }): void
-  getRelaunchData(): { [command: string]: /* description */ string }
+  setRelaunchData(data: { [command: string]: string }): void
+  getRelaunchData(): { [command: string]: string }
 }
 
 interface PluginDataMixin {
@@ -984,8 +971,6 @@ interface PluginDataMixin {
   setPluginData(key: string, value: string): void
   getPluginDataKeys(): string[]
 
-  // Namespace is a string that must be at least 3 alphanumeric characters, and should
-  // be a name related to your plugin. Other plugins will be able to read this data.
   getSharedPluginData(namespace: string, key: string): string
   setSharedPluginData(namespace: string, key: string, value: string): void
   getSharedPluginDataKeys(namespace: string): string[]
@@ -1016,16 +1001,8 @@ interface ChildrenMixin {
   findChildren(callback?: (node: SceneNode) => boolean): SceneNode[]
   findChild(callback: (node: SceneNode) => boolean): SceneNode | null
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.filter(callback) or node.findChildren(callback)
-   */
   findAll(callback?: (node: SceneNode) => boolean): SceneNode[]
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.find(callback) or node.findChild(callback)
-   */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
 
   findAllWithCriteria<T extends NodeType[]>(criteria: {
@@ -1044,7 +1021,7 @@ interface LayoutMixin {
   relativeTransform: Transform
   x: number
   y: number
-  rotation: number // In degrees
+  rotation: number
 
   readonly width: number
   readonly height: number
@@ -1052,7 +1029,6 @@ interface LayoutMixin {
   readonly absoluteBoundingBox: Rect | null
   constrainProportions: boolean
 
-  // applicable only inside auto-layout frames
   layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
   layoutGrow: number
   layoutPositioning: 'AUTO' | 'ABSOLUTE'
@@ -1070,8 +1046,8 @@ interface BlendMixin extends MinimalBlendMixin {
 
 interface ContainerMixin {
   expanded: boolean
-  backgrounds: ReadonlyArray<Paint> // DEPRECATED: use 'fills' instead
-  backgroundStyleId: string // DEPRECATED: use 'fillStyleId' instead
+  backgrounds: ReadonlyArray<Paint>
+  backgroundStyleId: string
 }
 
 type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
@@ -1121,7 +1097,7 @@ interface RectangleCornerMixin {
 
 interface ExportMixin {
   exportSettings: ReadonlyArray<ExportSettings>
-  exportAsync(settings?: ExportSettings): Promise<Uint8Array> // Defaults to PNG format
+  exportAsync(settings?: ExportSettings): Promise<Uint8Array>
 }
 
 interface FramePrototypingMixin {
@@ -1150,7 +1126,7 @@ interface PublishableMixin {
   description: string
   documentationLinks: ReadonlyArray<DocumentationLink>
   readonly remote: boolean
-  readonly key: string // The key to use with "importComponentByKeyAsync", "importComponentSetByKeyAsync", and "importStyleByKeyAsync"
+  readonly key: string
   getPublishStatusAsync(): Promise<PublishStatus>
 }
 
@@ -1177,22 +1153,22 @@ interface BaseFrameMixin
     ExportMixin,
     IndividualStrokesMixin {
   layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  primaryAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
-  counterAxisSizingMode: 'FIXED' | 'AUTO' // applicable only if layoutMode != "NONE"
+  primaryAxisSizingMode: 'FIXED' | 'AUTO'
+  counterAxisSizingMode: 'FIXED' | 'AUTO'
 
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN' // applicable only if layoutMode != "NONE"
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE' // applicable only if layoutMode != "NONE"
+  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
 
-  paddingLeft: number // applicable only if layoutMode != "NONE"
-  paddingRight: number // applicable only if layoutMode != "NONE"
-  paddingTop: number // applicable only if layoutMode != "NONE"
-  paddingBottom: number // applicable only if layoutMode != "NONE"
-  itemSpacing: number // applicable only if layoutMode != "NONE"
-  itemReverseZIndex: boolean // applicable only if layoutMode != "NONE"
-  strokesIncludedInLayout: boolean // applicable only if layoutMode != "NONE"
+  paddingLeft: number
+  paddingRight: number
+  paddingTop: number
+  paddingBottom: number
+  itemSpacing: number
+  itemReverseZIndex: boolean
+  strokesIncludedInLayout: boolean
 
-  horizontalPadding: number // DEPRECATED: use the individual paddings
-  verticalPadding: number // DEPRECATED: use the individual paddings
+  horizontalPadding: number
+  verticalPadding: number
 
   layoutGrids: ReadonlyArray<LayoutGrid>
   gridStyleId: string
@@ -1299,9 +1275,6 @@ interface TextSublayerNode extends MinimalFillsMixin {
   >
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Nodes
-
 interface DocumentNode extends BaseNodeMixin {
   readonly type: 'DOCUMENT'
 
@@ -1312,16 +1285,8 @@ interface DocumentNode extends BaseNodeMixin {
   findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>
   findChild(callback: (node: PageNode) => boolean): PageNode | null
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.filter(callback) or node.findChildren(callback)
-   */
   findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>
 
-  /**
-   * If you only need to search immediate children, it is much faster
-   * to call node.children.find(callback) or node.findChild(callback)
-   */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
 
   findAllWithCriteria<T extends NodeType[]>(criteria: {
@@ -1672,8 +1637,6 @@ type SceneNode =
 
 type NodeType = BaseNode['type']
 
-////////////////////////////////////////////////////////////////////////////////
-// Styles
 type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 
 interface BaseStyle extends PublishableMixin, PluginDataMixin {
@@ -1710,9 +1673,6 @@ interface GridStyle extends BaseStyle {
   layoutGrids: ReadonlyArray<LayoutGrid>
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Other
-
 interface Image {
   readonly hash: string
   getBytesAsync(): Promise<Uint8Array>
@@ -1728,8 +1688,6 @@ interface BaseUser {
 }
 
 interface User extends BaseUser {
-  // The current user's multiplayer color. This will match the color of their
-  // dot stamps and cursor.
   readonly color: string
   readonly sessionId: number
 }
