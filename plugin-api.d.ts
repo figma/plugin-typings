@@ -1456,11 +1456,29 @@ declare type SceneNode =
   | SectionNode
   | HighlightNode
   | WashiTapeNode
-declare type NodeType = BaseNode['type']
-declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
+
+type NodeType = BaseNode['type']
+
+////////////////////////////////////////////////////////////////////////////////
+// Styles
+type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
+declare type InheritedStyleField =
+  | 'fillStyleId'
+  | 'strokeStyleId'
+  | 'backgroundStyleId'
+  | 'textStyleId'
+  | 'effectStyleId'
+  | 'gridStyleId'
+  | 'strokeStyleId'
+interface StyleConsumers {
+  node: SceneNode
+  fields: InheritedStyleField[]
+}
+
 interface BaseStyle extends PublishableMixin, PluginDataMixin {
   readonly id: string
   readonly type: StyleType
+  readonly consumers: StyleConsumers[]
   name: string
   remove(): void
 }
