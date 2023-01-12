@@ -157,7 +157,10 @@ interface PaymentsAPI {
   readonly status: PaymentStatus
   setPaymentStatusInDevelopment(status: PaymentStatus): void
   getUserFirstRanSecondsAgo(): number
-  initiateCheckoutAsync(options?: { skipInterstitial?: boolean }): Promise<void>
+  initiateCheckoutAsync(options?: {
+    interstitial?: 'PAID_FEATURE' | 'TRIAL_ENDED' | 'SKIP'
+  }): Promise<void>
+  requestCheckout(): void
 }
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
