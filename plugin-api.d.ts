@@ -102,6 +102,7 @@ interface PluginAPI {
   readonly hasMissingFont: boolean
   createNodeFromSvg(svg: string): FrameNode
   createImage(data: Uint8Array): Image
+  createImageAsync(src: string): Promise<Image>
   getImageByHash(hash: string): Image | null
   createVideoAsync(data: Uint8Array): Promise<Video>
   createLinkPreviewAsync(url: string): Promise<EmbedNode | LinkUnfurlNode>
@@ -1490,6 +1491,10 @@ interface GridStyle extends BaseStyle {
 interface Image {
   readonly hash: string
   getBytesAsync(): Promise<Uint8Array>
+  getSizeAsync(): Promise<{
+    width: number
+    height: number
+  }>
 }
 interface Video {
   readonly hash: string
