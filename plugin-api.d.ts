@@ -10,6 +10,7 @@ declare type ArgFreeEventType =
   | 'timeradjust'
   | 'timerdone'
 interface PluginAPI {
+  readonly isReadOnly: boolean
   readonly apiVersion: '1.0.0'
   readonly command: string
   readonly editorType: 'figma' | 'figjam'
