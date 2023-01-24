@@ -190,6 +190,7 @@ interface UIAPI {
   show(): void
   hide(): void
   resize(width: number, height: number): void
+  reposition(x: number, y: number): void
   close(): void
   postMessage(pluginMessage: any, options?: UIPostMessageOptions): void
   onmessage: MessageEventHandler | undefined
