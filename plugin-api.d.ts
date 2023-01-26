@@ -911,6 +911,8 @@ interface BlendMixin extends MinimalBlendMixin {
 }
 interface ContainerMixin {
   expanded: boolean
+}
+interface DeprecatedBackgroundMixin {
   backgrounds: ReadonlyArray<Paint>
   backgroundStyleId: string
 }
@@ -994,6 +996,7 @@ interface BaseFrameMixin
     SceneNodeMixin,
     ChildrenMixin,
     ContainerMixin,
+    DeprecatedBackgroundMixin,
     GeometryMixin,
     CornerMixin,
     RectangleCornerMixin,
@@ -1157,6 +1160,7 @@ interface GroupNode
     ReactionMixin,
     ChildrenMixin,
     ContainerMixin,
+    DeprecatedBackgroundMixin,
     BlendMixin,
     LayoutMixin,
     ExportMixin {
@@ -1269,11 +1273,14 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   }[]
   resetOverrides(): void
 }
-interface BooleanOperationNode extends DefaultShapeMixin, ChildrenMixin, CornerMixin {
+interface BooleanOperationNode
+  extends DefaultShapeMixin,
+    ChildrenMixin,
+    CornerMixin,
+    ContainerMixin {
   readonly type: 'BOOLEAN_OPERATION'
   clone(): BooleanOperationNode
   booleanOperation: 'UNION' | 'INTERSECT' | 'SUBTRACT' | 'EXCLUDE'
-  expanded: boolean
 }
 interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin {
   readonly type: 'STICKY'
@@ -1458,12 +1465,8 @@ declare type SceneNode =
   | SectionNode
   | HighlightNode
   | WashiTapeNode
-
-type NodeType = BaseNode['type']
-
-////////////////////////////////////////////////////////////////////////////////
-// Styles
-type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
+declare type NodeType = BaseNode['type']
+declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 declare type InheritedStyleField =
   | 'fillStyleId'
   | 'strokeStyleId'
@@ -1476,7 +1479,6 @@ interface StyleConsumers {
   node: SceneNode
   fields: InheritedStyleField[]
 }
-
 interface BaseStyle extends PublishableMixin, PluginDataMixin {
   readonly id: string
   readonly type: StyleType
