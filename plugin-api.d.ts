@@ -11,6 +11,7 @@ declare type ArgFreeEventType =
   | 'timerdone'
 interface PluginAPI {
   readonly isReadOnly: boolean
+  readonly mode: 'default' | 'textreview' | 'inspect'
   readonly apiVersion: '1.0.0'
   readonly command: string
   readonly editorType: 'figma' | 'figjam'
