@@ -886,17 +886,19 @@ interface ChildrenMixin {
 interface ConstraintMixin {
   constraints: Constraints
 }
-interface LayoutMixin {
-  readonly absoluteTransform: Transform
-  relativeTransform: Transform
+interface DimensionAndPositionMixin {
   x: number
   y: number
-  rotation: number
   readonly width: number
   readonly height: number
-  readonly absoluteRenderBounds: Rect | null
+  relativeTransform: Transform
+  readonly absoluteTransform: Transform
   readonly absoluteBoundingBox: Rect | null
+}
+interface LayoutMixin extends DimensionAndPositionMixin {
+  readonly absoluteRenderBounds: Rect | null
   constrainProportions: boolean
+  rotation: number
   layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
   layoutGrow: number
   layoutPositioning: 'AUTO' | 'ABSOLUTE'
@@ -1025,15 +1027,11 @@ interface BaseFrameMixin
   guides: ReadonlyArray<Guide>
 }
 interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
-interface OpaqueNodeMixin extends BaseNodeMixin, SceneNodeMixin, ExportMixin {
-  readonly absoluteTransform: Transform
-  relativeTransform: Transform
-  x: number
-  y: number
-  readonly width: number
-  readonly height: number
-  readonly absoluteBoundingBox: Rect | null
-}
+interface OpaqueNodeMixin
+  extends BaseNodeMixin,
+    SceneNodeMixin,
+    ExportMixin,
+    DimensionAndPositionMixin {}
 interface MinimalBlendMixin {
   opacity: number
   blendMode: BlendMode
