@@ -11,7 +11,7 @@ declare type ArgFreeEventType =
   | 'timerdone'
 interface PluginAPI {
   readonly isReadOnly: boolean
-  readonly mode: 'default' | 'textreview' | 'inspect'
+  readonly mode: 'default' | 'textreview' | 'inspect' | 'codegen'
   readonly apiVersion: '1.0.0'
   readonly command: string
   readonly editorType: 'figma' | 'figjam'
@@ -46,6 +46,10 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  on(
+    type: 'codegen',
+    callback: (event: CodegenEvent) => Promise<CodegenResult> | CodegenResult,
+  ): void
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -54,6 +58,10 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  once(
+    type: 'codegen',
+    callback: (event: CodegenEvent) => Promise<CodegenResult> | CodegenResult,
+  ): void
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -61,6 +69,10 @@ interface PluginAPI {
   off(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
+  ): void
+  off(
+    type: 'codegen',
+    callback: (event: CodegenEvent) => Promise<CodegenResult> | CodegenResult,
   ): void
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
@@ -471,6 +483,32 @@ declare type TextReviewRange = {
   suggestions: string[]
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
+
+declare type CodegenEvent = {
+  node: SceneNode
+}
+
+declare type CodegenResult = {
+  title: string
+  code: string
+  language:
+    | 'TYPESCRIPT'
+    | 'CPP'
+    | 'RUBY'
+    | 'CSS'
+    | 'JAVASCRIPT'
+    | 'HTML'
+    | 'JSON'
+    | 'GRAPHQL'
+    | 'PYTHON'
+    | 'GO'
+    | 'SQL'
+    | 'SWIFT'
+    | 'KOTLIN'
+    | 'RUST'
+    | 'BASH'
+}[]
+
 declare type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
   readonly x: number
