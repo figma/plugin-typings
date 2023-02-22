@@ -481,7 +481,13 @@ interface FontName {
   readonly family: string
   readonly style: string
 }
-declare type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE'
+declare type TextCase =
+  | 'ORIGINAL'
+  | 'UPPER'
+  | 'LOWER'
+  | 'TITLE'
+  | 'SMALL_CAPS'
+  | 'SMALL_CAPS_FORCED'
 declare type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
 interface ArcData {
   readonly startingAngle: number
@@ -724,7 +730,26 @@ declare type Action =
     }
   | {
       readonly type: 'UPDATE_MEDIA_RUNTIME'
-      readonly mediaAction: 'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE'
+      readonly destinationId: string | null
+      readonly mediaAction:
+        | 'PLAY'
+        | 'PAUSE'
+        | 'TOGGLE_PLAY_PAUSE'
+        | 'MUTE'
+        | 'UNMUTE'
+        | 'TOGGLE_MUTE_UNMUTE'
+    }
+  | {
+      readonly type: 'UPDATE_MEDIA_RUNTIME'
+      readonly destinationId?: string | null
+      readonly mediaAction: 'SKIP_FORWARD' | 'SKIP_BACKWARD'
+      readonly amountToSkip: number
+    }
+  | {
+      readonly type: 'UPDATE_MEDIA_RUNTIME'
+      readonly destinationId?: string | null
+      readonly mediaAction: 'SKIP_TO'
+      readonly newTimestamp: number
     }
   | {
       readonly type: 'NODE'
@@ -764,6 +789,13 @@ declare type Trigger =
       readonly type: 'ON_KEY_DOWN'
       readonly device: 'KEYBOARD' | 'XBOX_ONE' | 'PS4' | 'SWITCH_PRO' | 'UNKNOWN_CONTROLLER'
       readonly keyCodes: ReadonlyArray<number>
+    }
+  | {
+      readonly type: 'ON_MEDIA_HIT'
+      readonly mediaHitTime: number
+    }
+  | {
+      readonly type: 'ON_MEDIA_END'
     }
 declare type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
 interface Easing {
