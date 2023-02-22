@@ -481,7 +481,13 @@ interface FontName {
   readonly family: string
   readonly style: string
 }
-declare type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE'
+declare type TextCase =
+  | 'ORIGINAL'
+  | 'UPPER'
+  | 'LOWER'
+  | 'TITLE'
+  | 'SMALL_CAPS'
+  | 'SMALL_CAPS_FORCED'
 declare type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
 interface ArcData {
   readonly startingAngle: number
