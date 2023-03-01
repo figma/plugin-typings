@@ -935,12 +935,14 @@ interface BaseNodeMixin extends PluginDataMixin {
   readonly parent: (BaseNode & ChildrenMixin) | null
   name: string
   readonly removed: boolean
+  readonly isAsset: boolean
   toString(): string
   remove(): void
   setRelaunchData(data: { [command: string]: string }): void
   getRelaunchData(): {
     [command: string]: string
   }
+  getCSSAsync(): Promise<{ [key: string]: string }>
 }
 interface PluginDataMixin {
   getPluginData(key: string): string
@@ -1091,6 +1093,22 @@ interface DefaultShapeMixin
     GeometryMixin,
     LayoutMixin,
     ExportMixin {}
+
+interface inferredAutoLayoutResult {
+  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
+  paddingLeft: number
+  paddingRight: number
+  paddingTop: number
+  paddingBottom: number
+  counterAxisSizingMode: 'FIXED' | 'AUTO'
+  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
+  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
+  layoutGrow: number
+  itemSpacing: number
+  layoutPositioning: 'AUTO' | 'ABSOLUTE'
+}
+
 interface BaseFrameMixin
   extends BaseNodeMixin,
     SceneNodeMixin,
@@ -1123,7 +1141,9 @@ interface BaseFrameMixin
   gridStyleId: string
   clipsContent: boolean
   guides: ReadonlyArray<Guide>
+  inferredAutoLayout: inferredAutoLayoutResult | null
 }
+
 interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
 interface OpaqueNodeMixin
   extends BaseNodeMixin,
