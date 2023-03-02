@@ -891,7 +891,7 @@ interface SceneNodeMixin {
   readonly attachedConnectors: ConnectorNode[]
   componentPropertyReferences:
     | {
-        [nodeProperty in 'visible' | 'characters' | 'mainComponent']: string
+        [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
 }
