@@ -22,6 +22,7 @@ interface PluginAPI {
   readonly currentUser: User | null
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
+  readonly payments?: PaymentsAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
   commitUndo(): void
@@ -148,6 +149,18 @@ interface PluginAPI {
 }
 interface VersionHistoryResult {
   id: string
+}
+declare type PaymentStatus = {
+  type: 'UNPAID' | 'PAID' | 'NOT_SUPPORTED'
+}
+interface PaymentsAPI {
+  readonly status: PaymentStatus
+  setPaymentStatusInDevelopment(status: PaymentStatus): void
+  getUserFirstRanSecondsAgo(): number
+  initiateCheckoutAsync(options?: {
+    interstitial?: 'PAID_FEATURE' | 'TRIAL_ENDED' | 'SKIP'
+  }): Promise<void>
+  requestCheckout(): void
 }
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
