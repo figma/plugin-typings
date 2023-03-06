@@ -34,6 +34,8 @@ interface PluginAPI {
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
   getStyleById(id: string): BaseStyle | null
+  getVariableById(id: string): Variable | null
+  getVariableCollectionById(id: string): VariableCollection | null
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
@@ -907,6 +909,32 @@ interface SceneNodeMixin {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
+  boundVariables: Record<VariableBindableNodeField, BoundVariableDescriptor[]>
+}
+declare type VariableBindableNodeField =
+  | 'height'
+  | 'width'
+  | 'characters'
+  | 'paragraphIndent'
+  | 'paragraphSpacing'
+  | 'itemSpacing'
+  | 'paddingLeft'
+  | 'paddingRight'
+  | 'paddingTop'
+  | 'paddingBottom'
+  | 'visible'
+  | 'styledTextSegments'
+  | 'topLeftRadius'
+  | 'topRightRadius'
+  | 'bottomLeftRadius'
+  | 'bottomRightRadius'
+  | 'stokeTopWeight'
+  | 'strokeBottomWeight'
+  | 'strokeLeftWeight'
+  | 'strokeRightWeight'
+interface BoundVariableDescriptor {
+  type: 'VARIABLE_ID'
+  id: string
 }
 interface StickableMixin {
   stuckTo: SceneNode | null
@@ -1413,6 +1441,34 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   connectorEndStrokeCap: ConnectorStrokeCap
   rotation: number
   clone(): ConnectorNode
+}
+declare type VariableResolvedDataType =
+  | 'BOOLEAN'
+  | 'COLOR'
+  | 'FLOAT'
+  | 'COMPONENT_ID'
+  | 'STRING'
+  | 'MAP'
+interface Variable {
+  readonly id: string
+  name: string
+  readonly remote: boolean
+  readonly variableCollectionId: string
+  readonly resolvedType: VariableResolvedDataType
+  resolveForConsumer(consumer: SceneNode): {
+    value: any
+    resolvedType: VariableResolvedDataType
+  }
+}
+interface VariableCollection {
+  readonly id: string
+  name: string
+  readonly remote: boolean
+  readonly modes: Array<{
+    modeID: string
+    name: string
+  }>
+  readonly variableIds: string[]
 }
 interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
   readonly type: 'WIDGET'
