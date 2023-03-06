@@ -558,6 +558,9 @@ interface SolidPaint {
   readonly visible?: boolean
   readonly opacity?: number
   readonly blendMode?: BlendMode
+  readonly boundVariables: {
+    color?: BoundVariableDescriptor
+  }
 }
 interface GradientPaint {
   readonly type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND'
