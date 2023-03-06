@@ -1,4 +1,3 @@
-// Figma Plugin API version 1, update 40
 /// <reference path="./plugin-api.d.ts" />
 
 declare global {
