@@ -912,7 +912,7 @@ interface SceneNodeMixin {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
-  boundVariables: Record<VariableBindableNodeField, BoundVariableDescriptor[]>
+  boundVariables: Record<VariableBindableNodeField, BoundVariableDescriptor>
 }
 declare type VariableBindableNodeField =
   | 'height'
