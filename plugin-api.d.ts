@@ -77,6 +77,7 @@ interface PluginAPI {
   createShapeWithText(): ShapeWithTextNode
   createCodeBlock(): CodeBlockNode
   createSection(): SectionNode
+  createTable(numRows?: number, numColumns?: number): TableNode
   createNodeFromJSXAsync(jsx: any): Promise<SceneNode>
   createBooleanOperation(): BooleanOperationNode
   createPaintStyle(): PaintStyle
@@ -1337,6 +1338,31 @@ interface StampNode extends DefaultShapeMixin, ConstraintMixin, StickableMixin {
   clone(): StampNode
   getAuthorAsync(): Promise<BaseUser | null>
 }
+interface TableNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin {
+  readonly type: 'TABLE'
+  clone(): TableNode
+  readonly numRows: number
+  readonly numColumns: number
+  cellAt(rowIndex: number, columnIndex: number): TableCellNode
+  insertRow(rowIndex: number): void
+  insertColumn(columnIndex: number): void
+  removeRow(rowIndex: number): void
+  removeColumn(columnIndex: number): void
+  moveRow(fromIndex: number, toIndex: number): void
+  moveColumn(fromIndex: number, toIndex: number): void
+  resizeRow(rowIndex: number, height: number): void
+  resizeColumn(columnIndex: number, width: number): void
+}
+interface TableCellNode extends MinimalFillsMixin {
+  readonly type: 'TABLE_CELL'
+  readonly text: TextSublayerNode
+  readonly rowIndex: number
+  readonly columnIndex: number
+  readonly toString: string
+  readonly parent: TableNode
+  readonly height: number
+  readonly width: number
+}
 interface HighlightNode
   extends DefaultShapeMixin,
     ConstraintMixin,
@@ -1508,6 +1534,7 @@ declare type SceneNode =
   | SectionNode
   | HighlightNode
   | WashiTapeNode
+  | TableNode
 declare type NodeType = BaseNode['type']
 declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 declare type InheritedStyleField =
