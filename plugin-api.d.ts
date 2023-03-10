@@ -559,7 +559,7 @@ interface SolidPaint {
   readonly opacity?: number
   readonly blendMode?: BlendMode
   readonly boundVariables: {
-    color?: BoundVariableDescriptor
+    [field in VariableBindablePaintField]?: BoundVariableDescriptor
   }
 }
 interface GradientPaint {
@@ -912,10 +912,15 @@ interface SceneNodeMixin {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
-  boundVariables: Record<VariableBindableNodeField, BoundVariableDescriptor>
+  boundVariables: {
+    [field in VariableBindableNodeField]?: BoundVariableDescriptor
+  } & {
+    fills?: BoundVariableDescriptor[]
+    strokes?: BoundVariableDescriptor[]
+    componentProperties?: BoundVariableDescriptor[]
+  }
 }
 declare type VariableBindableNodeField =
-  | 'fills'
   | 'height'
   | 'width'
   | 'characters'
@@ -936,6 +941,8 @@ declare type VariableBindableNodeField =
   | 'strokeBottomWeight'
   | 'strokeLeftWeight'
   | 'strokeRightWeight'
+declare type VariableBindablePaintField = 'color'
+declare type VariableBindableComponentPropertyField = 'value'
 interface BoundVariableDescriptor {
   type: 'VARIABLE_ID'
   id: string
@@ -1329,6 +1336,9 @@ declare type ComponentProperties = {
     type: ComponentPropertyType
     value: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
+    boundVariables: {
+      [field in VariableBindableComponentPropertyField]?: BoundVariableDescriptor
+    }
   }
 }
 interface InstanceNode extends DefaultFrameMixin, VariantMixin {
@@ -1458,11 +1468,14 @@ interface Variable {
   name: string
   readonly remote: boolean
   readonly variableCollectionId: string
+  readonly key: string
   readonly resolvedType: VariableResolvedDataType
   resolveForConsumer(consumer: SceneNode): {
     value: any
     resolvedType: VariableResolvedDataType
   }
+  setValueForMode(modeId: string, newValue: any): void
+  remove(): void
 }
 interface VariableCollection {
   readonly id: string
@@ -1473,6 +1486,11 @@ interface VariableCollection {
     name: string
   }>
   readonly variableIds: string[]
+  readonly defaultModeId: string
+  readonly key: string
+  remove(): void
+  removeMode(modeId: string): void
+  addMode(name: string): string
 }
 interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
   readonly type: 'WIDGET'
