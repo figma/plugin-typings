@@ -915,6 +915,7 @@ interface SceneNodeMixin {
   boundVariables: Record<VariableBindableNodeField, BoundVariableDescriptor>
 }
 declare type VariableBindableNodeField =
+  | 'fills'
   | 'height'
   | 'width'
   | 'characters'
