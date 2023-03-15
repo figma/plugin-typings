@@ -914,12 +914,16 @@ interface SceneNodeMixin {
       }
     | null
   boundVariables: {
-    [field in VariableBindableNodeField]?: BoundVariableDescriptor
+    readonly [field in VariableBindableNodeField]?: BoundVariableDescriptor
   } & {
-    fills?: BoundVariableDescriptor[]
-    strokes?: BoundVariableDescriptor[]
-    componentProperties?: BoundVariableDescriptor[]
+    readonly fills?: BoundVariableDescriptor[]
+    readonly strokes?: BoundVariableDescriptor[]
+    readonly componentProperties?: BoundVariableDescriptor[]
   }
+  resolvedVariableModes: Record<string, string>
+  explicitVariableModes: Record<string, string>
+  clearExplicitVariableModeForCollection(collectionId: string): void
+  setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
 }
 declare type VariableBindableNodeField =
   | 'height'
@@ -1337,7 +1341,7 @@ declare type ComponentProperties = {
     type: ComponentPropertyType
     value: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
-    boundVariables: {
+    readonly boundVariables: {
       [field in VariableBindableComponentPropertyField]?: BoundVariableDescriptor
     }
   }
@@ -1489,6 +1493,8 @@ declare type VariableResolvedDataType =
   | 'COMPONENT_ID'
   | 'STRING'
   | 'MAP'
+declare type VariableAliasValue = BoundVariableDescriptor
+declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAliasValue
 interface Variable {
   readonly id: string
   name: string
@@ -1501,6 +1507,7 @@ interface Variable {
     resolvedType: VariableResolvedDataType
   }
   setValueForMode(modeId: string, newValue: any): void
+  readonly valuesByMode: Record<string, VariableValue>
   remove(): void
 }
 interface VariableCollection {
