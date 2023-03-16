@@ -36,6 +36,7 @@ interface PluginAPI {
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
   getStyleById(id: string): BaseStyle | null
+  getSelectionColors(): null | { paints: Paint[]; styles: PaintStyle[] }
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
