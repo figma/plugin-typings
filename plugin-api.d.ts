@@ -575,7 +575,7 @@ interface SolidPaint {
   readonly visible?: boolean
   readonly opacity?: number
   readonly blendMode?: BlendMode
-  readonly boundVariables: {
+  readonly boundVariables?: {
     [field in VariableBindablePaintField]?: BoundVariableDescriptor
   }
 }
@@ -929,7 +929,7 @@ interface SceneNodeMixin {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
-  boundVariables: {
+  readonly boundVariables?: {
     readonly [field in VariableBindableNodeField]?: BoundVariableDescriptor
   } & {
     readonly fills?: BoundVariableDescriptor[]
@@ -1353,7 +1353,7 @@ declare type ComponentProperties = {
     type: ComponentPropertyType
     value: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
-    readonly boundVariables: {
+    readonly boundVariables?: {
       [field in VariableBindableComponentPropertyField]?: BoundVariableDescriptor
     }
   }
