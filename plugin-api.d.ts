@@ -34,8 +34,24 @@ interface PluginAPI {
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
   getStyleById(id: string): BaseStyle | null
-  getVariableById(id: string): Variable | null
-  getVariableCollectionById(id: string): VariableCollection | null
+  variables: {
+    getVariableById(id: string): Variable | null
+    getVariableCollectionById(id: string): VariableCollection | null
+    getLocalVariables(type?: VariableResolvedDataType): Variable[]
+    getLocalVariableCollections(): VariableCollection[]
+    createVariable(
+      name: string,
+      collectionId: string,
+      resolvedType: VariableResolvedDataType,
+    ): Variable
+    createVariableCollection(name: string): VariableCollection
+    createVariableBinding(variable: Variable): BoundVariableDescriptor
+    setBoundVariableForPaint(
+      paint: SolidPaint,
+      field: VariableBindablePaintField,
+      variable: Variable,
+    ): SolidPaint
+  }
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
@@ -929,20 +945,16 @@ declare type VariableBindableNodeField =
   | 'height'
   | 'width'
   | 'characters'
-  | 'paragraphIndent'
-  | 'paragraphSpacing'
-  | 'itemSpacing'
   | 'paddingLeft'
   | 'paddingRight'
   | 'paddingTop'
   | 'paddingBottom'
   | 'visible'
-  | 'styledTextSegments'
   | 'topLeftRadius'
   | 'topRightRadius'
   | 'bottomLeftRadius'
   | 'bottomRightRadius'
-  | 'stokeTopWeight'
+  | 'strokeTopWeight'
   | 'strokeBottomWeight'
   | 'strokeLeftWeight'
   | 'strokeRightWeight'
@@ -1351,7 +1363,9 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   clone(): InstanceNode
   mainComponent: ComponentNode | null
   swapComponent(componentNode: ComponentNode): void
-  setProperties(properties: { [propertyName: string]: string | boolean }): void
+  setProperties(properties: {
+    [propertyName: string]: string | boolean | BoundVariableDescriptor
+  }): void
   readonly componentProperties: ComponentProperties
   detachInstance(): FrameNode
   scaleFactor: number
@@ -1486,13 +1500,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   rotation: number
   clone(): ConnectorNode
 }
-declare type VariableResolvedDataType =
-  | 'BOOLEAN'
-  | 'COLOR'
-  | 'FLOAT'
-  | 'COMPONENT_ID'
-  | 'STRING'
-  | 'MAP'
+declare type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
 declare type VariableAliasValue = BoundVariableDescriptor
 declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAliasValue
 interface Variable {
@@ -1503,10 +1511,10 @@ interface Variable {
   readonly key: string
   readonly resolvedType: VariableResolvedDataType
   resolveForConsumer(consumer: SceneNode): {
-    value: any
+    value: VariableValue
     resolvedType: VariableResolvedDataType
   }
-  setValueForMode(modeId: string, newValue: any): void
+  setValueForMode(modeId: string, newValue: VariableValue): void
   readonly valuesByMode: Record<string, VariableValue>
   remove(): void
 }
@@ -1524,6 +1532,7 @@ interface VariableCollection {
   remove(): void
   removeMode(modeId: string): void
   addMode(name: string): string
+  renameMode(modeId: string, newName: string): void
 }
 interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
   readonly type: 'WIDGET'
