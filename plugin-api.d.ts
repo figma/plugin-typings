@@ -356,8 +356,12 @@ declare type NodeChangeProperty =
   | 'innerRadius'
   | 'fontSize'
   | 'lineHeight'
+  | 'leadingTrim'
   | 'paragraphIndent'
   | 'paragraphSpacing'
+  | 'listSpacing'
+  | 'hangingPunctuation'
+  | 'hangingList'
   | 'letterSpacing'
   | 'textAlignHorizontal'
   | 'textAlignVertical'
@@ -454,8 +458,11 @@ declare type StyleChangeProperty =
   | 'textDecoration'
   | 'letterSpacing'
   | 'lineHeight'
+  | 'leadingTrim'
   | 'paragraphIndent'
   | 'paragraphSpacing'
+  | 'hangingPunctuation'
+  | 'hangingList'
   | 'textCase'
   | 'paint'
   | 'effects'
@@ -682,6 +689,7 @@ declare type LineHeight =
   | {
       readonly unit: 'AUTO'
     }
+declare type LeadingTrim = 'CAP_HEIGHT' | 'NONE'
 declare type HyperlinkTarget = {
   type: 'URL' | 'NODE'
   value: string
@@ -1121,6 +1129,9 @@ interface TextSublayerNode extends MinimalFillsMixin {
   readonly hasMissingFont: boolean
   paragraphIndent: number
   paragraphSpacing: number
+  listSpacing: number
+  hangingPunctuation: boolean
+  hangingList: boolean
   fontSize: number | PluginAPI['mixed']
   fontName: FontName | PluginAPI['mixed']
   readonly fontWeight: number | PluginAPI['mixed']
@@ -1128,6 +1139,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
   textDecoration: TextDecoration | PluginAPI['mixed']
   letterSpacing: LetterSpacing | PluginAPI['mixed']
   lineHeight: LineHeight | PluginAPI['mixed']
+  leadingTrim: LeadingTrim | PluginAPI['mixed']
   hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
   characters: string
   insertCharacters(start: number, characters: string, useStyle?: 'BEFORE' | 'AFTER'): void
@@ -1579,8 +1591,12 @@ interface TextStyle extends BaseStyle {
   fontName: FontName
   letterSpacing: LetterSpacing
   lineHeight: LineHeight
+  leadingTrim: LeadingTrim
   paragraphIndent: number
   paragraphSpacing: number
+  listSpacing: number
+  hangingPunctuation: boolean
+  hangingList: boolean
   textCase: TextCase
 }
 interface EffectStyle extends BaseStyle {
