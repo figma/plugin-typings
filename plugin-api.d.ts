@@ -461,6 +461,7 @@ declare type StyleChangeProperty =
   | 'leadingTrim'
   | 'paragraphIndent'
   | 'paragraphSpacing'
+  | 'listSpacing'
   | 'hangingPunctuation'
   | 'hangingList'
   | 'textCase'
