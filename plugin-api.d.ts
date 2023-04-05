@@ -165,7 +165,6 @@ interface PluginAPI {
   getAllRelatedLinksAsync(): Promise<AllRelatedLinkResult[]>
 }
 declare type RelatedLink = {
-  readonly id: string
   readonly name: string
   readonly url: string
 }
@@ -283,9 +282,19 @@ interface ParametersAPI {
   once(type: 'input', callback: (event: ParameterInputEvent) => void): void
   off(type: 'input', callback: (event: ParameterInputEvent) => void): void
 }
-interface RunEvent<ParametersType = ParameterValues | undefined> {
+type RunEvent = RunParametersEvent | OpenRelatedLinkEvent
+
+interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
   command: string
   parameters: ParametersType
+}
+
+interface OpenRelatedLinkEvent {
+  command: 'open-related-link'
+  link: {
+    url: string
+    name: string
+  }
 }
 interface DropEvent {
   node: BaseNode | SceneNode
@@ -951,16 +960,10 @@ interface BaseNodeMixin extends PluginDataMixin {
     [command: string]: string
   }
   getCSSAsync(): Promise<{ [key: string]: string }>
-  getRelatedLinksAsync(): Promise<{ [id: string]: RelatedLink }>
-  addRelatedLinkAsync(url: string, name?: string): Promise<string>
-  editRelatedLinkAsync(
-    id: string,
-    newValue: {
-      name?: string
-      url?: string
-    },
-  ): Promise<void>
-  deleteRelatedLinkAsync(id: string): Promise<void>
+  getRelatedLinksAsync(): RelatedLink[]
+  addRelatedLinkAsync(url: string, name?: string): Promise<void>
+  editRelatedLinkAsync (currentUrl: string, newValue: { name?: string, url?: string }): Promise<void>
+  deleteRelatedLinkAsync (url: string): Promise<void>
 }
 interface PluginDataMixin {
   getPluginData(key: string): string
