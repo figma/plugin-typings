@@ -165,11 +165,11 @@ interface PluginAPI {
   getAllRelatedLinksAsync(): Promise<AllRelatedLinkResult[]>
 }
 declare type RelatedLink = {
-  readonly id: string 
+  readonly id: string
   readonly name: string
-  readonly url: string 
+  readonly url: string
 }
-declare type AllRelatedLinkResult = RelatedLink & { nodeId: string}
+declare type AllRelatedLinkResult = RelatedLink & { nodeId: string }
 interface VersionHistoryResult {
   id: string
 }
@@ -700,6 +700,7 @@ interface ExportSettingsPDF {
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
 }
+interface ExportSettingsREST { readonly format: 'JSON_REST_V1' }
 declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
 declare type WindingRule = 'NONZERO' | 'EVENODD'
 interface VectorVertex {
@@ -966,12 +967,15 @@ interface BaseNodeMixin extends PluginDataMixin {
     [command: string]: string
   }
   getCSSAsync(): Promise<{ [key: string]: string }>
-  getRelatedLinksAsync(): Promise<{ [id: string] : RelatedLink }>
+  getRelatedLinksAsync(): Promise<{ [id: string]: RelatedLink }>
   addRelatedLinkAsync(url: string, name?: string): Promise<string>
-  editRelatedLinkAsync(id: string, newValue: {
-    name?: string 
-    url?: string
-  }): Promise<void>
+  editRelatedLinkAsync(
+    id: string,
+    newValue: {
+      name?: string
+      url?: string
+    },
+  ): Promise<void>
   deleteRelatedLinkAsync(id: string): Promise<void>
 }
 interface PluginDataMixin {
@@ -1090,6 +1094,7 @@ interface ExportMixin {
   exportSettings: ReadonlyArray<ExportSettings>
   exportAsync(settings?: ExportSettings): Promise<Uint8Array>
   exportAsync(settings: ExportSettingsSVGString): Promise<string>
+  exportAsync(settings: ExportSettingsREST): Promise<Object>
 }
 interface FramePrototypingMixin {
   overflowDirection: OverflowDirection
