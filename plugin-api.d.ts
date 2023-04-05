@@ -289,7 +289,6 @@ interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
   command: string
   parameters: ParametersType
 }
-
 interface OpenRelatedLinkEvent {
   command: 'open-related-link'
   link: {
