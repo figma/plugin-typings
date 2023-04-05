@@ -1077,7 +1077,7 @@ interface RectangleCornerMixin {
 interface ExportMixin {
   exportSettings: ReadonlyArray<ExportSettings>
   exportAsync(settings?: ExportSettings): Promise<Uint8Array>
-  exportAsync(settings: { type: 'JSON_REST_V1' }): Promise<Object>
+  exportAsync(settings: { format: 'JSON_REST_V1' }): Promise<Object>
 }
 interface FramePrototypingMixin {
   overflowDirection: OverflowDirection
