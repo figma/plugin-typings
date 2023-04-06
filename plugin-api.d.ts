@@ -959,7 +959,7 @@ interface BaseNodeMixin extends PluginDataMixin {
     [command: string]: string
   }
   getCSSAsync(): Promise<{ [key: string]: string }>
-  getRelatedLinksAsync(): RelatedLink[]
+  getRelatedLinksAsync(): Promise<RelatedLink[]>
   addRelatedLinkAsync(url: string, name?: string): Promise<void>
   editRelatedLinkAsync (currentUrl: string, newValue: { name?: string, url?: string }): Promise<void>
   deleteRelatedLinkAsync (url: string): Promise<void>
