@@ -143,9 +143,9 @@ interface PluginAPI {
   ungroup(node: SceneNode & ChildrenMixin): Array<SceneNode>
   base64Encode(data: Uint8Array): string
   base64Decode(data: string): Uint8Array
-  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
+  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
   setFileThumbnailNodeAsync(
-    node: FrameNode | ComponentNode | ComponentSetNode | null,
+    node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
 }
 interface VersionHistoryResult {
