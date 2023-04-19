@@ -631,14 +631,19 @@ interface ExportSettingsImage {
   readonly suffix?: string
   readonly constraint?: ExportSettingsConstraints
 }
-interface ExportSettingsSVG {
-  readonly format: 'SVG'
+interface ExportSettingsSVGBase {
   readonly contentsOnly?: boolean
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
   readonly svgOutlineText?: boolean
   readonly svgIdAttribute?: boolean
   readonly svgSimplifyStroke?: boolean
+}
+interface ExportSettingsSVG extends ExportSettingsSVGBase {
+  readonly format: 'SVG'
+}
+interface ExportSettingsSVGString extends ExportSettingsSVGBase {
+  readonly format: 'SVG_STRING'
 }
 interface ExportSettingsPDF {
   readonly format: 'PDF'
@@ -1026,6 +1031,7 @@ interface RectangleCornerMixin {
 interface ExportMixin {
   exportSettings: ReadonlyArray<ExportSettings>
   exportAsync(settings?: ExportSettings): Promise<Uint8Array>
+  exportAsync(settings: ExportSettingsSVGString): Promise<string>
 }
 interface FramePrototypingMixin {
   overflowDirection: OverflowDirection
