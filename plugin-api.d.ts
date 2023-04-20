@@ -34,24 +34,7 @@ interface PluginAPI {
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
   getStyleById(id: string): BaseStyle | null
-  variables: {
-    getVariableById(id: string): Variable | null
-    getVariableCollectionById(id: string): VariableCollection | null
-    getLocalVariables(type?: VariableResolvedDataType): Variable[]
-    getLocalVariableCollections(): VariableCollection[]
-    createVariable(
-      name: string,
-      collectionId: string,
-      resolvedType: VariableResolvedDataType,
-    ): Variable
-    createVariableCollection(name: string): VariableCollection
-    createVariableBinding(variable: Variable): BoundVariableDescriptor
-    setBoundVariableForPaint(
-      paint: SolidPaint,
-      field: VariableBindablePaintField,
-      variable: Variable,
-    ): SolidPaint
-  }
+  readonly variables: VariablesAPI
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
@@ -161,13 +144,46 @@ interface PluginAPI {
   ungroup(node: SceneNode & ChildrenMixin): Array<SceneNode>
   base64Encode(data: Uint8Array): string
   base64Decode(data: string): Uint8Array
-  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | null
+  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
   setFileThumbnailNodeAsync(
-    node: FrameNode | ComponentNode | ComponentSetNode | null,
+    node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
 }
 interface VersionHistoryResult {
   id: string
+}
+interface VariablesAPI {
+  getVariableById(id: string): Variable | null
+  getVariableCollectionById(id: string): VariableCollection | null
+  getLocalVariables(type?: VariableResolvedDataType): Variable[]
+  getLocalVariableCollections(): VariableCollection[]
+  createVariable(
+    name: string,
+    collectionId: string,
+    resolvedType: VariableResolvedDataType,
+  ): Variable
+  createVariableCollection(name: string): VariableCollection
+  createVariableBinding(variable: Variable): BoundVariableDescriptor
+  setBoundVariableForPaint(
+    paint: SolidPaint,
+    field: VariableBindablePaintField,
+    variable: Variable,
+  ): SolidPaint
+  importVariableByKeyAsync(key: string): Promise<Variable>
+}
+interface LibraryVariableCollection {
+  name: string
+  key: string
+  libraryName: string
+}
+interface LibraryVariable {
+  name: string
+  key: string
+  resolvedType: VariableResolvedDataType
+}
+interface TeamLibraryAPI {
+  getAvailableLibraryVariableCollectionsAsync(): Promise<LibraryVariableCollection[]>
+  getVariablesInLibraryCollectionAsync(libraryCollectionKey: string): Promise<LibraryVariable[]>
 }
 declare type PaymentStatus = {
   type: 'UNPAID' | 'PAID' | 'NOT_SUPPORTED'
@@ -374,8 +390,12 @@ declare type NodeChangeProperty =
   | 'innerRadius'
   | 'fontSize'
   | 'lineHeight'
+  | 'leadingTrim'
   | 'paragraphIndent'
   | 'paragraphSpacing'
+  | 'listSpacing'
+  | 'hangingPunctuation'
+  | 'hangingList'
   | 'letterSpacing'
   | 'textAlignHorizontal'
   | 'textAlignVertical'
@@ -472,8 +492,12 @@ declare type StyleChangeProperty =
   | 'textDecoration'
   | 'letterSpacing'
   | 'lineHeight'
+  | 'leadingTrim'
   | 'paragraphIndent'
   | 'paragraphSpacing'
+  | 'listSpacing'
+  | 'hangingPunctuation'
+  | 'hangingList'
   | 'textCase'
   | 'paint'
   | 'effects'
@@ -703,6 +727,7 @@ declare type LineHeight =
   | {
       readonly unit: 'AUTO'
     }
+declare type LeadingTrim = 'CAP_HEIGHT' | 'NONE'
 declare type HyperlinkTarget = {
   type: 'URL' | 'NODE'
   value: string
@@ -843,13 +868,25 @@ interface Easing {
     | 'EASE_OUT_BACK'
     | 'EASE_IN_AND_OUT_BACK'
     | 'CUSTOM_CUBIC_BEZIER'
+    | 'GENTLE'
+    | 'QUICK'
+    | 'BOUNCY'
+    | 'SLOW'
+    | 'CUSTOM_SPRING'
   readonly easingFunctionCubicBezier?: EasingFunctionBezier
+  readonly easingFunctionSpring?: EasingFunctionSpring
 }
 interface EasingFunctionBezier {
   x1: number
   y1: number
   x2: number
   y2: number
+}
+interface EasingFunctionSpring {
+  mass: number
+  stiffness: number
+  damping: number
+  initialVelocity: number
 }
 declare type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
 declare type OverlayPositionType =
@@ -1167,6 +1204,9 @@ interface TextSublayerNode extends MinimalFillsMixin {
   readonly hasMissingFont: boolean
   paragraphIndent: number
   paragraphSpacing: number
+  listSpacing: number
+  hangingPunctuation: boolean
+  hangingList: boolean
   fontSize: number | PluginAPI['mixed']
   fontName: FontName | PluginAPI['mixed']
   readonly fontWeight: number | PluginAPI['mixed']
@@ -1174,6 +1214,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
   textDecoration: TextDecoration | PluginAPI['mixed']
   letterSpacing: LetterSpacing | PluginAPI['mixed']
   lineHeight: LineHeight | PluginAPI['mixed']
+  leadingTrim: LeadingTrim | PluginAPI['mixed']
   hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
   characters: string
   insertCharacters(start: number, characters: string, useStyle?: 'BEFORE' | 'AFTER'): void
@@ -1664,8 +1705,12 @@ interface TextStyle extends BaseStyle {
   fontName: FontName
   letterSpacing: LetterSpacing
   lineHeight: LineHeight
+  leadingTrim: LeadingTrim
   paragraphIndent: number
   paragraphSpacing: number
+  listSpacing: number
+  hangingPunctuation: boolean
+  hangingList: boolean
   textCase: TextCase
 }
 interface EffectStyle extends BaseStyle {
