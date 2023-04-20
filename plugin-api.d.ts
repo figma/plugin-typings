@@ -1453,6 +1453,7 @@ interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
     | 'KOTLIN'
     | 'RUST'
     | 'BASH'
+    | 'PLAINTEXT'
   clone(): CodeBlockNode
 }
 interface LabelSublayerNode {
