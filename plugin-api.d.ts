@@ -11,10 +11,10 @@ declare type ArgFreeEventType =
   | 'timerdone'
 interface PluginAPI {
   readonly isReadOnly: boolean
-  readonly mode: 'default' | 'textreview' | 'inspect' | 'codegen'
+  readonly mode: 'default' | 'textreview' | 'panel' | 'codegen'
   readonly apiVersion: '1.0.0'
   readonly command: string
-  readonly editorType: 'figma' | 'figjam'
+  readonly editorType: 'figma' | 'figjam' | 'inspect'
   readonly pluginId?: string
   readonly widgetId?: string
   readonly fileKey: string | undefined
