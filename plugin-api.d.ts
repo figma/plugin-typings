@@ -49,7 +49,7 @@ interface PluginAPI {
   ): void
   on(
     type: 'codegen',
-    callback: (event: CodegenEvent) => Promise<CodegenResult> | CodegenResult,
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
@@ -61,7 +61,7 @@ interface PluginAPI {
   ): void
   once(
     type: 'codegen',
-    callback: (event: CodegenEvent) => Promise<CodegenResult> | CodegenResult,
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
@@ -73,7 +73,7 @@ interface PluginAPI {
   ): void
   off(
     type: 'codegen',
-    callback: (event: CodegenEvent) => Promise<CodegenResult> | CodegenResult,
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
@@ -532,7 +532,7 @@ declare type CodegenResult = {
     | 'KOTLIN'
     | 'RUST'
     | 'BASH'
-}[]
+}
 
 declare type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
@@ -977,8 +977,8 @@ interface BaseNodeMixin extends PluginDataMixin {
   getCSSAsync(): Promise<{ [key: string]: string }>
   getRelatedLinksAsync(): Promise<RelatedLink[]>
   addRelatedLinkAsync(url: string, name?: string): Promise<void>
-  editRelatedLinkAsync (currentUrl: string, newValue: { name?: string, url?: string }): Promise<void>
-  deleteRelatedLinkAsync (url: string): Promise<void>
+  editRelatedLinkAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
+  deleteRelatedLinkAsync(url: string): Promise<void>
 }
 interface PluginDataMixin {
   getPluginData(key: string): string
