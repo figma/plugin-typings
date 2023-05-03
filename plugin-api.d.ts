@@ -162,6 +162,7 @@ interface PaymentsAPI {
     interstitial?: 'PAID_FEATURE' | 'TRIAL_ENDED' | 'SKIP'
   }): Promise<void>
   requestCheckout(): void
+  getPluginPaymentTokenAsync(): Promise<string>
 }
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
