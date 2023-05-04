@@ -35,6 +35,7 @@ interface PluginAPI {
   getNodeById(id: string): BaseNode | null
   getStyleById(id: string): BaseStyle | null
   readonly variables: VariablesAPI
+  readonly teamLibrary: TeamLibraryAPI
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
@@ -196,6 +197,7 @@ interface PaymentsAPI {
     interstitial?: 'PAID_FEATURE' | 'TRIAL_ENDED' | 'SKIP'
   }): Promise<void>
   requestCheckout(): void
+  getPluginPaymentTokenAsync(): Promise<string>
 }
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
@@ -668,14 +670,19 @@ interface ExportSettingsImage {
   readonly suffix?: string
   readonly constraint?: ExportSettingsConstraints
 }
-interface ExportSettingsSVG {
-  readonly format: 'SVG'
+interface ExportSettingsSVGBase {
   readonly contentsOnly?: boolean
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
   readonly svgOutlineText?: boolean
   readonly svgIdAttribute?: boolean
   readonly svgSimplifyStroke?: boolean
+}
+interface ExportSettingsSVG extends ExportSettingsSVGBase {
+  readonly format: 'SVG'
+}
+interface ExportSettingsSVGString extends ExportSettingsSVGBase {
+  readonly format: 'SVG_STRING'
 }
 interface ExportSettingsPDF {
   readonly format: 'PDF'
@@ -982,8 +989,6 @@ declare type VariableBindableNodeField =
   | 'height'
   | 'width'
   | 'characters'
-  | 'paragraphSpacing'
-  | 'paragraphIndent'
   | 'itemSpacing'
   | 'paddingLeft'
   | 'paddingRight'
@@ -994,10 +999,6 @@ declare type VariableBindableNodeField =
   | 'topRightRadius'
   | 'bottomLeftRadius'
   | 'bottomRightRadius'
-  | 'strokeTopWeight'
-  | 'strokeBottomWeight'
-  | 'strokeLeftWeight'
-  | 'strokeRightWeight'
 declare type VariableBindablePaintField = 'color'
 declare type VariableBindableComponentPropertyField = 'value'
 interface BoundVariableDescriptor {
@@ -1100,6 +1101,7 @@ interface RectangleCornerMixin {
 interface ExportMixin {
   exportSettings: ReadonlyArray<ExportSettings>
   exportAsync(settings?: ExportSettings): Promise<Uint8Array>
+  exportAsync(settings: ExportSettingsSVGString): Promise<string>
 }
 interface FramePrototypingMixin {
   overflowDirection: OverflowDirection
@@ -1526,6 +1528,7 @@ interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
     | 'KOTLIN'
     | 'RUST'
     | 'BASH'
+    | 'PLAINTEXT'
   clone(): CodeBlockNode
 }
 interface LabelSublayerNode {
