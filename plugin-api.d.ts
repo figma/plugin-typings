@@ -999,6 +999,11 @@ declare type VariableBindableNodeField =
   | 'topRightRadius'
   | 'bottomLeftRadius'
   | 'bottomRightRadius'
+  | 'counterAxisSpacing'
+  | 'minWidth'
+  | 'maxWidth'
+  | 'minHeight'
+  | 'maxHeight'
 declare type VariableBindablePaintField = 'color'
 declare type VariableBindableComponentPropertyField = 'value'
 interface BoundVariableDescriptor {
@@ -1038,6 +1043,10 @@ interface DimensionAndPositionMixin {
   readonly absoluteBoundingBox: Rect | null
 }
 interface LayoutMixin extends DimensionAndPositionMixin {
+  minWidth: number
+  maxWidth: number
+  minHeight: number
+  maxHeight: number
   readonly absoluteRenderBounds: Rect | null
   constrainProportions: boolean
   rotation: number
@@ -1150,6 +1159,9 @@ interface BaseFrameMixin
     LayoutMixin,
     ExportMixin,
     IndividualStrokesMixin {
+  layoutWrap: 'NO_WRAP' | 'WRAP'
+  counterAxisSpacing: number
+  counterAxisAlignContent: 'AUTO' | 'SPACE_BETWEEN'
   layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
   primaryAxisSizingMode: 'FIXED' | 'AUTO'
   counterAxisSizingMode: 'FIXED' | 'AUTO'
