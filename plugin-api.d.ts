@@ -51,6 +51,14 @@ interface PluginAPI {
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+  on(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  on(
+    type: 'auth',
+    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
+  ): void
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -63,6 +71,14 @@ interface PluginAPI {
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+  once(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  once(
+    type: 'auth',
+    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
+  ): void
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -74,6 +90,14 @@ interface PluginAPI {
   off(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
+  ): void
+  off(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  off(
+    type: 'auth',
+    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
   ): void
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
@@ -533,6 +557,25 @@ declare type CodegenResult = {
     | 'RUST'
     | 'BASH'
 }
+
+declare type LinkPreviewEvent = {
+  link: RelatedLink
+}
+
+declare type LinkPreviewResult = {
+  type: 'AUTH_REQUIRED'
+} | {
+  type: 'PLAIN_TEXT'
+  text: string
+} | null 
+
+declare type AuthEvent = {
+  links: RelatedLink[]
+}
+
+declare type AuthResult = {
+  type: 'AUTH_SUCCESS'
+} | null 
 
 declare type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
