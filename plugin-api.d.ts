@@ -186,13 +186,13 @@ interface PluginAPI {
   setFileThumbnailNodeAsync(
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
-  getAllRelatedLinksAsync(): Promise<AllRelatedLinkResult[]>
+  getAllRelatedLinksAsync(): Promise<RelatedLinkWithNodeId[]>
 }
 declare type RelatedLink = {
   readonly name: string
   readonly url: string
 }
-declare type AllRelatedLinkResult = RelatedLink & { nodeId: string }
+declare type RelatedLinkWithNodeId = RelatedLink & { nodeId: string }
 interface VersionHistoryResult {
   id: string
 }
@@ -1019,6 +1019,7 @@ interface BaseNodeMixin extends PluginDataMixin {
   }
   getCSSAsync(): Promise<{ [key: string]: string }>
   getRelatedLinksAsync(): Promise<RelatedLink[]>
+  getRelatedLinksFromNodeAndChildrenAsync(): Promise<RelatedLinkWithNodeId[]>
   addRelatedLinkAsync(url: string, name?: string): Promise<void>
   editRelatedLinkAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
   deleteRelatedLinkAsync(url: string): Promise<void>
