@@ -51,15 +51,12 @@ interface PluginAPI {
   on(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void
+  ): void // DEPRECATED
   on(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
-  on(
-    type: 'auth',
-    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
-  ): void
+  on(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -71,15 +68,12 @@ interface PluginAPI {
   once(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void
+  ): void // DEPRECATED
   once(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
-  once(
-    type: 'auth',
-    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
-  ): void
+  once(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -91,15 +85,12 @@ interface PluginAPI {
   off(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void
+  ): void // DEPRECATED
   off(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
-  off(
-    type: 'auth',
-    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
-  ): void
+  off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
   createLine(): LineNode
@@ -281,24 +272,30 @@ interface TextReviewAPI {
 }
 
 interface CodegenAPI {
-  on(type: 'generate',
+  on(
+    type: 'generate',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
   ): void
-  on(type: 'preferenceschange',
+  on(
+    type: 'preferenceschange',
     callback: (event: CodegenPreferencesEvent) => Promise<void>,
-  ): void
-  once(type: 'generate',
+  ): Promise<void> | void
+  once(
+    type: 'generate',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
   ): void
-  once(type: 'preferenceschange',
+  once(
+    type: 'preferenceschange',
     callback: (event: CodegenPreferencesEvent) => Promise<void>,
-  ): void
-  off(type: 'generate',
+  ): Promise<void> | void
+  off(
+    type: 'generate',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
   ): void
-  off(type: 'preferenceschange',
+  off(
+    type: 'preferenceschange',
     callback: (event: CodegenPreferencesEvent) => Promise<void>,
-  ): void
+  ): Promise<void> | void
   readonly preferences: CodegenPreferences
   refresh: () => void
 }
@@ -597,12 +594,15 @@ declare type LinkPreviewEvent = {
   link: RelatedLink
 }
 
-declare type LinkPreviewResult = {
-  type: 'AUTH_REQUIRED'
-} | {
-  type: 'PLAIN_TEXT'
-  text: string
-} | null 
+declare type LinkPreviewResult =
+  | {
+      type: 'AUTH_REQUIRED'
+    }
+  | {
+      type: 'PLAIN_TEXT'
+      text: string
+    }
+  | null
 
 declare type AuthEvent = {
   links: RelatedLink[]
@@ -610,7 +610,7 @@ declare type AuthEvent = {
 
 declare type AuthResult = {
   type: 'AUTH_SUCCESS'
-} | null 
+} | null
 
 declare type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
@@ -786,7 +786,9 @@ interface ExportSettingsPDF {
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
 }
-interface ExportSettingsREST { readonly format: 'JSON_REST_V1' }
+interface ExportSettingsREST {
+  readonly format: 'JSON_REST_V1'
+}
 declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
 declare type WindingRule = 'NONZERO' | 'EVENODD'
 interface VectorVertex {

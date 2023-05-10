@@ -118,6 +118,28 @@ function testCodegen() {
     ]
   })
 }
+
+function testCodegenPreferences() {
+  figma.codegen.on("generate", async () => {
+    return [
+      {
+        language: "TYPESCRIPT",
+        code: figma.codegen.preferences.unit,
+        title: "Code snippet 1"
+      },
+      {
+        language: "JAVASCRIPT",
+        code: figma.codegen.preferences.scaleFactor,
+        title: "Code snippet 2"
+      },
+      {
+        language: "JAVASCRIPT",
+        code: figma.codegen.preferences.customSettings,
+        title: "Code snippet 3"
+      }
+    ]
+  }) )
+}
 EOF
 
 
