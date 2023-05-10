@@ -24,7 +24,7 @@ interface PluginAPI {
   readonly currentUser: User | null
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
-  readonly codegen?: CodegenAPI
+  readonly codegen: CodegenAPI
   readonly payments?: PaymentsAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
