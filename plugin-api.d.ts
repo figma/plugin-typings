@@ -24,6 +24,7 @@ interface PluginAPI {
   readonly currentUser: User | null
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
+  readonly codegen?: CodegenAPI
   readonly payments?: PaymentsAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
@@ -278,6 +279,40 @@ interface TextReviewAPI {
   requestToBeDisabledAsync(): Promise<void>
   readonly isEnabled: boolean
 }
+
+interface CodegenAPI {
+  on(type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+  ): void
+  on(type: 'preferenceschange',
+    callback: (event: CodegenPreferencesEvent) => Promise<void>,
+  ): void
+  once(type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+  ): void
+  once(type: 'preferenceschange',
+    callback: (event: CodegenPreferencesEvent) => Promise<void>,
+  ): void
+  onoff(type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+  ): void
+  onoff(type: 'preferenceschange',
+    callback: (event: CodegenPreferencesEvent) => Promise<void>,
+  ): void
+  readonly preferences: CodegenPreferences
+  refresh: () => void
+}
+
+declare type CodegenPreferences = {
+  readonly unit: 'pixel' | 'scaled'
+  readonly scaleFactor?: number
+  readonly customSettings: Record<string, string>
+}
+
+declare type CodegenPreferencesEvent = {
+  propertyName: string
+}
+
 interface ParameterValues {
   [key: string]: any
 }
