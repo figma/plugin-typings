@@ -293,10 +293,10 @@ interface CodegenAPI {
   once(type: 'preferenceschange',
     callback: (event: CodegenPreferencesEvent) => Promise<void>,
   ): void
-  onoff(type: 'generate',
+  off(type: 'generate',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
   ): void
-  onoff(type: 'preferenceschange',
+  off(type: 'preferenceschange',
     callback: (event: CodegenPreferencesEvent) => Promise<void>,
   ): void
   readonly preferences: CodegenPreferences
