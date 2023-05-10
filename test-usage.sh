@@ -138,7 +138,7 @@ function testCodegenPreferences() {
         title: "Code snippet 3"
       }
     ]
-  }) )
+  })
 }
 EOF
 
