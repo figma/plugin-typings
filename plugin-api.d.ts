@@ -48,10 +48,13 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  /**
+   * @deprecated The method should not be used
+   */
   on(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void // DEPRECATED
+  ): void
   on(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
@@ -65,10 +68,13 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  /**
+   * @deprecated The method should not be used
+   */
   once(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void // DEPRECATED
+  ): void
   once(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
@@ -82,10 +88,13 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  /**
+   * @deprecated The method should not be used
+   */
   off(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void // DEPRECATED
+  ): void
   off(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
