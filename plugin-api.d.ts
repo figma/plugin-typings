@@ -57,7 +57,6 @@ interface PluginAPI {
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
 
-
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -74,7 +73,6 @@ interface PluginAPI {
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
 
-
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -90,7 +88,6 @@ interface PluginAPI {
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
-
 
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
@@ -293,7 +290,7 @@ interface TextReviewAPI {
 interface CodegenAPI {
   on(
     type: 'generate',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
   on(
     type: 'preferenceschange',
@@ -301,7 +298,7 @@ interface CodegenAPI {
   ): Promise<void> | void
   once(
     type: 'generate',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
   once(
     type: 'preferenceschange',
@@ -607,6 +604,7 @@ declare type CodegenResult = {
     | 'KOTLIN'
     | 'RUST'
     | 'BASH'
+    | 'PLAINTEXT'
 }
 
 declare type LinkPreviewEvent = {
@@ -1074,7 +1072,7 @@ interface BaseNodeMixin extends PluginDataMixin {
     [command: string]: string
   }
   getCSSAsync(): Promise<{ [key: string]: string }>
-  getRelatedLinksAsync(options?: {includeChildren?: boolean}): Promise<RelatedLinkWithNodeId[]>
+  getRelatedLinksAsync(options?: { includeChildren?: boolean }): Promise<RelatedLinkWithNodeId[]>
   addRelatedLinkAsync(url: string, name?: string): Promise<void>
   editRelatedLinkAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
   deleteRelatedLinkAsync(url: string): Promise<void>
