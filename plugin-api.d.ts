@@ -25,7 +25,7 @@ interface PluginAPI {
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
   readonly payments?: PaymentsAPI
-  readonly relatedLinks: RelatedLinksAPI
+  readonly relatedLinks?: RelatedLinksAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
   commitUndo(): void
