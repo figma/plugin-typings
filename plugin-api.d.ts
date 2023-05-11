@@ -24,6 +24,7 @@ interface PluginAPI {
   readonly currentUser: User | null
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
+  readonly codegen: CodegenAPI
   readonly payments?: PaymentsAPI
   readonly relatedLinks?: RelatedLinksAPI
   closePlugin(message?: string): void
@@ -48,10 +49,14 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  /**
+   * @deprecated The method should not be used
+   */
   on(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+
 
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
@@ -61,10 +66,14 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  /**
+   * @deprecated The method should not be used
+   */
   once(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+
 
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
@@ -74,10 +83,14 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  /**
+   * @deprecated The method should not be used
+   */
   off(
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+
 
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
@@ -276,6 +289,46 @@ interface TextReviewAPI {
   requestToBeDisabledAsync(): Promise<void>
   readonly isEnabled: boolean
 }
+
+interface CodegenAPI {
+  on(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+  ): void
+  on(
+    type: 'preferenceschange',
+    callback: (event: CodegenPreferencesEvent) => Promise<void>,
+  ): Promise<void> | void
+  once(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+  ): void
+  once(
+    type: 'preferenceschange',
+    callback: (event: CodegenPreferencesEvent) => Promise<void>,
+  ): Promise<void> | void
+  off(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
+  ): void
+  off(
+    type: 'preferenceschange',
+    callback: (event: CodegenPreferencesEvent) => Promise<void>,
+  ): Promise<void> | void
+  readonly preferences: CodegenPreferences
+  refresh: () => void
+}
+
+declare type CodegenPreferences = {
+  readonly unit: 'pixel' | 'scaled'
+  readonly scaleFactor?: number
+  readonly customSettings: Record<string, string>
+}
+
+declare type CodegenPreferencesEvent = {
+  propertyName: string
+}
+
 interface ParameterValues {
   [key: string]: any
 }
