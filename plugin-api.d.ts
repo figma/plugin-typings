@@ -25,6 +25,7 @@ interface PluginAPI {
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
   readonly payments?: PaymentsAPI
+  readonly relatedLinks: RelatedLinksAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
   commitUndo(): void
@@ -51,14 +52,7 @@ interface PluginAPI {
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
-  on(
-    type: 'linkpreview',
-    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
-  ): void
-  on(
-    type: 'auth',
-    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
-  ): void
+
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -71,14 +65,7 @@ interface PluginAPI {
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
-  once(
-    type: 'linkpreview',
-    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
-  ): void
-  once(
-    type: 'auth',
-    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
-  ): void
+
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -91,14 +78,7 @@ interface PluginAPI {
     type: 'codegen',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
-  off(
-    type: 'linkpreview',
-    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
-  ): void
-  off(
-    type: 'auth',
-    callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult,
-  ): void
+
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
   createLine(): LineNode
@@ -208,6 +188,25 @@ interface PaymentsAPI {
   requestCheckout(): void
   getPluginPaymentTokenAsync(): Promise<string>
 }
+
+interface RelatedLinksAPI {
+  on(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  on(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  once(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  once(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  off(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+}
+
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
   setAsync(key: string, value: any): Promise<void>
@@ -561,12 +560,15 @@ declare type LinkPreviewEvent = {
   link: RelatedLink
 }
 
-declare type LinkPreviewResult = {
-  type: 'AUTH_REQUIRED'
-} | {
-  type: 'PLAIN_TEXT'
-  text: string
-} | null 
+declare type LinkPreviewResult =
+  | {
+      type: 'AUTH_REQUIRED'
+    }
+  | {
+      type: 'PLAIN_TEXT'
+      text: string
+    }
+  | null
 
 declare type AuthEvent = {
   links: RelatedLink[]
@@ -574,7 +576,7 @@ declare type AuthEvent = {
 
 declare type AuthResult = {
   type: 'AUTH_SUCCESS'
-} | null 
+} | null
 
 declare type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
@@ -750,7 +752,9 @@ interface ExportSettingsPDF {
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
 }
-interface ExportSettingsREST { readonly format: 'JSON_REST_V1' }
+interface ExportSettingsREST {
+  readonly format: 'JSON_REST_V1'
+}
 declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
 declare type WindingRule = 'NONZERO' | 'EVENODD'
 interface VectorVertex {
