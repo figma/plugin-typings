@@ -583,6 +583,7 @@ declare type TextReviewRange = {
 
 declare type CodegenEvent = {
   node: SceneNode
+  language: string
 }
 
 declare type CodegenResult = {
