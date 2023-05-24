@@ -1194,6 +1194,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
 interface DocumentNode extends BaseNodeMixin {
   readonly type: 'DOCUMENT'
   readonly children: ReadonlyArray<PageNode>
+  readonly documentColorProfile: 'LEGACY' | 'SRGB' | 'DISPLAY_P3'
   appendChild(child: PageNode): void
   insertChild(index: number, child: PageNode): void
   findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>
