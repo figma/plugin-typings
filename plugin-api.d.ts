@@ -27,6 +27,7 @@ interface PluginAPI {
   readonly codegen: CodegenAPI
   readonly payments?: PaymentsAPI
   readonly relatedLinks?: RelatedLinksAPI
+  readonly devResources?: DevResourcesAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
   commitUndo(): void
@@ -177,11 +178,13 @@ interface PluginAPI {
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
 }
-declare type RelatedLink = {
+
+declare type DevResource = {
   readonly name: string
   readonly url: string
 }
-declare type RelatedLinkWithNodeId = RelatedLink & { nodeId: string }
+
+declare type DevResourceWithNodeId = DevResource & { nodeId: string }
 interface VersionHistoryResult {
   id: string
 }
@@ -199,7 +202,7 @@ interface PaymentsAPI {
   getPluginPaymentTokenAsync(): Promise<string>
 }
 
-interface RelatedLinksAPI {
+interface DevResourcesAPI {
   on(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
@@ -216,6 +219,8 @@ interface RelatedLinksAPI {
   ): void
   off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
 }
+
+interface RelatedLinksAPI extends DevResourcesAPI {}
 
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
@@ -609,21 +614,23 @@ declare type CodegenResult = {
 }
 
 declare type LinkPreviewEvent = {
-  link: RelatedLink
+  link: DevResource
 }
+
+declare type PlainTextElement = {
+      type: 'PLAIN_TEXT'
+      text: string
+    }
 
 declare type LinkPreviewResult =
   | {
       type: 'AUTH_REQUIRED'
     }
-  | {
-      type: 'PLAIN_TEXT'
-      text: string
-    }
+  | PlainTextElement
   | null
 
 declare type AuthEvent = {
-  links: RelatedLink[]
+  links: DevResource[]
 }
 
 declare type AuthResult = {
@@ -1073,10 +1080,15 @@ interface BaseNodeMixin extends PluginDataMixin {
     [command: string]: string
   }
   getCSSAsync(): Promise<{ [key: string]: string }>
-  getRelatedLinksAsync(options?: { includeChildren?: boolean }): Promise<RelatedLinkWithNodeId[]>
+  getRelatedLinksAsync(options?: { includeChildren?: boolean }): Promise<DevResourceWithNodeId[]>
   addRelatedLinkAsync(url: string, name?: string): Promise<void>
   editRelatedLinkAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
   deleteRelatedLinkAsync(url: string): Promise<void>
+  getDevResourcesAsync(options?: { includeChildren?: boolean }): Promise<DevResourceWithNodeId[]>
+  addDevResourceAsync(url: string, name?: string): Promise<void>
+  editDevResourceAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
+  deleteDevResourceAsync(url: string): Promise<void>
+  setDevResourcePreviewAsync(url: string, preview: PlainTextElement): Promise<void>
 }
 interface PluginDataMixin {
   getPluginData(key: string): string
