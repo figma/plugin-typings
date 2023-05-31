@@ -785,9 +785,11 @@ declare type Action =
       readonly destinationId: string | null
       readonly navigation: Navigation
       readonly transition: Transition | null
-      readonly preserveScrollPosition: boolean
+      readonly preserveScrollPosition?: boolean
       readonly overlayRelativePosition?: Vector
       readonly resetVideoPosition?: boolean
+      readonly resetScrollPosition?: boolean
+      readonly resetInteractiveComponents?: boolean
     }
 interface SimpleTransition {
   readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
