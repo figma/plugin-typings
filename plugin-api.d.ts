@@ -26,7 +26,6 @@ interface PluginAPI {
   readonly textreview?: TextReviewAPI
   readonly codegen: CodegenAPI
   readonly payments?: PaymentsAPI
-  readonly relatedLinks?: RelatedLinksAPI
   readonly devResources?: DevResourcesAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
@@ -182,6 +181,7 @@ interface PluginAPI {
 declare type DevResource = {
   readonly name: string
   readonly url: string
+  readonly inheritedNodeId?: string
 }
 
 declare type DevResourceWithNodeId = DevResource & { nodeId: string }
@@ -219,8 +219,6 @@ interface DevResourcesAPI {
   ): void
   off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
 }
-
-interface RelatedLinksAPI extends DevResourcesAPI {}
 
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
@@ -1080,10 +1078,6 @@ interface BaseNodeMixin extends PluginDataMixin {
     [command: string]: string
   }
   getCSSAsync(): Promise<{ [key: string]: string }>
-  getRelatedLinksAsync(options?: { includeChildren?: boolean }): Promise<DevResourceWithNodeId[]>
-  addRelatedLinkAsync(url: string, name?: string): Promise<void>
-  editRelatedLinkAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
-  deleteRelatedLinkAsync(url: string): Promise<void>
   getDevResourcesAsync(options?: { includeChildren?: boolean }): Promise<DevResourceWithNodeId[]>
   addDevResourceAsync(url: string, name?: string): Promise<void>
   editDevResourceAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
