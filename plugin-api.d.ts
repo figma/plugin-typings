@@ -34,6 +34,8 @@ interface PluginAPI {
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
   getStyleById(id: string): BaseStyle | null
+  readonly variables: VariablesAPI
+  readonly teamLibrary: TeamLibraryAPI
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
@@ -150,6 +152,39 @@ interface PluginAPI {
 }
 interface VersionHistoryResult {
   id: string
+}
+interface VariablesAPI {
+  getVariableById(id: string): Variable | null
+  getVariableCollectionById(id: string): VariableCollection | null
+  getLocalVariables(type?: VariableResolvedDataType): Variable[]
+  getLocalVariableCollections(): VariableCollection[]
+  createVariable(
+    name: string,
+    collectionId: string,
+    resolvedType: VariableResolvedDataType,
+  ): Variable
+  createVariableCollection(name: string): VariableCollection
+  createVariableAlias(variable: Variable): VariableAlias
+  setBoundVariableForPaint(
+    paint: SolidPaint,
+    field: VariableBindablePaintField,
+    variable: Variable,
+  ): SolidPaint
+  importVariableByKeyAsync(key: string): Promise<Variable>
+}
+interface LibraryVariableCollection {
+  name: string
+  key: string
+  libraryName: string
+}
+interface LibraryVariable {
+  name: string
+  key: string
+  resolvedType: VariableResolvedDataType
+}
+interface TeamLibraryAPI {
+  getAvailableLibraryVariableCollectionsAsync(): Promise<LibraryVariableCollection[]>
+  getVariablesInLibraryCollectionAsync(libraryCollectionKey: string): Promise<LibraryVariable[]>
 }
 declare type PaymentStatus = {
   type: 'UNPAID' | 'PAID' | 'NOT_SUPPORTED'
@@ -566,6 +601,9 @@ interface SolidPaint {
   readonly visible?: boolean
   readonly opacity?: number
   readonly blendMode?: BlendMode
+  readonly boundVariables?: {
+    [field in VariableBindablePaintField]?: VariableAlias
+  }
 }
 interface GradientPaint {
   readonly type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND'
@@ -937,7 +975,35 @@ interface SceneNodeMixin {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
+  readonly boundVariables?: {
+    readonly [field in VariableBindableNodeField]?: VariableAlias
+  } & {
+    readonly fills?: VariableAlias[]
+    readonly strokes?: VariableAlias[]
+    readonly componentProperties?: VariableAlias[]
+  }
+  setBoundVariable(field: VariableBindableNodeField, variableId: string): void
+  resolvedVariableModes: Record<string, string>
+  explicitVariableModes: Record<string, string>
+  clearExplicitVariableModeForCollection(collectionId: string): void
+  setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
 }
+declare type VariableBindableNodeField =
+  | 'height'
+  | 'width'
+  | 'characters'
+  | 'itemSpacing'
+  | 'paddingLeft'
+  | 'paddingRight'
+  | 'paddingTop'
+  | 'paddingBottom'
+  | 'visible'
+  | 'topLeftRadius'
+  | 'topRightRadius'
+  | 'bottomLeftRadius'
+  | 'bottomRightRadius'
+declare type VariableBindablePaintField = 'color'
+declare type VariableBindableComponentPropertyField = 'value'
 interface StickableMixin {
   stuckTo: SceneNode | null
 }
@@ -1332,6 +1398,9 @@ declare type ComponentProperties = {
     type: ComponentPropertyType
     value: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
+    readonly boundVariables?: {
+      [field in VariableBindableComponentPropertyField]?: VariableAlias
+    }
   }
 }
 interface InstanceNode extends DefaultFrameMixin, VariantMixin {
@@ -1339,7 +1408,7 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   clone(): InstanceNode
   mainComponent: ComponentNode | null
   swapComponent(componentNode: ComponentNode): void
-  setProperties(properties: { [propertyName: string]: string | boolean }): void
+  setProperties(properties: { [propertyName: string]: string | boolean | VariableAlias }): void
   readonly componentProperties: ComponentProperties
   detachInstance(): FrameNode
   scaleFactor: number
@@ -1474,6 +1543,43 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   connectorEndStrokeCap: ConnectorStrokeCap
   rotation: number
   clone(): ConnectorNode
+}
+declare type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
+interface VariableAlias {
+  type: 'VARIABLE_ALIAS'
+  id: string
+}
+declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
+interface Variable {
+  readonly id: string
+  name: string
+  readonly remote: boolean
+  readonly variableCollectionId: string
+  readonly key: string
+  readonly resolvedType: VariableResolvedDataType
+  resolveForConsumer(consumer: SceneNode): {
+    value: VariableValue
+    resolvedType: VariableResolvedDataType
+  }
+  setValueForMode(modeId: string, newValue: VariableValue): void
+  readonly valuesByMode: Record<string, VariableValue>
+  remove(): void
+}
+interface VariableCollection {
+  readonly id: string
+  name: string
+  readonly remote: boolean
+  readonly modes: Array<{
+    modeID: string
+    name: string
+  }>
+  readonly variableIds: string[]
+  readonly defaultModeId: string
+  readonly key: string
+  remove(): void
+  removeMode(modeId: string): void
+  addMode(name: string): string
+  renameMode(modeId: string, newName: string): void
 }
 interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
   readonly type: 'WIDGET'
