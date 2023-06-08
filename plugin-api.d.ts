@@ -1575,7 +1575,7 @@ interface VariableCollection {
   name: string
   readonly remote: boolean
   readonly modes: Array<{
-    modeID: string
+    modeId: string
     name: string
   }>
   readonly variableIds: string[]
