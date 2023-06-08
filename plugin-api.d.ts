@@ -1558,6 +1558,7 @@ declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAl
 interface Variable {
   readonly id: string
   name: string
+  description: string
   readonly remote: boolean
   readonly variableCollectionId: string
   readonly key: string
