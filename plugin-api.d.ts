@@ -1002,6 +1002,11 @@ declare type VariableBindableNodeField =
   | 'topRightRadius'
   | 'bottomLeftRadius'
   | 'bottomRightRadius'
+  | 'minWidth'
+  | 'maxWidth'
+  | 'minHeight'
+  | 'maxHeight'
+  | 'counterAxisSpacing'
 declare type VariableBindablePaintField = 'color'
 declare type VariableBindableComponentPropertyField = 'value'
 interface StickableMixin {
