@@ -1242,6 +1242,7 @@ interface inferredAutoLayoutResult {
   paddingRight: number
   paddingTop: number
   paddingBottom: number
+  primaryAxisSizingMode: 'FIXED' | 'AUTO'
   counterAxisSizingMode: 'FIXED' | 'AUTO'
   primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
   counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
