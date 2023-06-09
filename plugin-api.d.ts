@@ -616,9 +616,9 @@ declare type LinkPreviewEvent = {
 }
 
 declare type PlainTextElement = {
-      type: 'PLAIN_TEXT'
-      text: string
-    }
+  type: 'PLAIN_TEXT'
+  text: string
+}
 
 declare type LinkPreviewResult =
   | {
