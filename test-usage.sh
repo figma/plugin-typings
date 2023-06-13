@@ -103,23 +103,6 @@ function testNotify() {
 }
 
 function testCodegen() {
-  figma.on("codegen", async () => {
-    return [
-      {
-        language: "TYPESCRIPT",
-        code: "function() {}",
-        title: "Code snippet 1"
-      },
-      {
-        language: "JAVASCRIPT",
-        code: "function() {}",
-        title: "Code snippet 2"
-      }
-    ]
-  })
-}
-
-function testCodegenPreferences() {
   figma.codegen.on("generate", async () => {
     return [
       {

@@ -10,11 +10,11 @@ declare type ArgFreeEventType =
   | 'timeradjust'
   | 'timerdone'
 interface PluginAPI {
-  readonly isReadOnly: boolean
-  readonly mode: 'default' | 'textreview' | 'inspect' | 'codegen' | 'linkpreview' | 'auth'
   readonly apiVersion: '1.0.0'
   readonly command: string
   readonly editorType: 'figma' | 'figjam' | 'dev'
+  readonly isReadOnly: boolean
+  readonly mode: 'default' | 'textreview' | 'inspect' | 'codegen' | 'linkpreview' | 'auth'
   readonly pluginId?: string
   readonly widgetId?: string
   readonly fileKey: string | undefined
@@ -25,8 +25,8 @@ interface PluginAPI {
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
   readonly codegen: CodegenAPI
-  readonly payments?: PaymentsAPI
   readonly devResources?: DevResourcesAPI
+  readonly payments?: PaymentsAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
   commitUndo(): void
@@ -40,7 +40,6 @@ interface PluginAPI {
   getStyleById(id: string): BaseStyle | null
   readonly variables: VariablesAPI
   readonly teamLibrary: TeamLibraryAPI
-  getSelectionColors(): null | { paints: Paint[]; styles: PaintStyle[] }
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
@@ -51,13 +50,6 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
-  /**
-   * @deprecated The method should not be used
-   */
-  on(
-    type: 'codegen',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -66,13 +58,6 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
-  /**
-   * @deprecated The method should not be used
-   */
-  once(
-    type: 'codegen',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -80,13 +65,6 @@ interface PluginAPI {
   off(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
-  ): void
-  /**
-   * @deprecated The method should not be used
-   */
-  off(
-    type: 'codegen',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
@@ -116,6 +94,10 @@ interface PluginAPI {
   getLocalTextStyles(): TextStyle[]
   getLocalEffectStyles(): EffectStyle[]
   getLocalGridStyles(): GridStyle[]
+  getSelectionColors(): null | {
+    paints: Paint[]
+    styles: PaintStyle[]
+  }
   moveLocalPaintStyleAfter(targetNode: PaintStyle, reference: PaintStyle | null): void
   moveLocalTextStyleAfter(targetNode: TextStyle, reference: TextStyle | null): void
   moveLocalEffectStyleAfter(targetNode: EffectStyle, reference: EffectStyle | null): void
@@ -176,14 +158,6 @@ interface PluginAPI {
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
 }
-
-declare type DevResource = {
-  readonly name: string
-  readonly url: string
-  readonly inheritedNodeId?: string
-}
-
-declare type DevResourceWithNodeId = DevResource & { nodeId: string }
 interface VersionHistoryResult {
   id: string
 }
@@ -233,25 +207,6 @@ interface PaymentsAPI {
   requestCheckout(): void
   getPluginPaymentTokenAsync(): Promise<string>
 }
-
-interface DevResourcesAPI {
-  on(
-    type: 'linkpreview',
-    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
-  ): void
-  on(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
-  once(
-    type: 'linkpreview',
-    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
-  ): void
-  once(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
-  off(
-    type: 'linkpreview',
-    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
-  ): void
-  off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
-}
-
 interface ClientStorageAPI {
   getAsync(key: string): Promise<any | undefined>
   setAsync(key: string, value: any): Promise<void>
@@ -301,6 +256,102 @@ interface UIAPI {
   once(type: 'message', callback: MessageEventHandler): void
   off(type: 'message', callback: MessageEventHandler): void
 }
+declare type CodegenEvent = {
+  node: SceneNode
+  language: string
+}
+declare type CodegenPreferences = {
+  readonly unit: 'pixel' | 'scaled'
+  readonly scaleFactor?: number
+  readonly customSettings: Record<string, string>
+}
+declare type CodegenPreferencesEvent = {
+  propertyName: string
+}
+declare type CodegenResult = {
+  title: string
+  code: string
+  language:
+    | 'TYPESCRIPT'
+    | 'CPP'
+    | 'RUBY'
+    | 'CSS'
+    | 'JAVASCRIPT'
+    | 'HTML'
+    | 'JSON'
+    | 'GRAPHQL'
+    | 'PYTHON'
+    | 'GO'
+    | 'SQL'
+    | 'SWIFT'
+    | 'KOTLIN'
+    | 'RUST'
+    | 'BASH'
+    | 'PLAINTEXT'
+}
+interface CodegenAPI {
+  on(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
+  ): void
+  on(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
+  once(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
+  ): void
+  once(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
+  off(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
+  ): void
+  off(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
+  readonly preferences: CodegenPreferences
+  refresh: () => void
+}
+declare type DevResource = {
+  readonly name: string
+  readonly url: string
+  readonly inheritedNodeId?: string
+}
+declare type DevResourceWithNodeId = DevResource & {
+  nodeId: string
+}
+declare type LinkPreviewEvent = {
+  link: DevResource
+}
+declare type PlainTextElement = {
+  type: 'PLAIN_TEXT'
+  text: string
+}
+declare type LinkPreviewResult =
+  | {
+      type: 'AUTH_REQUIRED'
+    }
+  | PlainTextElement
+  | null
+declare type AuthEvent = {
+  links: DevResource[]
+}
+declare type AuthResult = {
+  type: 'AUTH_SUCCESS'
+} | null
+interface DevResourcesAPI {
+  on(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  on(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  once(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  once(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  off(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+}
 interface TimerAPI {
   readonly remaining: number
   readonly total: number
@@ -321,46 +372,6 @@ interface TextReviewAPI {
   requestToBeDisabledAsync(): Promise<void>
   readonly isEnabled: boolean
 }
-
-interface CodegenAPI {
-  on(
-    type: 'generate',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void
-  on(
-    type: 'preferenceschange',
-    callback: (event: CodegenPreferencesEvent) => Promise<void>,
-  ): Promise<void> | void
-  once(
-    type: 'generate',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
-  ): void
-  once(
-    type: 'preferenceschange',
-    callback: (event: CodegenPreferencesEvent) => Promise<void>,
-  ): Promise<void> | void
-  off(
-    type: 'generate',
-    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult,
-  ): void
-  off(
-    type: 'preferenceschange',
-    callback: (event: CodegenPreferencesEvent) => Promise<void>,
-  ): Promise<void> | void
-  readonly preferences: CodegenPreferences
-  refresh: () => void
-}
-
-declare type CodegenPreferences = {
-  readonly unit: 'pixel' | 'scaled'
-  readonly scaleFactor?: number
-  readonly customSettings: Record<string, string>
-}
-
-declare type CodegenPreferencesEvent = {
-  propertyName: string
-}
-
 interface ParameterValues {
   [key: string]: any
 }
@@ -390,19 +401,18 @@ interface ParametersAPI {
   once(type: 'input', callback: (event: ParameterInputEvent) => void): void
   off(type: 'input', callback: (event: ParameterInputEvent) => void): void
 }
-type RunEvent = RunParametersEvent | OpenRelatedLinkEvent
-
 interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
   command: string
   parameters: ParametersType
 }
-interface OpenRelatedLinkEvent {
-  command: 'open-related-link' | 'open-dev-resource'
+interface OpenDevResourcesEvent {
+  command: 'open-dev-resource'
   link: {
     url: string
     name: string
   }
 }
+declare type RunEvent = RunParametersEvent | OpenDevResourcesEvent
 interface DropEvent {
   node: BaseNode | SceneNode
   x: number
@@ -615,58 +625,6 @@ declare type TextReviewRange = {
   suggestions: string[]
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
-
-declare type CodegenEvent = {
-  node: SceneNode
-  language: string
-}
-
-declare type CodegenResult = {
-  title: string
-  code: string
-  language:
-    | 'TYPESCRIPT'
-    | 'CPP'
-    | 'RUBY'
-    | 'CSS'
-    | 'JAVASCRIPT'
-    | 'HTML'
-    | 'JSON'
-    | 'GRAPHQL'
-    | 'PYTHON'
-    | 'GO'
-    | 'SQL'
-    | 'SWIFT'
-    | 'KOTLIN'
-    | 'RUST'
-    | 'BASH'
-    | 'PLAINTEXT'
-}
-
-declare type LinkPreviewEvent = {
-  link: DevResource
-}
-
-declare type PlainTextElement = {
-  type: 'PLAIN_TEXT'
-  text: string
-}
-
-declare type LinkPreviewResult =
-  | {
-      type: 'AUTH_REQUIRED'
-    }
-  | PlainTextElement
-  | null
-
-declare type AuthEvent = {
-  links: DevResource[]
-}
-
-declare type AuthResult = {
-  type: 'AUTH_SUCCESS'
-} | null
-
 declare type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
   readonly x: number
@@ -1107,17 +1065,25 @@ interface BaseNodeMixin extends PluginDataMixin {
   readonly parent: (BaseNode & ChildrenMixin) | null
   name: string
   readonly removed: boolean
-  readonly isAsset: boolean
   toString(): string
   remove(): void
   setRelaunchData(data: { [command: string]: string }): void
   getRelaunchData(): {
     [command: string]: string
   }
-  getCSSAsync(): Promise<{ [key: string]: string }>
+  readonly isAsset: boolean
+  getCSSAsync(): Promise<{
+    [key: string]: string
+  }>
   getDevResourcesAsync(options?: { includeChildren?: boolean }): Promise<DevResourceWithNodeId[]>
   addDevResourceAsync(url: string, name?: string): Promise<void>
-  editDevResourceAsync(currentUrl: string, newValue: { name?: string; url?: string }): Promise<void>
+  editDevResourceAsync(
+    currentUrl: string,
+    newValue: {
+      name?: string
+      url?: string
+    },
+  ): Promise<void>
   deleteDevResourceAsync(url: string): Promise<void>
   setDevResourcePreviewAsync(url: string, preview: PlainTextElement): Promise<void>
 }
@@ -1231,6 +1197,21 @@ interface DeprecatedBackgroundMixin {
 declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
+interface InferredAutoLayoutResult {
+  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
+  paddingLeft: number
+  paddingRight: number
+  paddingTop: number
+  paddingBottom: number
+  primaryAxisSizingMode: 'FIXED' | 'AUTO'
+  counterAxisSizingMode: 'FIXED' | 'AUTO'
+  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
+  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
+  layoutGrow: number
+  itemSpacing: number
+  layoutPositioning: 'AUTO' | 'ABSOLUTE'
+}
 interface MinimalStrokesMixin {
   strokes: ReadonlyArray<Paint>
   strokeStyleId: string
@@ -1305,23 +1286,6 @@ interface DefaultShapeMixin
     GeometryMixin,
     LayoutMixin,
     ExportMixin {}
-
-interface inferredAutoLayoutResult {
-  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  paddingLeft: number
-  paddingRight: number
-  paddingTop: number
-  paddingBottom: number
-  primaryAxisSizingMode: 'FIXED' | 'AUTO'
-  counterAxisSizingMode: 'FIXED' | 'AUTO'
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
-  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
-  layoutGrow: number
-  itemSpacing: number
-  layoutPositioning: 'AUTO' | 'ABSOLUTE'
-}
-
 interface BaseFrameMixin
   extends BaseNodeMixin,
     SceneNodeMixin,
@@ -1354,9 +1318,8 @@ interface BaseFrameMixin
   gridStyleId: string
   clipsContent: boolean
   guides: ReadonlyArray<Guide>
-  inferredAutoLayout: inferredAutoLayoutResult | null
+  inferredAutoLayout: InferredAutoLayoutResult | null
 }
-
 interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
 interface OpaqueNodeMixin
   extends BaseNodeMixin,
