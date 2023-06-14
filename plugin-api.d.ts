@@ -308,12 +308,12 @@ interface CodegenAPI {
   readonly preferences: CodegenPreferences
   refresh: () => void
 }
-declare type DevResource = {
+interface DevResource {
   readonly name: string
   readonly url: string
   readonly inheritedNodeId?: string
 }
-declare type DevResourceWithNodeId = DevResource & {
+interface DevResourceWithNodeId extends DevResource {
   nodeId: string
 }
 declare type LinkPreviewEvent = {
@@ -1197,6 +1197,36 @@ interface DeprecatedBackgroundMixin {
 declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
+interface InferredAutoLayoutResult {
+  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
+  paddingLeft: number
+  paddingRight: number
+  paddingTop: number
+  paddingBottom: number
+  primaryAxisSizingMode: 'FIXED' | 'AUTO'
+  counterAxisSizingMode: 'FIXED' | 'AUTO'
+  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
+  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
+  layoutGrow: number
+  itemSpacing: number
+  layoutPositioning: 'AUTO' | 'ABSOLUTE'
+}
+interface InferredAutoLayoutResult {
+  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
+  paddingLeft: number
+  paddingRight: number
+  paddingTop: number
+  paddingBottom: number
+  primaryAxisSizingMode: 'FIXED' | 'AUTO'
+  counterAxisSizingMode: 'FIXED' | 'AUTO'
+  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
+  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
+  layoutGrow: number
+  itemSpacing: number
+  layoutPositioning: 'AUTO' | 'ABSOLUTE'
+}
 interface InferredAutoLayoutResult {
   layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
   paddingLeft: number
