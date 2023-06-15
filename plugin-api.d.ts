@@ -1697,6 +1697,17 @@ interface VariableAlias {
   id: string
 }
 declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
+declare type VariableScope =
+  | 'ALL_SCOPES'
+  | 'TEXT_CONTENT'
+  | 'CORNER_RADIUS'
+  | 'WIDTH_HEIGHT'
+  | 'GAP'
+  | 'ALL_FILLS'
+  | 'FRAME_FILL'
+  | 'SHAPE_FILL'
+  | 'TEXT_FILL'
+  | 'STROKE'
 interface Variable {
   readonly id: string
   name: string
@@ -1712,6 +1723,7 @@ interface Variable {
   setValueForMode(modeId: string, newValue: VariableValue): void
   readonly valuesByMode: Record<string, VariableValue>
   remove(): void
+  scopes: Array<VariableScope>
 }
 interface VariableCollection {
   readonly id: string
