@@ -1112,7 +1112,9 @@ interface SceneNodeMixin {
   } & {
     readonly fills?: VariableAlias[]
     readonly strokes?: VariableAlias[]
-    readonly componentProperties?: Record<string, VariableAlias>
+    readonly componentProperties?: {
+      readonly [propertyName: string]: VariableAlias
+    }
   }
   setBoundVariable(field: VariableBindableNodeField, variableId: string): void
   resolvedVariableModes: Record<string, string>
