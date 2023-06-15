@@ -1175,13 +1175,10 @@ interface DimensionAndPositionMixin {
   readonly absoluteTransform: Transform
   readonly absoluteBoundingBox: Rect | null
 }
-interface LayoutMixin extends DimensionAndPositionMixin {
+interface LayoutMixin extends DimensionAndPositionMixin, AutoLayoutChildrenMixin {
   readonly absoluteRenderBounds: Rect | null
   constrainProportions: boolean
   rotation: number
-  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
-  layoutGrow: number
-  layoutPositioning: 'AUTO' | 'ABSOLUTE'
   resize(width: number, height: number): void
   resizeWithoutConstraints(width: number, height: number): void
   rescale(scale: number): void
@@ -1201,7 +1198,7 @@ interface DeprecatedBackgroundMixin {
 declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
-interface InferredAutoLayoutResult {
+interface AutoLayoutMixin {
   layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
   paddingLeft: number
   paddingRight: number
@@ -1211,41 +1208,14 @@ interface InferredAutoLayoutResult {
   counterAxisSizingMode: 'FIXED' | 'AUTO'
   primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
   counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
+  itemSpacing: number
+}
+interface AutoLayoutChildrenMixin {
   layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
   layoutGrow: number
-  itemSpacing: number
   layoutPositioning: 'AUTO' | 'ABSOLUTE'
 }
-interface InferredAutoLayoutResult {
-  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  paddingLeft: number
-  paddingRight: number
-  paddingTop: number
-  paddingBottom: number
-  primaryAxisSizingMode: 'FIXED' | 'AUTO'
-  counterAxisSizingMode: 'FIXED' | 'AUTO'
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
-  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
-  layoutGrow: number
-  itemSpacing: number
-  layoutPositioning: 'AUTO' | 'ABSOLUTE'
-}
-interface InferredAutoLayoutResult {
-  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  paddingLeft: number
-  paddingRight: number
-  paddingTop: number
-  paddingBottom: number
-  primaryAxisSizingMode: 'FIXED' | 'AUTO'
-  counterAxisSizingMode: 'FIXED' | 'AUTO'
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
-  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
-  layoutGrow: number
-  itemSpacing: number
-  layoutPositioning: 'AUTO' | 'ABSOLUTE'
-}
+interface InferredAutoLayoutResult extends AutoLayoutChildrenMixin, AutoLayoutMixin {}
 interface MinimalStrokesMixin {
   strokes: ReadonlyArray<Paint>
   strokeStyleId: string
@@ -1333,17 +1303,8 @@ interface BaseFrameMixin
     ConstraintMixin,
     LayoutMixin,
     ExportMixin,
-    IndividualStrokesMixin {
-  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  primaryAxisSizingMode: 'FIXED' | 'AUTO'
-  counterAxisSizingMode: 'FIXED' | 'AUTO'
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
-  paddingLeft: number
-  paddingRight: number
-  paddingTop: number
-  paddingBottom: number
-  itemSpacing: number
+    IndividualStrokesMixin,
+    AutoLayoutMixin {
   itemReverseZIndex: boolean
   strokesIncludedInLayout: boolean
   horizontalPadding: number
