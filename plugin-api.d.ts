@@ -1060,7 +1060,7 @@ declare type ConnectorStrokeCap =
   | 'TRIANGLE_FILLED'
   | 'DIAMOND_FILLED'
   | 'CIRCLE_FILLED'
-interface BaseNodeMixin extends PluginDataMixin {
+interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   readonly id: string
   readonly parent: (BaseNode & ChildrenMixin) | null
   name: string
@@ -1075,6 +1075,16 @@ interface BaseNodeMixin extends PluginDataMixin {
   getCSSAsync(): Promise<{
     [key: string]: string
   }>
+}
+interface PluginDataMixin {
+  getPluginData(key: string): string
+  setPluginData(key: string, value: string): void
+  getPluginDataKeys(): string[]
+  getSharedPluginData(namespace: string, key: string): string
+  setSharedPluginData(namespace: string, key: string, value: string): void
+  getSharedPluginDataKeys(namespace: string): string[]
+}
+interface DevResourcesMixin {
   getDevResourcesAsync(options?: { includeChildren?: boolean }): Promise<DevResourceWithNodeId[]>
   addDevResourceAsync(url: string, name?: string): Promise<void>
   editDevResourceAsync(
@@ -1086,14 +1096,6 @@ interface BaseNodeMixin extends PluginDataMixin {
   ): Promise<void>
   deleteDevResourceAsync(url: string): Promise<void>
   setDevResourcePreviewAsync(url: string, preview: PlainTextElement): Promise<void>
-}
-interface PluginDataMixin {
-  getPluginData(key: string): string
-  setPluginData(key: string, value: string): void
-  getPluginDataKeys(): string[]
-  getSharedPluginData(namespace: string, key: string): string
-  setSharedPluginData(namespace: string, key: string, value: string): void
-  getSharedPluginDataKeys(namespace: string): string[]
 }
 interface SceneNodeMixin {
   visible: boolean
