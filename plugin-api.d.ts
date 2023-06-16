@@ -13,7 +13,6 @@ interface PluginAPI {
   readonly apiVersion: '1.0.0'
   readonly command: string
   readonly editorType: 'figma' | 'figjam' | 'dev'
-  readonly isReadOnly: boolean
   readonly mode: 'default' | 'textreview' | 'inspect' | 'codegen' | 'linkpreview' | 'auth'
   readonly pluginId?: string
   readonly widgetId?: string
