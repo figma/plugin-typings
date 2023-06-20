@@ -1805,7 +1805,7 @@ interface MediaNode extends OpaqueNodeMixin {
 interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
   readonly type: 'SECTION'
   devStatus: {
-    type: 'READY_TO_BUILD'
+    type: 'READY_FOR_DEV'
   } | null
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
