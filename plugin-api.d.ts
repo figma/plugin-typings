@@ -12,7 +12,8 @@ declare type ArgFreeEventType =
 interface PluginAPI {
   readonly apiVersion: '1.0.0'
   readonly command: string
-  readonly editorType: 'figma' | 'figjam'
+  readonly editorType: 'figma' | 'figjam' | 'dev'
+  readonly mode: 'default' | 'textreview' | 'inspect' | 'codegen' | 'linkpreview' | 'auth'
   readonly pluginId?: string
   readonly widgetId?: string
   readonly fileKey: string | undefined
@@ -22,6 +23,8 @@ interface PluginAPI {
   readonly currentUser: User | null
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
+  readonly codegen: CodegenAPI
+  readonly devResources?: DevResourcesAPI
   readonly payments?: PaymentsAPI
   closePlugin(message?: string): void
   notify(message: string, options?: NotificationOptions): NotificationHandler
@@ -34,6 +37,8 @@ interface PluginAPI {
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
   getStyleById(id: string): BaseStyle | null
+  readonly variables: VariablesAPI
+  readonly teamLibrary: TeamLibraryAPI
   readonly root: DocumentNode
   currentPage: PageNode
   on(type: ArgFreeEventType, callback: () => void): void
@@ -88,6 +93,10 @@ interface PluginAPI {
   getLocalTextStyles(): TextStyle[]
   getLocalEffectStyles(): EffectStyle[]
   getLocalGridStyles(): GridStyle[]
+  getSelectionColors(): null | {
+    paints: Paint[]
+    styles: PaintStyle[]
+  }
   moveLocalPaintStyleAfter(targetNode: PaintStyle, reference: PaintStyle | null): void
   moveLocalTextStyleAfter(targetNode: TextStyle, reference: TextStyle | null): void
   moveLocalEffectStyleAfter(targetNode: EffectStyle, reference: EffectStyle | null): void
@@ -151,6 +160,39 @@ interface PluginAPI {
 interface VersionHistoryResult {
   id: string
 }
+interface VariablesAPI {
+  getVariableById(id: string): Variable | null
+  getVariableCollectionById(id: string): VariableCollection | null
+  getLocalVariables(type?: VariableResolvedDataType): Variable[]
+  getLocalVariableCollections(): VariableCollection[]
+  createVariable(
+    name: string,
+    collectionId: string,
+    resolvedType: VariableResolvedDataType,
+  ): Variable
+  createVariableCollection(name: string): VariableCollection
+  createVariableAlias(variable: Variable): VariableAlias
+  setBoundVariableForPaint(
+    paint: SolidPaint,
+    field: VariableBindablePaintField,
+    variable: Variable,
+  ): SolidPaint
+  importVariableByKeyAsync(key: string): Promise<Variable>
+}
+interface LibraryVariableCollection {
+  name: string
+  key: string
+  libraryName: string
+}
+interface LibraryVariable {
+  name: string
+  key: string
+  resolvedType: VariableResolvedDataType
+}
+interface TeamLibraryAPI {
+  getAvailableLibraryVariableCollectionsAsync(): Promise<LibraryVariableCollection[]>
+  getVariablesInLibraryCollectionAsync(libraryCollectionKey: string): Promise<LibraryVariable[]>
+}
 declare type PaymentStatus = {
   type: 'UNPAID' | 'PAID' | 'NOT_SUPPORTED'
 }
@@ -213,6 +255,102 @@ interface UIAPI {
   once(type: 'message', callback: MessageEventHandler): void
   off(type: 'message', callback: MessageEventHandler): void
 }
+declare type CodegenEvent = {
+  node: SceneNode
+  language: string
+}
+declare type CodegenPreferences = {
+  readonly unit: 'pixel' | 'scaled'
+  readonly scaleFactor?: number
+  readonly customSettings: Record<string, string>
+}
+declare type CodegenPreferencesEvent = {
+  propertyName: string
+}
+declare type CodegenResult = {
+  title: string
+  code: string
+  language:
+    | 'TYPESCRIPT'
+    | 'CPP'
+    | 'RUBY'
+    | 'CSS'
+    | 'JAVASCRIPT'
+    | 'HTML'
+    | 'JSON'
+    | 'GRAPHQL'
+    | 'PYTHON'
+    | 'GO'
+    | 'SQL'
+    | 'SWIFT'
+    | 'KOTLIN'
+    | 'RUST'
+    | 'BASH'
+    | 'PLAINTEXT'
+}
+interface CodegenAPI {
+  on(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
+  ): void
+  on(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
+  once(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
+  ): void
+  once(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
+  off(
+    type: 'generate',
+    callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
+  ): void
+  off(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
+  readonly preferences: CodegenPreferences
+  refresh: () => void
+}
+interface DevResource {
+  readonly name: string
+  readonly url: string
+  readonly inheritedNodeId?: string
+}
+interface DevResourceWithNodeId extends DevResource {
+  nodeId: string
+}
+declare type LinkPreviewEvent = {
+  link: DevResource
+}
+declare type PlainTextElement = {
+  type: 'PLAIN_TEXT'
+  text: string
+}
+declare type LinkPreviewResult =
+  | {
+      type: 'AUTH_REQUIRED'
+    }
+  | PlainTextElement
+  | null
+declare type AuthEvent = {
+  links: DevResource[]
+}
+declare type AuthResult = {
+  type: 'AUTH_SUCCESS'
+} | null
+interface DevResourcesAPI {
+  on(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  on(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  once(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  once(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  off(
+    type: 'linkpreview',
+    callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
+  ): void
+  off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+}
 interface TimerAPI {
   readonly remaining: number
   readonly total: number
@@ -262,10 +400,18 @@ interface ParametersAPI {
   once(type: 'input', callback: (event: ParameterInputEvent) => void): void
   off(type: 'input', callback: (event: ParameterInputEvent) => void): void
 }
-interface RunEvent<ParametersType = ParameterValues | undefined> {
+interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
   command: string
   parameters: ParametersType
 }
+interface OpenDevResourcesEvent {
+  command: 'open-dev-resource'
+  link: {
+    url: string
+    name: string
+  }
+}
+declare type RunEvent = RunParametersEvent | OpenDevResourcesEvent
 interface DropEvent {
   node: BaseNode | SceneNode
   x: number
@@ -566,6 +712,9 @@ interface SolidPaint {
   readonly visible?: boolean
   readonly opacity?: number
   readonly blendMode?: BlendMode
+  readonly boundVariables?: {
+    [field in VariableBindablePaintField]?: VariableAlias
+  }
 }
 interface GradientPaint {
   readonly type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND'
@@ -651,6 +800,9 @@ interface ExportSettingsPDF {
   readonly contentsOnly?: boolean
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
+}
+interface ExportSettingsREST {
+  readonly format: 'JSON_REST_V1'
 }
 declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
 declare type WindingRule = 'NONZERO' | 'EVENODD'
@@ -907,7 +1059,7 @@ declare type ConnectorStrokeCap =
   | 'TRIANGLE_FILLED'
   | 'DIAMOND_FILLED'
   | 'CIRCLE_FILLED'
-interface BaseNodeMixin extends PluginDataMixin {
+interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   readonly id: string
   readonly parent: (BaseNode & ChildrenMixin) | null
   name: string
@@ -918,6 +1070,10 @@ interface BaseNodeMixin extends PluginDataMixin {
   getRelaunchData(): {
     [command: string]: string
   }
+  readonly isAsset: boolean
+  getCSSAsync(): Promise<{
+    [key: string]: string
+  }>
 }
 interface PluginDataMixin {
   getPluginData(key: string): string
@@ -926,6 +1082,19 @@ interface PluginDataMixin {
   getSharedPluginData(namespace: string, key: string): string
   setSharedPluginData(namespace: string, key: string, value: string): void
   getSharedPluginDataKeys(namespace: string): string[]
+}
+interface DevResourcesMixin {
+  getDevResourcesAsync(options?: { includeChildren?: boolean }): Promise<DevResourceWithNodeId[]>
+  addDevResourceAsync(url: string, name?: string): Promise<void>
+  editDevResourceAsync(
+    currentUrl: string,
+    newValue: {
+      name?: string
+      url?: string
+    },
+  ): Promise<void>
+  deleteDevResourceAsync(url: string): Promise<void>
+  setDevResourcePreviewAsync(url: string, preview: PlainTextElement): Promise<void>
 }
 interface SceneNodeMixin {
   visible: boolean
@@ -937,7 +1106,42 @@ interface SceneNodeMixin {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
+  readonly boundVariables?: {
+    readonly [field in VariableBindableNodeField]?: VariableAlias
+  } & {
+    readonly fills?: VariableAlias[]
+    readonly strokes?: VariableAlias[]
+    readonly componentProperties?: {
+      readonly [propertyName: string]: VariableAlias
+    }
+  }
+  setBoundVariable(field: VariableBindableNodeField, variableId: string): void
+  resolvedVariableModes: Record<string, string>
+  explicitVariableModes: Record<string, string>
+  clearExplicitVariableModeForCollection(collectionId: string): void
+  setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
 }
+declare type VariableBindableNodeField =
+  | 'height'
+  | 'width'
+  | 'characters'
+  | 'itemSpacing'
+  | 'paddingLeft'
+  | 'paddingRight'
+  | 'paddingTop'
+  | 'paddingBottom'
+  | 'visible'
+  | 'topLeftRadius'
+  | 'topRightRadius'
+  | 'bottomLeftRadius'
+  | 'bottomRightRadius'
+  | 'minWidth'
+  | 'maxWidth'
+  | 'minHeight'
+  | 'maxHeight'
+  | 'counterAxisSpacing'
+declare type VariableBindablePaintField = 'color'
+declare type VariableBindableComponentPropertyField = 'value'
 interface StickableMixin {
   stuckTo: SceneNode | null
 }
@@ -970,13 +1174,10 @@ interface DimensionAndPositionMixin {
   readonly absoluteTransform: Transform
   readonly absoluteBoundingBox: Rect | null
 }
-interface LayoutMixin extends DimensionAndPositionMixin {
+interface LayoutMixin extends DimensionAndPositionMixin, AutoLayoutChildrenMixin {
   readonly absoluteRenderBounds: Rect | null
   constrainProportions: boolean
   rotation: number
-  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
-  layoutGrow: number
-  layoutPositioning: 'AUTO' | 'ABSOLUTE'
   resize(width: number, height: number): void
   resizeWithoutConstraints(width: number, height: number): void
   rescale(scale: number): void
@@ -996,6 +1197,24 @@ interface DeprecatedBackgroundMixin {
 declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
+interface AutoLayoutMixin {
+  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
+  paddingLeft: number
+  paddingRight: number
+  paddingTop: number
+  paddingBottom: number
+  primaryAxisSizingMode: 'FIXED' | 'AUTO'
+  counterAxisSizingMode: 'FIXED' | 'AUTO'
+  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
+  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
+  itemSpacing: number
+}
+interface AutoLayoutChildrenMixin {
+  layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
+  layoutGrow: number
+  layoutPositioning: 'AUTO' | 'ABSOLUTE'
+}
+interface InferredAutoLayoutResult extends AutoLayoutChildrenMixin, AutoLayoutMixin {}
 interface MinimalStrokesMixin {
   strokes: ReadonlyArray<Paint>
   strokeStyleId: string
@@ -1035,6 +1254,7 @@ interface ExportMixin {
   exportSettings: ReadonlyArray<ExportSettings>
   exportAsync(settings?: ExportSettings): Promise<Uint8Array>
   exportAsync(settings: ExportSettingsSVGString): Promise<string>
+  exportAsync(settings: ExportSettingsREST): Promise<Object>
 }
 interface FramePrototypingMixin {
   overflowDirection: OverflowDirection
@@ -1082,17 +1302,8 @@ interface BaseFrameMixin
     ConstraintMixin,
     LayoutMixin,
     ExportMixin,
-    IndividualStrokesMixin {
-  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  primaryAxisSizingMode: 'FIXED' | 'AUTO'
-  counterAxisSizingMode: 'FIXED' | 'AUTO'
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
-  counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
-  paddingLeft: number
-  paddingRight: number
-  paddingTop: number
-  paddingBottom: number
-  itemSpacing: number
+    IndividualStrokesMixin,
+    AutoLayoutMixin {
   itemReverseZIndex: boolean
   strokesIncludedInLayout: boolean
   horizontalPadding: number
@@ -1101,6 +1312,7 @@ interface BaseFrameMixin
   gridStyleId: string
   clipsContent: boolean
   guides: ReadonlyArray<Guide>
+  inferredAutoLayout: InferredAutoLayoutResult | null
 }
 interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
 interface OpaqueNodeMixin
@@ -1332,6 +1544,9 @@ declare type ComponentProperties = {
     type: ComponentPropertyType
     value: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
+    readonly boundVariables?: {
+      [field in VariableBindableComponentPropertyField]?: VariableAlias
+    }
   }
 }
 interface InstanceNode extends DefaultFrameMixin, VariantMixin {
@@ -1339,7 +1554,7 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   clone(): InstanceNode
   mainComponent: ComponentNode | null
   swapComponent(componentNode: ComponentNode): void
-  setProperties(properties: { [propertyName: string]: string | boolean }): void
+  setProperties(properties: { [propertyName: string]: string | boolean | VariableAlias }): void
   readonly componentProperties: ComponentProperties
   detachInstance(): FrameNode
   scaleFactor: number
@@ -1457,6 +1672,7 @@ interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
     | 'RUST'
     | 'BASH'
     | 'PLAINTEXT'
+    | 'DART'
   clone(): CodeBlockNode
 }
 interface LabelSublayerNode {
@@ -1474,6 +1690,56 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   connectorEndStrokeCap: ConnectorStrokeCap
   rotation: number
   clone(): ConnectorNode
+}
+declare type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
+interface VariableAlias {
+  type: 'VARIABLE_ALIAS'
+  id: string
+}
+declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
+declare type VariableScope =
+  | 'ALL_SCOPES'
+  | 'TEXT_CONTENT'
+  | 'CORNER_RADIUS'
+  | 'WIDTH_HEIGHT'
+  | 'GAP'
+  | 'ALL_FILLS'
+  | 'FRAME_FILL'
+  | 'SHAPE_FILL'
+  | 'TEXT_FILL'
+  | 'STROKE'
+interface Variable {
+  readonly id: string
+  name: string
+  description: string
+  readonly remote: boolean
+  readonly variableCollectionId: string
+  readonly key: string
+  readonly resolvedType: VariableResolvedDataType
+  resolveForConsumer(consumer: SceneNode): {
+    value: VariableValue
+    resolvedType: VariableResolvedDataType
+  }
+  setValueForMode(modeId: string, newValue: VariableValue): void
+  readonly valuesByMode: Record<string, VariableValue>
+  remove(): void
+  scopes: Array<VariableScope>
+}
+interface VariableCollection {
+  readonly id: string
+  name: string
+  readonly remote: boolean
+  readonly modes: Array<{
+    modeId: string
+    name: string
+  }>
+  readonly variableIds: string[]
+  readonly defaultModeId: string
+  readonly key: string
+  remove(): void
+  removeMode(modeId: string): void
+  addMode(name: string): string
+  renameMode(modeId: string, newName: string): void
 }
 interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
   readonly type: 'WIDGET'
@@ -1538,6 +1804,9 @@ interface MediaNode extends OpaqueNodeMixin {
 }
 interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
   readonly type: 'SECTION'
+  devStatus: {
+    type: 'READY_FOR_DEV'
+  } | null
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
 }

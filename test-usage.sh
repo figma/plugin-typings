@@ -100,7 +100,28 @@ function testNotify() {
       }
     }
   })
+}
 
+function testCodegen() {
+  figma.codegen.on("generate", async () => {
+    return [
+      {
+        language: "TYPESCRIPT",
+        code: JSON.stringify(figma.codegen.preferences.unit),
+        title: "Code snippet 1"
+      },
+      {
+        language: "JAVASCRIPT",
+        code: JSON.stringify(figma.codegen.preferences.scaleFactor),
+        title: "Code snippet 2"
+      },
+      {
+        language: "JAVASCRIPT",
+        code: JSON.stringify(figma.codegen.preferences.customSettings),
+        title: "Code snippet 3"
+      }
+    ]
+  })
 }
 EOF
 
