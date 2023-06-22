@@ -483,6 +483,10 @@ declare type NodeChangeProperty =
   | 'name'
   | 'width'
   | 'height'
+  | 'minWidth'
+  | 'maxWidth'
+  | 'minHeight'
+  | 'maxHeight'
   | 'parent'
   | 'pluginData'
   | 'constraints'
@@ -515,6 +519,8 @@ declare type NodeChangeProperty =
   | 'textCase'
   | 'textDecoration'
   | 'textAutoResize'
+  | 'textTruncation'
+  | 'maxLines'
   | 'fills'
   | 'topLeftRadius'
   | 'topRightRadius'
@@ -555,16 +561,19 @@ declare type NodeChangeProperty =
   | 'gridStyleId'
   | 'description'
   | 'layoutMode'
+  | 'layoutWrap'
   | 'paddingLeft'
   | 'paddingTop'
   | 'paddingRight'
   | 'paddingBottom'
   | 'itemSpacing'
+  | 'counterAxisSpacing'
   | 'layoutAlign'
   | 'counterAxisSizingMode'
   | 'primaryAxisSizingMode'
   | 'primaryAxisAlignItems'
   | 'counterAxisAlignItems'
+  | 'counterAxisAlignContent'
   | 'layoutGrow'
   | 'layoutPositioning'
   | 'itemReverseZIndex'
@@ -1170,6 +1179,10 @@ interface DimensionAndPositionMixin {
   y: number
   readonly width: number
   readonly height: number
+  minWidth: number | null
+  maxWidth: number | null
+  minHeight: number | null
+  maxHeight: number | null
   relativeTransform: Transform
   readonly absoluteTransform: Transform
   readonly absoluteBoundingBox: Rect | null
@@ -1178,6 +1191,8 @@ interface LayoutMixin extends DimensionAndPositionMixin, AutoLayoutChildrenMixin
   readonly absoluteRenderBounds: Rect | null
   constrainProportions: boolean
   rotation: number
+  layoutSizingHorizontal: 'FIXED' | 'HUG' | 'FILL'
+  layoutSizingVertical: 'FIXED' | 'HUG' | 'FILL'
   resize(width: number, height: number): void
   resizeWithoutConstraints(width: number, height: number): void
   rescale(scale: number): void
@@ -1199,15 +1214,22 @@ declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
 interface AutoLayoutMixin {
   layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
+  layoutWrap: 'NO_WRAP' | 'WRAP'
   paddingLeft: number
   paddingRight: number
   paddingTop: number
   paddingBottom: number
+  horizontalPadding: number
+  verticalPadding: number
   primaryAxisSizingMode: 'FIXED' | 'AUTO'
   counterAxisSizingMode: 'FIXED' | 'AUTO'
   primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
   counterAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'BASELINE'
+  counterAxisAlignContent: 'AUTO' | 'SPACE_BETWEEN'
   itemSpacing: number
+  counterAxisSpacing: number | null
+  itemReverseZIndex: boolean
+  strokesIncludedInLayout: boolean
 }
 interface AutoLayoutChildrenMixin {
   layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'INHERIT'
@@ -1304,10 +1326,6 @@ interface BaseFrameMixin
     ExportMixin,
     IndividualStrokesMixin,
     AutoLayoutMixin {
-  itemReverseZIndex: boolean
-  strokesIncludedInLayout: boolean
-  horizontalPadding: number
-  verticalPadding: number
   layoutGrids: ReadonlyArray<LayoutGrid>
   gridStyleId: string
   clipsContent: boolean
@@ -1500,6 +1518,8 @@ interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode 
   textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
   textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM'
   textAutoResize: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT' | 'TRUNCATE'
+  textTruncation: 'DISABLED' | 'ENDING'
+  maxLines: number | null
   autoRename: boolean
   textStyleId: string | PluginAPI['mixed']
 }
