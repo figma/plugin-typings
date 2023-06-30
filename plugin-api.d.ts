@@ -1600,6 +1600,7 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
   readonly text: TextSublayerNode
   authorVisible: boolean
   authorName: string
+  isWideWidth: boolean
   clone(): StickyNode
 }
 interface StampNode extends DefaultShapeMixin, ConstraintMixin, StickableMixin {
