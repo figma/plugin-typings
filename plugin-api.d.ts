@@ -1125,8 +1125,12 @@ interface SceneNodeMixin {
     }
   }
   setBoundVariable(field: VariableBindableNodeField, variableId: string): void
-  resolvedVariableModes: Record<string, string>
-  explicitVariableModes: Record<string, string>
+  resolvedVariableModes: {
+    [collectionId: string]: string
+  }
+  explicitVariableModes: {
+    [collectionId: string]: string
+  }
   clearExplicitVariableModeForCollection(collectionId: string): void
   setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
 }
@@ -1742,7 +1746,9 @@ interface Variable {
     resolvedType: VariableResolvedDataType
   }
   setValueForMode(modeId: string, newValue: VariableValue): void
-  readonly valuesByMode: Record<string, VariableValue>
+  readonly valuesByMode: {
+    [modeId: string]: VariableValue
+  }
   remove(): void
   scopes: Array<VariableScope>
 }
