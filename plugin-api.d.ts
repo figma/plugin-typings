@@ -1888,6 +1888,9 @@ interface BaseStyle extends PublishableMixin, PluginDataMixin {
   remove(): void
 }
 interface PaintStyle extends BaseStyle {
+  readonly boundVariables?: {
+    [field in VariableBindablePaintField]?: VariableAlias
+  }
   type: 'PAINT'
   paints: ReadonlyArray<Paint>
 }
