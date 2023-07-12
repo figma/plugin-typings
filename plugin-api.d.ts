@@ -1670,6 +1670,24 @@ interface ShapeWithTextNode
     | 'ENG_QUEUE'
     | 'ENG_FILE'
     | 'ENG_FOLDER'
+    | 'TRAPEZOID'
+    | 'PREDEFINED_PROCESS'
+    | 'SHIELD'
+    | 'DOCUMENT_SINGLE'
+    | 'DOCUMENT_MULTIPLE'
+    | 'MANUAL_INPUT'
+    | 'HEXAGON'
+    | 'CHEVRON'
+    | 'PENTAGON'
+    | 'OCTAGON'
+    | 'STAR'
+    | 'PLUS'
+    | 'ARROW_LEFT'
+    | 'ARROW_RIGHT'
+    | 'SUMMING_JUNCTION'
+    | 'OR'
+    | 'SPEECH_BUBBLE'
+    | 'INTERNAL_STORAGE'
   readonly text: TextSublayerNode
   readonly cornerRadius?: number
   rotation: number
@@ -1737,8 +1755,6 @@ interface Variable {
   readonly id: string
   name: string
   description: string
-  hiddenFromPublishing: boolean
-  getPublishStatusAsync(): Promise<PublishStatus>
   readonly remote: boolean
   readonly variableCollectionId: string
   readonly key: string
@@ -1757,8 +1773,6 @@ interface Variable {
 interface VariableCollection {
   readonly id: string
   name: string
-  hiddenFromPublishing: boolean
-  getPublishStatusAsync(): Promise<PublishStatus>
   readonly remote: boolean
   readonly modes: Array<{
     modeId: string
