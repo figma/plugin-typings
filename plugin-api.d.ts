@@ -1755,6 +1755,8 @@ interface Variable {
   readonly id: string
   name: string
   description: string
+  hiddenFromPublishing: boolean
+  getPublishStatusAsync(): Promise<PublishStatus>
   readonly remote: boolean
   readonly variableCollectionId: string
   readonly key: string
@@ -1773,6 +1775,8 @@ interface Variable {
 interface VariableCollection {
   readonly id: string
   name: string
+  hiddenFromPublishing: boolean
+  getPublishStatusAsync(): Promise<PublishStatus>
   readonly remote: boolean
   readonly modes: Array<{
     modeId: string
