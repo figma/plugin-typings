@@ -1436,9 +1436,9 @@ interface DocumentNode extends BaseNodeMixin {
   findChild(callback: (node: PageNode) => boolean): PageNode | null
   findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
-  findAllWithCriteria<T extends NodeType[]>(criteria: {
-    types: T
-  }): Array<
+  findAllWithCriteria<T extends NodeType[]>(
+    criteria: FindAllCriteria<T>,
+  ): Array<
     {
       type: T[number]
     } & (PageNode | SceneNode)
