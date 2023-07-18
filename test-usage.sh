@@ -123,6 +123,17 @@ function testCodegen() {
     ]
   })
 }
+
+function testFindAllWithCriteria() {
+  const nodes = figma.root.findAllWithCriteria({ types: ["TEXT"] });
+  console.log(nodes.map(n => {
+    return [n.id, n.characters]
+  }))
+
+  const frame = figma.createFrame()
+  const nodes2 = frame.findAllWithCriteria({ sharedPluginData: { namespace: 'foo' } })
+  console.log(nodes2[0].id)
+}
 EOF
 
 
