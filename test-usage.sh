@@ -123,6 +123,13 @@ function testCodegen() {
     ]
   })
 }
+
+function testFindAllWithCriteria() {
+  const nodes = figma.root.findAllWithCriteria({ types: ["TEXT"] });
+  console.log(nodes.map(n => {
+    return [n.id, n.characters]
+  }))
+}
 EOF
 
 
