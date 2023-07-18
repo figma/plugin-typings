@@ -1838,6 +1838,7 @@ interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin 
   devStatus: {
     type: 'READY_FOR_DEV'
   } | null
+  sectionContentsHidden: boolean
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
 }
