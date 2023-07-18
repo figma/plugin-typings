@@ -1870,7 +1870,6 @@ declare type SceneNode =
   | HighlightNode
   | WashiTapeNode
   | TableNode
-  | TableCellNode
 declare type NodeType = BaseNode['type']
 declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 declare type InheritedStyleField =
