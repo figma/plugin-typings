@@ -1166,9 +1166,9 @@ interface ChildrenMixin {
   findChild(callback: (node: SceneNode) => boolean): SceneNode | null
   findAll(callback?: (node: SceneNode) => boolean): SceneNode[]
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
-  findAllWithCriteria<T extends NodeType[]>(criteria: {
-    types: T
-  }): Array<
+  findAllWithCriteria<T extends NodeType[]>(
+    criteria: FindAllCriteria<T>,
+  ): Array<
     {
       type: T[number]
     } & SceneNode
@@ -1939,4 +1939,14 @@ interface ActiveUser extends User {
   readonly position: Vector | null
   readonly viewport: Rect
   readonly selection: string[]
+}
+interface FindAllCriteria<T extends NodeType[]> {
+  types?: T
+  pluginData?: {
+    keys?: string[]
+  }
+  sharedPluginData?: {
+    namespace: string
+    keys?: string[]
+  }
 }
