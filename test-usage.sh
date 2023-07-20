@@ -134,6 +134,13 @@ function testFindAllWithCriteria() {
   const nodes2 = frame.findAllWithCriteria({ sharedPluginData: { namespace: 'foo' } })
   console.log(nodes2[0].id)
 }
+
+function testParameters() {
+  figma.on('run', async ({ command, parameters }) => {
+    console.log(command, parameters)
+  })
+}
+
 EOF
 
 
