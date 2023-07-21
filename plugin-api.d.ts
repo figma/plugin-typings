@@ -406,6 +406,7 @@ interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
 }
 interface OpenDevResourcesEvent {
   command: 'open-dev-resource'
+  parameters?: undefined
   link: {
     url: string
     name: string
