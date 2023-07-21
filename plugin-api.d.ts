@@ -406,7 +406,6 @@ interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
 }
 interface OpenDevResourcesEvent {
   command: 'open-dev-resource'
-  parameters?: undefined
   link: {
     url: string
     name: string
@@ -1671,6 +1670,24 @@ interface ShapeWithTextNode
     | 'ENG_QUEUE'
     | 'ENG_FILE'
     | 'ENG_FOLDER'
+    | 'TRAPEZOID'
+    | 'PREDEFINED_PROCESS'
+    | 'SHIELD'
+    | 'DOCUMENT_SINGLE'
+    | 'DOCUMENT_MULTIPLE'
+    | 'MANUAL_INPUT'
+    | 'HEXAGON'
+    | 'CHEVRON'
+    | 'PENTAGON'
+    | 'OCTAGON'
+    | 'STAR'
+    | 'PLUS'
+    | 'ARROW_LEFT'
+    | 'ARROW_RIGHT'
+    | 'SUMMING_JUNCTION'
+    | 'OR'
+    | 'SPEECH_BUBBLE'
+    | 'INTERNAL_STORAGE'
   readonly text: TextSublayerNode
   readonly cornerRadius?: number
   rotation: number
