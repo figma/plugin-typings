@@ -33,6 +33,7 @@ interface PluginAPI {
   saveVersionHistoryAsync(title: string, description?: string): Promise<VersionHistoryResult>
   showUI(html: string, options?: ShowUIOptions): void
   readonly ui: UIAPI
+  readonly util: UtilAPI
   readonly clientStorage: ClientStorageAPI
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
@@ -254,6 +255,11 @@ interface UIAPI {
   on(type: 'message', callback: MessageEventHandler): void
   once(type: 'message', callback: MessageEventHandler): void
   off(type: 'message', callback: MessageEventHandler): void
+}
+interface UtilAPI {
+  rgb(color: string | RGB | RGBA): RGB
+  rgba(color: string | RGB | RGBA): RGBA
+  solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
 }
 declare type CodegenEvent = {
   node: SceneNode
