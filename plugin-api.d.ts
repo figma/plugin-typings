@@ -331,6 +331,9 @@ declare type LinkPreviewResult =
 declare type AuthEvent = {
   links: DevResource[]
 }
+declare type DevResourceOpenEvent = {
+  devResource: DevResourceWithNodeId
+}
 declare type AuthResult = {
   type: 'AUTH_SUCCESS'
 } | null
@@ -340,16 +343,19 @@ interface DevResourcesAPI {
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
   on(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  on(type: 'open', callback: (event: DevResourceOpenEvent) => void): void
   once(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
   once(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  once(type: 'open', callback: (event: DevResourceOpenEvent) => void): void
   off(
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
   off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+  off(type: 'open', callback: (event: DevResourceOpenEvent) => void): void
 }
 interface TimerAPI {
   readonly remaining: number
