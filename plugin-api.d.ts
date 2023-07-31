@@ -33,7 +33,6 @@ interface PluginAPI {
   saveVersionHistoryAsync(title: string, description?: string): Promise<VersionHistoryResult>
   showUI(html: string, options?: ShowUIOptions): void
   readonly ui: UIAPI
-  readonly util: UtilAPI
   readonly clientStorage: ClientStorageAPI
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
@@ -255,11 +254,6 @@ interface UIAPI {
   on(type: 'message', callback: MessageEventHandler): void
   once(type: 'message', callback: MessageEventHandler): void
   off(type: 'message', callback: MessageEventHandler): void
-}
-interface UtilAPI {
-  rgb(color: string | RGB | RGBA): RGB
-  rgba(color: string | RGB | RGBA): RGBA
-  solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
 }
 declare type CodegenEvent = {
   node: SceneNode
@@ -802,6 +796,7 @@ interface ExportSettingsImage {
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
   readonly constraint?: ExportSettingsConstraints
+  readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 interface ExportSettingsSVGBase {
   readonly contentsOnly?: boolean
@@ -810,6 +805,7 @@ interface ExportSettingsSVGBase {
   readonly svgOutlineText?: boolean
   readonly svgIdAttribute?: boolean
   readonly svgSimplifyStroke?: boolean
+  readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 interface ExportSettingsSVG extends ExportSettingsSVGBase {
   readonly format: 'SVG'
@@ -822,6 +818,7 @@ interface ExportSettingsPDF {
   readonly contentsOnly?: boolean
   readonly useAbsoluteBounds?: boolean
   readonly suffix?: string
+  readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 interface ExportSettingsREST {
   readonly format: 'JSON_REST_V1'
@@ -1443,6 +1440,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
 interface DocumentNode extends BaseNodeMixin {
   readonly type: 'DOCUMENT'
   readonly children: ReadonlyArray<PageNode>
+  readonly documentColorProfile: 'LEGACY' | 'SRGB' | 'DISPLAY_P3'
   appendChild(child: PageNode): void
   insertChild(index: number, child: PageNode): void
   findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>
