@@ -1767,7 +1767,7 @@ declare type VariableScope =
   | 'FRAME_FILL'
   | 'SHAPE_FILL'
   | 'TEXT_FILL'
-  | 'STROKE'
+  | 'STROKE_COLOR'
 interface Variable {
   readonly id: string
   name: string
