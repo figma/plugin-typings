@@ -1141,6 +1141,12 @@ interface SceneNodeMixin {
     }
   }
   setBoundVariable(field: VariableBindableNodeField, variableId: string): void
+  readonly inferredVariables?: {
+    readonly [field in VariableBindableNodeField]?: VariableAlias[]
+  } & {
+    readonly fills?: VariableAlias[][]
+    readonly strokes?: VariableAlias[][]
+  }
   resolvedVariableModes: {
     [collectionId: string]: string
   }
