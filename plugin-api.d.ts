@@ -1768,6 +1768,7 @@ declare type VariableScope =
   | 'SHAPE_FILL'
   | 'TEXT_FILL'
   | 'STROKE_COLOR'
+declare type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
 interface Variable {
   readonly id: string
   name: string
@@ -1788,6 +1789,11 @@ interface Variable {
   }
   remove(): void
   scopes: Array<VariableScope>
+  readonly codeSyntax: {
+    [platform in CodeSyntaxPlatform]?: string
+  }
+  setVariableCodeSyntax(platform: CodeSyntaxPlatform, value: string): void
+  removeVariableCodeSyntax(platform: CodeSyntaxPlatform): void
 }
 interface VariableCollection {
   readonly id: string
