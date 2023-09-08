@@ -1496,6 +1496,15 @@ interface AutoLayoutChildrenMixin {
   layoutPositioning: 'AUTO' | 'ABSOLUTE'
 }
 interface InferredAutoLayoutResult extends AutoLayoutChildrenMixin, AutoLayoutMixin {}
+declare type DetachedInfo =
+  | {
+      type: 'local'
+      componentId: string
+    }
+  | {
+      type: 'library'
+      componentKey: string
+    }
 interface MinimalStrokesMixin {
   strokes: ReadonlyArray<Paint>
   strokeStyleId: string
@@ -1585,6 +1594,7 @@ interface BaseFrameMixin
     ExportMixin,
     IndividualStrokesMixin,
     AutoLayoutMixin {
+  readonly detachedInfo: DetachedInfo | null
   layoutGrids: ReadonlyArray<LayoutGrid>
   gridStyleId: string
   clipsContent: boolean
