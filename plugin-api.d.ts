@@ -34,6 +34,7 @@ interface PluginAPI {
   showUI(html: string, options?: ShowUIOptions): void
   readonly ui: UIAPI
   readonly util: UtilAPI
+  readonly constants: ConstantsAPI
   readonly clientStorage: ClientStorageAPI
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
@@ -260,6 +261,11 @@ interface UtilAPI {
   rgb(color: string | RGB | RGBA): RGB
   rgba(color: string | RGB | RGBA): RGBA
   solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
+}
+interface ConstantsAPI {
+  colors: {
+    [key: string]: ColorPalette
+  }
 }
 declare type CodegenEvent = {
   node: SceneNode
@@ -661,6 +667,9 @@ interface RGB {
   readonly r: number
   readonly g: number
   readonly b: number
+}
+interface ColorPalette {
+  [key: string]: string
 }
 interface RGBA {
   readonly r: number
