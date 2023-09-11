@@ -34,6 +34,7 @@ interface PluginAPI {
   showUI(html: string, options?: ShowUIOptions): void
   readonly ui: UIAPI
   readonly util: UtilAPI
+  readonly constants: ConstantsAPI
   readonly clientStorage: ClientStorageAPI
   readonly parameters: ParametersAPI
   getNodeById(id: string): BaseNode | null
@@ -260,6 +261,14 @@ interface UtilAPI {
   rgb(color: string | RGB | RGBA): RGB
   rgba(color: string | RGB | RGBA): RGBA
   solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
+}
+interface ConstantsAPI {
+  figJamBase: {
+    [key: string]: string
+  }
+  figJamBaseLight: {
+    [key: string]: string
+  }
 }
 declare type CodegenEvent = {
   node: SceneNode
