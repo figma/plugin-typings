@@ -263,7 +263,7 @@ interface UtilAPI {
   solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
 }
 interface ConstantsAPI {
-  colors: { 
+  colors: {
     [key: string]: ColorPalette
   }
 }
