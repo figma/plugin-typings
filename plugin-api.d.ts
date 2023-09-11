@@ -263,11 +263,8 @@ interface UtilAPI {
   solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
 }
 interface ConstantsAPI {
-  figJamBase: {
-    [key: string]: string
-  }
-  figJamBaseLight: {
-    [key: string]: string
+  colors: { 
+    [key: string]: ColorPalette
   }
 }
 declare type CodegenEvent = {
@@ -670,6 +667,9 @@ interface RGB {
   readonly r: number
   readonly g: number
   readonly b: number
+}
+interface ColorPalette {
+  [key: string]: string
 }
 interface RGBA {
   readonly r: number
