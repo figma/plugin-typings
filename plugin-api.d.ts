@@ -262,10 +262,12 @@ interface UtilAPI {
   rgba(color: string | RGB | RGBA): RGBA
   solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
 }
+interface ColorPalette {
+  [key: string]: string
+}
 interface ConstantsAPI {
-  colors: {
-    [key: string]: ColorPalette
-  }
+  figJamBase: ColorPalette
+  figJamBaseLight: ColorPalette
 }
 declare type CodegenEvent = {
   node: SceneNode
@@ -667,9 +669,6 @@ interface RGB {
   readonly r: number
   readonly g: number
   readonly b: number
-}
-interface ColorPalette {
-  [key: string]: string
 }
 interface RGBA {
   readonly r: number
@@ -1165,8 +1164,44 @@ interface StyledTextSegment {
   }
 }
 declare type Reaction = {
-  action: Action | null
+  action?: Action
+  actions?: Action[]
   trigger: Trigger | null
+}
+declare type VariableDataType =
+  | 'BOOLEAN'
+  | 'FLOAT'
+  | 'STRING'
+  | 'VARIABLE_ALIAS'
+  | 'COLOR'
+  | 'EXPRESSION'
+declare type ExpressionFunction =
+  | 'ADDITION'
+  | 'SUBTRACTION'
+  | 'MULTIPLICATION'
+  | 'DIVISION'
+  | 'EQUALS'
+  | 'NOT_EQUAL'
+  | 'LESS_THAN'
+  | 'LESS_THAN_OR_EQUAL'
+  | 'GREATER_THAN'
+  | 'GREATER_THAN_OR_EQUAL'
+  | 'AND'
+  | 'OR'
+  | 'VAR_MODE_LOOKUP'
+interface Expression {
+  expressionFunction: ExpressionFunction
+  expressionArguments: VariableData[]
+}
+declare type VariableValueWithExpression = VariableValue | Expression
+interface VariableData {
+  type?: VariableDataType
+  resolvedType?: VariableResolvedDataType
+  value?: VariableValueWithExpression
+}
+declare type ConditionalBlock = {
+  condition?: VariableData
+  actions: Action[]
 }
 declare type Action =
   | {
@@ -1198,6 +1233,15 @@ declare type Action =
       readonly destinationId?: string | null
       readonly mediaAction: 'SKIP_TO'
       readonly newTimestamp: number
+    }
+  | {
+      readonly type: 'SET_VARIABLE'
+      readonly variableId: string | null
+      readonly variableValue?: VariableData
+    }
+  | {
+      readonly type: 'CONDITIONAL'
+      readonly conditionalBlocks: ConditionalBlock[]
     }
   | {
       readonly type: 'NODE'
