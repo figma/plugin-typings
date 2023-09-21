@@ -566,6 +566,7 @@ declare type NodeChangeProperty =
   | 'y'
   | 'rotation'
   | 'isMask'
+  | 'maskType'
   | 'clipsContent'
   | 'type'
   | 'overlayPositionType'
@@ -1139,6 +1140,7 @@ declare type BlendMode =
   | 'SATURATION'
   | 'COLOR'
   | 'LUMINOSITY'
+declare type MaskType = 'ALPHA' | 'VECTOR' | 'LUMINANCE'
 interface Font {
   fontName: FontName
 }
@@ -1511,6 +1513,7 @@ interface LayoutMixin extends DimensionAndPositionMixin, AutoLayoutChildrenMixin
 }
 interface BlendMixin extends MinimalBlendMixin {
   isMask: boolean
+  maskType: MaskType
   effects: ReadonlyArray<Effect>
   effectStyleId: string
 }
