@@ -1359,7 +1359,7 @@ interface ConnectorEndpointPositionAndEndpointNodeId {
 }
 interface ConnectorEndpointEndpointNodeIdAndMagnet {
   endpointNodeId: string
-  magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT'
+  magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' | 'CENTER'
 }
 declare type ConnectorEndpoint =
   | ConnectorEndpointPosition
