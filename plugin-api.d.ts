@@ -1205,6 +1205,9 @@ declare type ConditionalBlock = {
   condition?: VariableData
   actions: Action[]
 }
+declare type DevStatus = {
+  type: 'READY_FOR_DEV'
+} | null
 declare type Action =
   | {
       readonly type: 'BACK' | 'CLOSE'
@@ -1409,6 +1412,9 @@ interface DevResourcesMixin {
   deleteDevResourceAsync(url: string): Promise<void>
   setDevResourcePreviewAsync(url: string, preview: PlainTextElement): Promise<void>
 }
+interface DevStatusMixin {
+  devStatus: DevStatus
+}
 interface SceneNodeMixin {
   visible: boolean
   locked: boolean
@@ -1427,8 +1433,9 @@ interface SceneNodeMixin {
     readonly componentProperties?: {
       readonly [propertyName: string]: VariableAlias
     }
+    readonly textRangeFills?: VariableAlias[]
   }
-  setBoundVariable(field: VariableBindableNodeField, variableId: string): void
+  setBoundVariable(field: VariableBindableNodeField, variableId: string | null): void
   readonly inferredVariables?: {
     readonly [field in VariableBindableNodeField]?: VariableAlias[]
   } & {
@@ -1649,7 +1656,8 @@ interface BaseFrameMixin
     LayoutMixin,
     ExportMixin,
     IndividualStrokesMixin,
-    AutoLayoutMixin {
+    AutoLayoutMixin,
+    DevStatusMixin {
   readonly detachedInfo: DetachedInfo | null
   layoutGrids: ReadonlyArray<LayoutGrid>
   gridStyleId: string
@@ -1690,7 +1698,7 @@ interface ComponentPropertiesMixin {
   ): string
   deleteComponentProperty(propertyName: string): void
 }
-interface TextSublayerNode extends MinimalFillsMixin {
+interface NonResizableTextMixin {
   readonly hasMissingFont: boolean
   paragraphIndent: number
   paragraphSpacing: number
@@ -1761,6 +1769,7 @@ interface TextSublayerNode extends MinimalFillsMixin {
     Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>
   >
 }
+interface TextSublayerNode extends NonResizableTextMixin, MinimalFillsMixin {}
 interface DocumentNode extends BaseNodeMixin {
   readonly type: 'DOCUMENT'
   readonly children: ReadonlyArray<PageNode>
@@ -1851,7 +1860,7 @@ interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, Ve
   readonly type: 'VECTOR'
   clone(): VectorNode
 }
-interface TextNode extends DefaultShapeMixin, ConstraintMixin, TextSublayerNode {
+interface TextNode extends DefaultShapeMixin, ConstraintMixin, NonResizableTextMixin {
   readonly type: 'TEXT'
   clone(): TextNode
   textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
@@ -1976,7 +1985,6 @@ interface HighlightNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
-    ReactionMixin,
     VectorLikeMixin,
     StickableMixin {
   readonly type: 'HIGHLIGHT'
@@ -2087,7 +2095,7 @@ declare type VariableScope =
   | 'TEXT_FILL'
   | 'STROKE_COLOR'
 declare type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
-interface Variable {
+interface Variable extends PluginDataMixin {
   readonly id: string
   name: string
   description: string
@@ -2113,7 +2121,7 @@ interface Variable {
   setVariableCodeSyntax(platform: CodeSyntaxPlatform, value: string): void
   removeVariableCodeSyntax(platform: CodeSyntaxPlatform): void
 }
-interface VariableCollection {
+interface VariableCollection extends PluginDataMixin {
   readonly id: string
   name: string
   hiddenFromPublishing: boolean
@@ -2166,7 +2174,7 @@ interface EmbedData {
   description: string | null
   provider: string | null
 }
-interface EmbedNode extends OpaqueNodeMixin, SceneNodeMixin {
+interface EmbedNode extends OpaqueNodeMixin {
   readonly type: 'EMBED'
   readonly embedData: EmbedData
   clone(): EmbedNode
@@ -2177,7 +2185,7 @@ interface LinkUnfurlData {
   description: string | null
   provider: string | null
 }
-interface LinkUnfurlNode extends OpaqueNodeMixin, SceneNodeMixin {
+interface LinkUnfurlNode extends OpaqueNodeMixin {
   readonly type: 'LINK_UNFURL'
   readonly linkUnfurlData: LinkUnfurlData
   clone(): LinkUnfurlNode
@@ -2192,11 +2200,8 @@ interface MediaNode extends OpaqueNodeMixin {
   resizeWithoutConstraints(width: number, height: number): void
   clone(): MediaNode
 }
-interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin {
+interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin, DevStatusMixin {
   readonly type: 'SECTION'
-  devStatus: {
-    type: 'READY_FOR_DEV'
-  } | null
   sectionContentsHidden: boolean
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
