@@ -24,6 +24,7 @@ interface PluginAPI {
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
   readonly codegen: CodegenAPI
+  readonly vscode?: VsCodeAPI
   readonly devResources?: DevResourcesAPI
   readonly payments?: PaymentsAPI
   closePlugin(message?: string): void
@@ -158,6 +159,8 @@ interface PluginAPI {
   setFileThumbnailNodeAsync(
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
+
+  openExternal(url: string): void
 }
 interface VersionHistoryResult {
   id: string
@@ -321,6 +324,10 @@ interface CodegenAPI {
   readonly preferences: CodegenPreferences
   refresh: () => void
 }
+
+interface VsCodeAPI {
+}
+
 interface DevResource {
   readonly name: string
   readonly url: string
