@@ -159,7 +159,6 @@ interface PluginAPI {
   setFileThumbnailNodeAsync(
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
-
   openExternal(url: string): void
 }
 interface VersionHistoryResult {
@@ -324,10 +323,7 @@ interface CodegenAPI {
   readonly preferences: CodegenPreferences
   refresh: () => void
 }
-
-interface VsCodeAPI {
-}
-
+interface VsCodeAPI {}
 interface DevResource {
   readonly name: string
   readonly url: string
