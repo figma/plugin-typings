@@ -24,6 +24,7 @@ interface PluginAPI {
   readonly activeUsers: ActiveUser[]
   readonly textreview?: TextReviewAPI
   readonly codegen: CodegenAPI
+  readonly vscode?: VSCodeAPI
   readonly devResources?: DevResourcesAPI
   readonly payments?: PaymentsAPI
   closePlugin(message?: string): void
@@ -31,6 +32,7 @@ interface PluginAPI {
   commitUndo(): void
   triggerUndo(): void
   saveVersionHistoryAsync(title: string, description?: string): Promise<VersionHistoryResult>
+  openExternal(url: string): void
   showUI(html: string, options?: ShowUIOptions): void
   readonly ui: UIAPI
   readonly util: UtilAPI
@@ -351,6 +353,7 @@ declare type DevResourceOpenEvent = {
 declare type AuthResult = {
   type: 'AUTH_SUCCESS'
 } | null
+interface VSCodeAPI {}
 interface DevResourcesAPI {
   on(
     type: 'linkpreview',
