@@ -1579,7 +1579,7 @@ interface MinimalStrokesMixin {
   strokeJoin: StrokeJoin | PluginAPI['mixed']
   strokeAlign: 'CENTER' | 'INSIDE' | 'OUTSIDE'
   dashPattern: ReadonlyArray<number>
-  strokeGeometry: VectorPaths
+  readonly strokeGeometry: VectorPaths
 }
 interface IndividualStrokesMixin {
   strokeTopWeight: number
@@ -1595,7 +1595,7 @@ interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   strokeCap: StrokeCap | PluginAPI['mixed']
   strokeMiterLimit: number
   outlineStroke(): VectorNode | null
-  fillGeometry: VectorPaths
+  readonly fillGeometry: VectorPaths
 }
 interface CornerMixin {
   cornerRadius: number | PluginAPI['mixed']
