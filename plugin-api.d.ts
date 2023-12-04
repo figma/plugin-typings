@@ -1595,7 +1595,7 @@ interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   strokeCap: StrokeCap | PluginAPI['mixed']
   strokeMiterLimit: number
   outlineStroke(): VectorNode | null
-  fillGeometry: VectorPaths
+  readonly fillGeometry: VectorPaths
 }
 interface CornerMixin {
   cornerRadius: number | PluginAPI['mixed']
