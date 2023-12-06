@@ -181,6 +181,16 @@ interface VariablesAPI {
     field: VariableBindablePaintField,
     variable: Variable,
   ): SolidPaint
+  setBoundVariableForEffect(
+    effect: Effect,
+    field: VariableBindableEffectField,
+    variable: Variable,
+  ): Effect
+  setBoundVariableForLayoutGrid(
+    layoutGrid: LayoutGrid,
+    field: VariableBindableLayoutGridField,
+    variable: Variable,
+  ): LayoutGrid
   importVariableByKeyAsync(key: string): Promise<Variable>
 }
 interface LibraryVariableCollection {
@@ -936,6 +946,9 @@ interface DropShadowEffect {
   readonly visible: boolean
   readonly blendMode: BlendMode
   readonly showShadowBehindNode?: boolean
+  readonly boundVariables?: {
+    [field in VariableBindableEffectField]?: VariableAlias
+  }
 }
 interface InnerShadowEffect {
   readonly type: 'INNER_SHADOW'
@@ -945,11 +958,17 @@ interface InnerShadowEffect {
   readonly spread?: number
   readonly visible: boolean
   readonly blendMode: BlendMode
+  readonly boundVariables?: {
+    [field in VariableBindableEffectField]?: VariableAlias
+  }
 }
 interface BlurEffect {
   readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
   readonly radius: number
   readonly visible: boolean
+  readonly boundVariables?: {
+    ['radius']?: VariableAlias
+  }
 }
 declare type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
 declare type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
@@ -1026,12 +1045,18 @@ interface RowsColsLayoutGrid {
   readonly offset?: number
   readonly visible?: boolean
   readonly color?: RGBA
+  readonly boundVariables?: {
+    [field in VariableBindableLayoutGridField]?: VariableAlias
+  }
 }
 interface GridLayoutGrid {
   readonly pattern: 'GRID'
   readonly sectionSize: number
   readonly visible?: boolean
   readonly color?: RGBA
+  readonly boundVariables?: {
+    ['sectionSize']?: VariableAlias
+  }
 }
 declare type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
 interface ExportSettingsConstraints {
@@ -1434,6 +1459,8 @@ interface SceneNodeMixin {
   } & {
     readonly fills?: VariableAlias[]
     readonly strokes?: VariableAlias[]
+    readonly effects?: VariableAlias[]
+    readonly layoutGrids?: VariableAlias[]
     readonly componentProperties?: {
       readonly [propertyName: string]: VariableAlias
     }
@@ -1474,7 +1501,15 @@ declare type VariableBindableNodeField =
   | 'minHeight'
   | 'maxHeight'
   | 'counterAxisSpacing'
+  | 'strokeWeight'
+  | 'strokeTopWeight'
+  | 'strokeRightWeight'
+  | 'strokeBottomWeight'
+  | 'strokeLeftWeight'
+  | 'opacity'
 declare type VariableBindablePaintField = 'color'
+declare type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
+declare type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
 declare type VariableBindableComponentPropertyField = 'value'
 interface StickableMixin {
   stuckTo: SceneNode | null
@@ -2098,6 +2133,10 @@ declare type VariableScope =
   | 'SHAPE_FILL'
   | 'TEXT_FILL'
   | 'STROKE_COLOR'
+  | 'STROKE_FLOAT'
+  | 'EFFECT_FLOAT'
+  | 'EFFECT_COLOR'
+  | 'OPACITY'
 declare type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
 interface Variable extends PluginDataMixin {
   readonly id: string
