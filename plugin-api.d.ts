@@ -492,7 +492,7 @@ interface PropertyChange extends BaseNodeChange {
   properties: NodeChangeProperty[]
 }
 interface BaseStyleChange extends BaseDocumentChange {
-  style: PaintStyle | TextStyle | GridStyle | EffectStyle | null
+  style: BaseStyle | null
 }
 interface StyleCreateChange extends BaseStyleChange {
   type: 'STYLE_CREATE'
@@ -1444,7 +1444,7 @@ interface DevResourcesMixin {
 interface DevStatusMixin {
   devStatus: DevStatus
 }
-interface SceneNodeMixin {
+interface SceneNodeMixin extends ExplicitVariableModesMixin {
   visible: boolean
   locked: boolean
   readonly stuckNodes: SceneNode[]
@@ -1476,11 +1476,6 @@ interface SceneNodeMixin {
   resolvedVariableModes: {
     [collectionId: string]: string
   }
-  explicitVariableModes: {
-    [collectionId: string]: string
-  }
-  clearExplicitVariableModeForCollection(collectionId: string): void
-  setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
 }
 declare type VariableBindableNodeField =
   | 'height'
@@ -1508,8 +1503,11 @@ declare type VariableBindableNodeField =
   | 'strokeLeftWeight'
   | 'opacity'
 declare type VariableBindablePaintField = 'color'
+declare type VariableBindablePaintStyleField = 'paints'
 declare type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
+declare type VariableBindableEffectStyleField = 'effects'
 declare type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
+declare type VariableBindableGridStyleField = 'layoutGrids'
 declare type VariableBindableComponentPropertyField = 'value'
 interface StickableMixin {
   stuckTo: SceneNode | null
@@ -1827,7 +1825,14 @@ interface DocumentNode extends BaseNodeMixin {
     } & (PageNode | SceneNode)
   >
 }
-interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
+interface ExplicitVariableModesMixin {
+  explicitVariableModes: {
+    [collectionId: string]: string
+  }
+  clearExplicitVariableModeForCollection(collectionId: string): void
+  setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
+}
+interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin, ExplicitVariableModesMixin {
   readonly type: 'PAGE'
   clone(): PageNode
   guides: ReadonlyArray<Guide>
@@ -2292,18 +2297,21 @@ interface StyleConsumers {
   node: SceneNode
   fields: InheritedStyleField[]
 }
-interface BaseStyle extends PublishableMixin, PluginDataMixin {
+interface BaseStyleMixin extends PublishableMixin, PluginDataMixin {
   readonly id: string
   readonly type: StyleType
   readonly consumers: StyleConsumers[]
   name: string
   remove(): void
 }
-interface PaintStyle extends BaseStyle {
+interface PaintStyle extends BaseStyleMixin {
   type: 'PAINT'
   paints: ReadonlyArray<Paint>
+  readonly boundVariables?: {
+    readonly [field in VariableBindablePaintStyleField]?: VariableAlias[]
+  }
 }
-interface TextStyle extends BaseStyle {
+interface TextStyle extends BaseStyleMixin {
   type: 'TEXT'
   fontSize: number
   textDecoration: TextDecoration
@@ -2318,14 +2326,21 @@ interface TextStyle extends BaseStyle {
   hangingList: boolean
   textCase: TextCase
 }
-interface EffectStyle extends BaseStyle {
+interface EffectStyle extends BaseStyleMixin {
   type: 'EFFECT'
   effects: ReadonlyArray<Effect>
+  readonly boundVariables?: {
+    readonly [field in VariableBindableEffectStyleField]?: VariableAlias[]
+  }
 }
-interface GridStyle extends BaseStyle {
+interface GridStyle extends BaseStyleMixin {
   type: 'GRID'
   layoutGrids: ReadonlyArray<LayoutGrid>
+  readonly boundVariables?: {
+    readonly [field in VariableBindableGridStyleField]?: VariableAlias[]
+  }
 }
+declare type BaseStyle = PaintStyle | TextStyle | EffectStyle | GridStyle
 interface Image {
   readonly hash: string
   getBytesAsync(): Promise<Uint8Array>
