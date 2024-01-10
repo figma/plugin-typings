@@ -179,17 +179,17 @@ interface VariablesAPI {
   setBoundVariableForPaint(
     paint: SolidPaint,
     field: VariableBindablePaintField,
-    variable: Variable | null,
+    variable: Variable,
   ): SolidPaint
   setBoundVariableForEffect(
     effect: Effect,
     field: VariableBindableEffectField,
-    variable: Variable | null,
+    variable: Variable,
   ): Effect
   setBoundVariableForLayoutGrid(
     layoutGrid: LayoutGrid,
     field: VariableBindableLayoutGridField,
-    variable: Variable | null,
+    variable: Variable,
   ): LayoutGrid
   importVariableByKeyAsync(key: string): Promise<Variable>
 }
