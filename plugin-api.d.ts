@@ -1694,6 +1694,7 @@ interface BaseFrameMixin
     ExportMixin,
     IndividualStrokesMixin,
     AutoLayoutMixin,
+    AnnotationsMixin,
     DevStatusMixin {
   readonly detachedInfo: DetachedInfo | null
   layoutGrids: ReadonlyArray<LayoutGrid>
@@ -1711,6 +1712,87 @@ interface OpaqueNodeMixin
 interface MinimalBlendMixin {
   opacity: number
   blendMode: BlendMode
+}
+interface Annotation {
+  readonly label?: string
+  readonly properties?: ReadonlyArray<AnnotationProperty>
+}
+interface AnnotationProperty {
+  readonly type: AnnotationPropertyType
+}
+declare type AnnotationPropertyType =
+  | 'width'
+  | 'height'
+  | 'maxWidth'
+  | 'minWidth'
+  | 'maxHeight'
+  | 'minHeight'
+  | 'fills'
+  | 'strokes'
+  | 'effects'
+  | 'strokeWeight'
+  | 'cornerRadius'
+  | 'textStyleId'
+  | 'textAlignHorizontal'
+  | 'fontFamily'
+  | 'fontSize'
+  | 'fontWeight'
+  | 'lineHeight'
+  | 'letterSpacing'
+  | 'itemSpacing'
+  | 'padding'
+  | 'layoutMode'
+  | 'alignItems'
+  | 'opacity'
+  | 'mainComponent'
+interface AnnotationsMixin {
+  annotations: ReadonlyArray<Annotation>
+}
+interface Measurement {
+  id: string
+  start: {
+    node: SceneNode
+    side: MeasurementSide
+  }
+  end: {
+    node: SceneNode
+    side: MeasurementSide
+  }
+  offset: MeasurementOffset
+}
+declare type MeasurementSide = 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'
+declare type MeasurementOffset =
+  | {
+      type: 'INNER'
+      relative: number
+    }
+  | {
+      type: 'OUTER'
+      fixed: number
+    }
+interface MeasurementsMixin {
+  getMeasurements(): Measurement[]
+  getMeasurementsForNode(node: SceneNode): Measurement[]
+  addMeasurement(
+    start: {
+      node: SceneNode
+      side: MeasurementSide
+    },
+    end: {
+      node: SceneNode
+      side: MeasurementSide
+    },
+    options?: {
+      offset?: MeasurementOffset
+    },
+  ): Measurement
+  editMeasurement(
+    id: string,
+    newValue: {
+      offset: MeasurementOffset
+    },
+  ): Measurement
+  deleteMeasurement(id: string): void
 }
 interface VariantMixin {
   readonly variantProperties: {
@@ -1832,7 +1914,12 @@ interface ExplicitVariableModesMixin {
   clearExplicitVariableModeForCollection(collectionId: string): void
   setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
 }
-interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin, ExplicitVariableModesMixin {
+interface PageNode
+  extends BaseNodeMixin,
+    ChildrenMixin,
+    ExportMixin,
+    ExplicitVariableModesMixin,
+    MeasurementsMixin {
   readonly type: 'PAGE'
   clone(): PageNode
   guides: ReadonlyArray<Guide>
@@ -1876,35 +1963,45 @@ interface RectangleNode
     ConstraintMixin,
     CornerMixin,
     RectangleCornerMixin,
-    IndividualStrokesMixin {
+    IndividualStrokesMixin,
+    AnnotationsMixin {
   readonly type: 'RECTANGLE'
   clone(): RectangleNode
 }
-interface LineNode extends DefaultShapeMixin, ConstraintMixin {
+interface LineNode extends DefaultShapeMixin, ConstraintMixin, AnnotationsMixin {
   readonly type: 'LINE'
   clone(): LineNode
 }
-interface EllipseNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+interface EllipseNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, AnnotationsMixin {
   readonly type: 'ELLIPSE'
   clone(): EllipseNode
   arcData: ArcData
 }
-interface PolygonNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+interface PolygonNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, AnnotationsMixin {
   readonly type: 'POLYGON'
   clone(): PolygonNode
   pointCount: number
 }
-interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin {
+interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, AnnotationsMixin {
   readonly type: 'STAR'
   clone(): StarNode
   pointCount: number
   innerRadius: number
 }
-interface VectorNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, VectorLikeMixin {
+interface VectorNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    CornerMixin,
+    VectorLikeMixin,
+    AnnotationsMixin {
   readonly type: 'VECTOR'
   clone(): VectorNode
 }
-interface TextNode extends DefaultShapeMixin, ConstraintMixin, NonResizableTextMixin {
+interface TextNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    NonResizableTextMixin,
+    AnnotationsMixin {
   readonly type: 'TEXT'
   clone(): TextNode
   textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
