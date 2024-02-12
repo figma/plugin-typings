@@ -79,6 +79,7 @@ interface PluginAPI {
   createText(): TextNode
   createFrame(): FrameNode
   createComponent(): ComponentNode
+  createComponentFromNode(node: SceneNode): ComponentNode
   createPage(): PageNode
   createSlice(): SliceNode
   createSticky(): StickyNode
