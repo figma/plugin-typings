@@ -172,7 +172,7 @@ interface VariablesAPI {
   getLocalVariableCollections(): VariableCollection[]
   createVariable(
     name: string,
-    collectionId: string,
+    collection: VariableCollection,
     resolvedType: VariableResolvedDataType,
   ): Variable
   createVariableCollection(name: string): VariableCollection
