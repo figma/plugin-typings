@@ -1467,7 +1467,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     }
     readonly textRangeFills?: VariableAlias[]
   }
-  setBoundVariable(field: VariableBindableNodeField, variableId: string | null): void
+  setBoundVariable(field: VariableBindableNodeField, variable: Variable | null): void
   readonly inferredVariables?: {
     readonly [field in VariableBindableNodeField]?: VariableAlias[]
   } & {
