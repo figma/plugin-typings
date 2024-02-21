@@ -39,12 +39,15 @@ interface PluginAPI {
   readonly constants: ConstantsAPI
   readonly clientStorage: ClientStorageAPI
   readonly parameters: ParametersAPI
+  getNodeByIdAsync(id: string): Promise<BaseNode | null>
   getNodeById(id: string): BaseNode | null
+  getStyleByIdAsync(id: string): Promise<BaseStyle | null>
   getStyleById(id: string): BaseStyle | null
   readonly variables: VariablesAPI
   readonly teamLibrary: TeamLibraryAPI
   readonly root: DocumentNode
   currentPage: PageNode
+  setCurrentPageAsync(page: PageNode): Promise<void>
   on(type: ArgFreeEventType, callback: () => void): void
   on(type: 'run', callback: (event: RunEvent) => void): void
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -53,6 +56,7 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  on(type: 'stylechange', callback: (event: StyleChangeEvent) => void): void
   once(type: ArgFreeEventType, callback: () => void): void
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -61,6 +65,7 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  once(type: 'stylechange', callback: (event: StyleChangeEvent) => void): void
   off(type: ArgFreeEventType, callback: () => void): void
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
@@ -69,6 +74,7 @@ interface PluginAPI {
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+  off(type: 'stylechange', callback: (event: StyleChangeEvent) => void): void
   readonly mixed: unique symbol
   createRectangle(): RectangleNode
   createLine(): LineNode
@@ -94,9 +100,13 @@ interface PluginAPI {
   createTextStyle(): TextStyle
   createEffectStyle(): EffectStyle
   createGridStyle(): GridStyle
+  getLocalPaintStylesAsync(): Promise<PaintStyle[]>
   getLocalPaintStyles(): PaintStyle[]
+  getLocalTextStylesAsync(): Promise<TextStyle[]>
   getLocalTextStyles(): TextStyle[]
+  getLocalEffectStylesAsync(): Promise<EffectStyle[]>
   getLocalEffectStyles(): EffectStyle[]
+  getLocalGridStylesAsync(): Promise<GridStyle[]>
   getLocalGridStyles(): GridStyle[]
   getSelectionColors(): null | {
     paints: Paint[]
@@ -157,26 +167,40 @@ interface PluginAPI {
   ungroup(node: SceneNode & ChildrenMixin): Array<SceneNode>
   base64Encode(data: Uint8Array): string
   base64Decode(data: string): Uint8Array
+  getFileThumbnailNodeAsync(): Promise<
+    FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
+  >
   getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
   setFileThumbnailNodeAsync(
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
+  loadAllPagesAsync(): Promise<void>
 }
 interface VersionHistoryResult {
   id: string
 }
 interface VariablesAPI {
+  getVariableByIdAsync(id: string): Promise<Variable | null>
   getVariableById(id: string): Variable | null
+  getVariableCollectionByIdAsync(id: string): Promise<VariableCollection | null>
   getVariableCollectionById(id: string): VariableCollection | null
+  getLocalVariablesAsync(type?: VariableResolvedDataType): Promise<Variable[]>
   getLocalVariables(type?: VariableResolvedDataType): Variable[]
+  getLocalVariableCollectionsAsync(): Promise<VariableCollection[]>
   getLocalVariableCollections(): VariableCollection[]
   createVariable(
     name: string,
     collectionId: string,
     resolvedType: VariableResolvedDataType,
   ): Variable
+  createVariable(
+    name: string,
+    collection: VariableCollection,
+    resolvedType: VariableResolvedDataType,
+  ): Variable
   createVariableCollection(name: string): VariableCollection
   createVariableAlias(variable: Variable): VariableAlias
+  createVariableAliasByIdAsync(variableId: string): Promise<VariableAlias>
   setBoundVariableForPaint(
     paint: SolidPaint,
     field: VariableBindablePaintField,
@@ -470,6 +494,10 @@ interface DropFile {
 interface DocumentChangeEvent {
   documentChanges: DocumentChange[]
 }
+interface StyleChangeEvent {
+  styleChanges: StyleChange[]
+}
+declare type StyleChange = StyleCreateChange | StyleDeleteChange | StylePropertyChange
 interface BaseDocumentChange {
   id: string
   origin: 'LOCAL' | 'REMOTE'
@@ -639,6 +667,10 @@ declare type NodeChangeProperty =
   | 'authorName'
   | 'code'
   | 'textBackground'
+interface NodeChangeEvent {
+  nodeChanges: NodeChange[]
+}
+declare type NodeChange = CreateChange | DeleteChange | PropertyChange
 declare type StyleChangeProperty =
   | 'name'
   | 'pluginData'
@@ -1468,6 +1500,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     readonly textRangeFills?: VariableAlias[]
   }
   setBoundVariable(field: VariableBindableNodeField, variableId: string | null): void
+  setBoundVariable(field: VariableBindableNodeField, variable: Variable | null): void
   readonly inferredVariables?: {
     readonly [field in VariableBindableNodeField]?: VariableAlias[]
   } & {
@@ -1561,6 +1594,7 @@ interface BlendMixin extends MinimalBlendMixin {
   maskType: MaskType
   effects: ReadonlyArray<Effect>
   effectStyleId: string
+  setEffectStyleIdAsync(styleId: string): Promise<void>
 }
 interface ContainerMixin {
   expanded: boolean
@@ -1609,6 +1643,7 @@ declare type DetachedInfo =
 interface MinimalStrokesMixin {
   strokes: ReadonlyArray<Paint>
   strokeStyleId: string
+  setStrokeStyleIdAsync(styleId: string): Promise<void>
   strokeWeight: number | PluginAPI['mixed']
   strokeJoin: StrokeJoin | PluginAPI['mixed']
   strokeAlign: 'CENTER' | 'INSIDE' | 'OUTSIDE'
@@ -1624,6 +1659,7 @@ interface IndividualStrokesMixin {
 interface MinimalFillsMixin {
   fills: ReadonlyArray<Paint> | PluginAPI['mixed']
   fillStyleId: string | PluginAPI['mixed']
+  setFillStyleIdAsync(styleId: string): Promise<void>
 }
 interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   strokeCap: StrokeCap | PluginAPI['mixed']
@@ -1656,6 +1692,7 @@ interface FramePrototypingMixin {
 }
 interface VectorLikeMixin {
   vectorNetwork: VectorNetwork
+  setVectorNetworkAsync(vectorNetwork: VectorNetwork): Promise<void>
   vectorPaths: VectorPaths
   handleMirroring: HandleMirroring | PluginAPI['mixed']
 }
@@ -1700,6 +1737,7 @@ interface BaseFrameMixin
   readonly detachedInfo: DetachedInfo | null
   layoutGrids: ReadonlyArray<LayoutGrid>
   gridStyleId: string
+  setGridStyleIdAsync(styleId: string): Promise<void>
   clipsContent: boolean
   guides: ReadonlyArray<Guide>
   inferredAutoLayout: InferredAutoLayoutResult | null
@@ -1869,8 +1907,10 @@ interface NonResizableTextMixin {
   getRangeFills(start: number, end: number): Paint[] | PluginAPI['mixed']
   setRangeFills(start: number, end: number, value: Paint[]): void
   getRangeTextStyleId(start: number, end: number): string | PluginAPI['mixed']
+  setRangeTextStyleIdAsync(start: number, end: number, styleId: string): Promise<void>
   setRangeTextStyleId(start: number, end: number, value: string): void
   getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
+  setRangeFillStyleIdAsync(start: number, end: number, styleId: string): Promise<void>
   setRangeFillStyleId(start: number, end: number, value: string): void
   getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
   setRangeListOptions(start: number, end: number, value: TextListOptions): void
@@ -1913,7 +1953,9 @@ interface ExplicitVariableModesMixin {
     [collectionId: string]: string
   }
   clearExplicitVariableModeForCollection(collectionId: string): void
+  clearExplicitVariableModeForCollection(collection: VariableCollection): void
   setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
+  setExplicitVariableModeForCollection(collection: VariableCollection, modeId: string): void
 }
 interface PageNode
   extends BaseNodeMixin,
@@ -1937,6 +1979,10 @@ interface PageNode
   backgrounds: ReadonlyArray<Paint>
   prototypeBackgrounds: ReadonlyArray<Paint>
   readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null
+  loadAsync(): Promise<void>
+  on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
+  once(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
+  off(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
 }
 interface FrameNode extends DefaultFrameMixin {
   readonly type: 'FRAME'
@@ -2012,6 +2058,7 @@ interface TextNode
   maxLines: number | null
   autoRename: boolean
   textStyleId: string | PluginAPI['mixed']
+  setTextStyleIdAsync(styleId: string): Promise<void>
 }
 declare type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
 declare type InstanceSwapPreferredValue = {
@@ -2047,6 +2094,7 @@ interface ComponentNode
   readonly type: 'COMPONENT'
   clone(): ComponentNode
   createInstance(): InstanceNode
+  getInstancesAsync(): Promise<InstanceNode[]>
   readonly instances: InstanceNode[]
 }
 declare type ComponentProperties = {
@@ -2062,6 +2110,7 @@ declare type ComponentProperties = {
 interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   readonly type: 'INSTANCE'
   clone(): InstanceNode
+  getMainComponentAsync(): Promise<ComponentNode | null>
   mainComponent: ComponentNode | null
   swapComponent(componentNode: ComponentNode): void
   setProperties(properties: { [propertyName: string]: string | boolean | VariableAlias }): void
@@ -2398,6 +2447,7 @@ interface StyleConsumers {
 interface BaseStyleMixin extends PublishableMixin, PluginDataMixin {
   readonly id: string
   readonly type: StyleType
+  getStyleConsumersAsync(): Promise<StyleConsumers[]>
   readonly consumers: StyleConsumers[]
   name: string
   remove(): void
