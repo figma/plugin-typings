@@ -1698,6 +1698,7 @@ interface VectorLikeMixin {
 }
 interface ReactionMixin {
   reactions: ReadonlyArray<Reaction>
+  setReactionsAsync(reactions: Array<Reaction>): Promise<void>
 }
 interface DocumentationLink {
   readonly uri: string
