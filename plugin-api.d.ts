@@ -1948,6 +1948,7 @@ interface DocumentNode extends BaseNodeMixin {
       type: T[number]
     } & (PageNode | SceneNode)
   >
+  findWidgetNodesByWidgetId(widgetId: string): Array<WidgetNode>
 }
 interface ExplicitVariableModesMixin {
   explicitVariableModes: {
