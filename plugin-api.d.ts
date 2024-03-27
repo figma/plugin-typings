@@ -560,6 +560,7 @@ declare type NodeChangeProperty =
   | 'layoutGrids'
   | 'guides'
   | 'characters'
+  | 'openTypeFeatures'
   | 'styledTextSegments'
   | 'vectorNetwork'
   | 'effects'
