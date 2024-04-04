@@ -1776,6 +1776,7 @@ declare type AnnotationPropertyType =
   | 'textStyleId'
   | 'textAlignHorizontal'
   | 'fontFamily'
+  | 'fontStyle'
   | 'fontSize'
   | 'fontWeight'
   | 'lineHeight'
