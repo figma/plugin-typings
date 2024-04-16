@@ -1226,6 +1226,12 @@ interface StyledTextSegment {
   openTypeFeatures: {
     readonly [feature in OpenTypeFeature]: boolean
   }
+  boundVariables?: {
+    [field in keyof Omit<
+      VariableBindableTextField,
+      'paragraphSpacing' | 'paragraphIndent'
+    >]?: VariableAlias
+  }
 }
 declare type Reaction = {
   action?: Action
@@ -1491,6 +1497,8 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
   readonly boundVariables?: {
     readonly [field in VariableBindableNodeField]?: VariableAlias
   } & {
+    readonly [field in VariableBindableTextField]?: VariableAlias[]
+  } & {
     readonly fills?: VariableAlias[]
     readonly strokes?: VariableAlias[]
     readonly effects?: VariableAlias[]
@@ -1500,8 +1508,14 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     }
     readonly textRangeFills?: VariableAlias[]
   }
-  setBoundVariable(field: VariableBindableNodeField, variableId: string | null): void
-  setBoundVariable(field: VariableBindableNodeField, variable: Variable | null): void
+  setBoundVariable(
+    field: VariableBindableNodeField | VariableBindableTextField,
+    variableId: string | null,
+  ): void
+  setBoundVariable(
+    field: VariableBindableNodeField | VariableBindableTextField,
+    variable: Variable | null,
+  ): void
   readonly inferredVariables?: {
     readonly [field in VariableBindableNodeField]?: VariableAlias[]
   } & {
@@ -1537,6 +1551,15 @@ declare type VariableBindableNodeField =
   | 'strokeBottomWeight'
   | 'strokeLeftWeight'
   | 'opacity'
+declare type VariableBindableTextField =
+  | 'fontFamily'
+  | 'fontSize'
+  | 'fontStyle'
+  | 'fontWeight'
+  | 'letterSpacing'
+  | 'lineHeight'
+  | 'paragraphSpacing'
+  | 'paragraphIndent'
 declare type VariableBindablePaintField = 'color'
 declare type VariableBindablePaintStyleField = 'paints'
 declare type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
@@ -1919,6 +1942,17 @@ interface NonResizableTextMixin {
   setRangeListOptions(start: number, end: number, value: TextListOptions): void
   getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
   setRangeIndentation(start: number, end: number, value: number): void
+  getRangeBoundVariable(
+    start: number,
+    end: number,
+    field: keyof Omit<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
+  ): number | PluginAPI['mixed']
+  setRangeBoundVariable(
+    start: number,
+    end: number,
+    field: keyof Omit<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
+    variable: Variable | null,
+  ): void
   getStyledTextSegments<
     StyledTextSegmentFields extends (keyof Omit<
       StyledTextSegment,
@@ -2477,6 +2511,10 @@ interface TextStyle extends BaseStyleMixin {
   hangingPunctuation: boolean
   hangingList: boolean
   textCase: TextCase
+  boundVariables?: {
+    [field in VariableBindableTextField]?: VariableAlias
+  }
+  setBoundVariable(field: VariableBindableTextField, variable: Variable | null): void
 }
 interface EffectStyle extends BaseStyleMixin {
   type: 'EFFECT'
