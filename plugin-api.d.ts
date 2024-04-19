@@ -303,10 +303,8 @@ interface ColorPalette {
   [key: string]: string
 }
 interface ConstantsAPI {
-  colors: {
-    figJamBase: ColorPalette
-    figJamBaseLight: ColorPalette
-  }
+  figJamBase: ColorPalette
+  figJamBaseLight: ColorPalette
 }
 declare type CodegenEvent = {
   node: SceneNode
