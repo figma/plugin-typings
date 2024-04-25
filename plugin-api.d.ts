@@ -302,9 +302,12 @@ interface UtilAPI {
 interface ColorPalette {
   [key: string]: string
 }
-interface ConstantsAPI {
+interface ColorPalettes {
   figJamBase: ColorPalette
   figJamBaseLight: ColorPalette
+}
+interface ConstantsAPI {
+  colors: ColorPalettes
 }
 declare type CodegenEvent = {
   node: SceneNode
@@ -1013,6 +1016,9 @@ interface Constraints {
 interface ColorStop {
   readonly position: number
   readonly color: RGBA
+  readonly boundVariables: {
+    [field in VariableBindableColorStopField]?: VariableAlias
+  }
 }
 interface ImageFilters {
   readonly exposure?: number
@@ -1562,6 +1568,7 @@ declare type VariableBindableTextField =
   | 'paragraphIndent'
 declare type VariableBindablePaintField = 'color'
 declare type VariableBindablePaintStyleField = 'paints'
+declare type VariableBindableColorStopField = 'color'
 declare type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
 declare type VariableBindableEffectStyleField = 'effects'
 declare type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
