@@ -1320,6 +1320,11 @@ declare type Action =
       readonly variableValue?: VariableData
     }
   | {
+      readonly type: 'SET_VARIABLE_MODE'
+      readonly variableCollectionId: string | null
+      readonly variableModeId: string | null
+    }
+  | {
       readonly type: 'CONDITIONAL'
       readonly conditionalBlocks: ConditionalBlock[]
     }
