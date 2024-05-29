@@ -2339,6 +2339,14 @@ declare type VariableScope =
   | 'EFFECT_FLOAT'
   | 'EFFECT_COLOR'
   | 'OPACITY'
+  | 'FONT_FAMILY'
+  | 'FONT_STYLE'
+  | 'FONT_WEIGHT'
+  | 'FONT_SIZE'
+  | 'LINE_HEIGHT'
+  | 'LETTER_SPACING'
+  | 'PARAGRAPH_SPACING'
+  | 'PARAGRAPH_INDENT'
 declare type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
 interface Variable extends PluginDataMixin {
   readonly id: string
