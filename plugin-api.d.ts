@@ -1233,7 +1233,7 @@ interface StyledTextSegment {
     readonly [feature in OpenTypeFeature]: boolean
   }
   boundVariables?: {
-    [field in keyof Omit<
+    [field in Exclude<
       VariableBindableTextField,
       'paragraphSpacing' | 'paragraphIndent'
     >]?: VariableAlias
@@ -1957,12 +1957,12 @@ interface NonResizableTextMixin {
   getRangeBoundVariable(
     start: number,
     end: number,
-    field: keyof Omit<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
+    field: Exclude<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
   ): number | PluginAPI['mixed']
   setRangeBoundVariable(
     start: number,
     end: number,
-    field: keyof Omit<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
+    field: Exclude<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
     variable: Variable | null,
   ): void
   getStyledTextSegments<
