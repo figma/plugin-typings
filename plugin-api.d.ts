@@ -1266,6 +1266,7 @@ declare type ExpressionFunction =
   | 'OR'
   | 'VAR_MODE_LOOKUP'
   | 'NEGATE'
+  | 'NOT'
 interface Expression {
   expressionFunction: ExpressionFunction
   expressionArguments: VariableData[]
