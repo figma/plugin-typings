@@ -1282,7 +1282,8 @@ declare type ConditionalBlock = {
   actions: Action[]
 }
 declare type DevStatus = {
-  type: 'READY_FOR_DEV'
+  type: 'READY_FOR_DEV' | 'COMPLETED'
+  description?: string
 } | null
 declare type Action =
   | {
