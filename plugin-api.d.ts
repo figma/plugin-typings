@@ -1548,6 +1548,7 @@ declare type VariableBindableNodeField =
   | 'paddingTop'
   | 'paddingBottom'
   | 'visible'
+  | 'cornerRadius'
   | 'topLeftRadius'
   | 'topRightRadius'
   | 'bottomLeftRadius'
