@@ -1641,7 +1641,15 @@ interface DeprecatedBackgroundMixin {
   backgrounds: ReadonlyArray<Paint>
   backgroundStyleId: string
 }
-declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
+declare type StrokeCap =
+  | 'NONE'
+  | 'ROUND'
+  | 'SQUARE'
+  | 'ARROW_LINES'
+  | 'ARROW_EQUILATERAL'
+  | 'TRIANGLE_FILLED'
+  | 'DIAMOND_FILLED'
+  | 'CIRCLE_FILLED'
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
 interface AutoLayoutMixin {
