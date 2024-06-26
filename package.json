@@ -1,6 +1,6 @@
 {
   "name": "@figma/plugin-typings",
-  "version": "1.96.0",
+  "version": "1.97.0",
   "description": "Typings for the Figma Plugin API",
   "main": "",
   "scripts": {
