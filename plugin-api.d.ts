@@ -983,7 +983,7 @@ interface DropShadowEffect {
   readonly visible: boolean
   readonly blendMode: BlendMode
   readonly showShadowBehindNode?: boolean
-  readonly boundVariables?: {
+  readonly boundVariables: {
     [field in VariableBindableEffectField]?: VariableAlias
   }
 }
@@ -995,7 +995,7 @@ interface InnerShadowEffect {
   readonly spread?: number
   readonly visible: boolean
   readonly blendMode: BlendMode
-  readonly boundVariables?: {
+  readonly boundVariables: {
     [field in VariableBindableEffectField]?: VariableAlias
   }
 }
@@ -1003,7 +1003,7 @@ interface BlurEffect {
   readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
   readonly radius: number
   readonly visible: boolean
-  readonly boundVariables?: {
+  readonly boundVariables: {
     ['radius']?: VariableAlias
   }
 }
@@ -1035,7 +1035,7 @@ interface SolidPaint {
   readonly visible?: boolean
   readonly opacity?: number
   readonly blendMode?: BlendMode
-  readonly boundVariables?: {
+  readonly boundVariables: {
     [field in VariableBindablePaintField]?: VariableAlias
   }
 }
@@ -1085,7 +1085,7 @@ interface RowsColsLayoutGrid {
   readonly offset?: number
   readonly visible?: boolean
   readonly color?: RGBA
-  readonly boundVariables?: {
+  readonly boundVariables: {
     [field in VariableBindableLayoutGridField]?: VariableAlias
   }
 }
@@ -1094,7 +1094,7 @@ interface GridLayoutGrid {
   readonly sectionSize: number
   readonly visible?: boolean
   readonly color?: RGBA
-  readonly boundVariables?: {
+  readonly boundVariables: {
     ['sectionSize']?: VariableAlias
   }
 }
@@ -1212,6 +1212,9 @@ declare type MaskType = 'ALPHA' | 'VECTOR' | 'LUMINANCE'
 interface Font {
   fontName: FontName
 }
+declare type TextStyleOverrideType = {
+  type: 'SEMANTIC_ITALIC' | 'SEMANTIC_WEIGHT' | 'HYPERLINK' | 'TEXT_DECORATION'
+}
 interface StyledTextSegment {
   characters: string
   start: number
@@ -1232,12 +1235,13 @@ interface StyledTextSegment {
   openTypeFeatures: {
     readonly [feature in OpenTypeFeature]: boolean
   }
-  boundVariables?: {
+  readonly boundVariables: {
     [field in Exclude<
       VariableBindableTextField,
       'paragraphSpacing' | 'paragraphIndent'
     >]?: VariableAlias
   }
+  textStyleOverrides: TextStyleOverrideType[]
 }
 declare type Reaction = {
   action?: Action
@@ -1507,7 +1511,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
         [nodeProperty in 'visible' | 'characters' | 'mainComponent']?: string
       }
     | null
-  readonly boundVariables?: {
+  readonly boundVariables: {
     readonly [field in VariableBindableNodeField]?: VariableAlias
   } & {
     readonly [field in VariableBindableTextField]?: VariableAlias[]
@@ -1549,7 +1553,6 @@ declare type VariableBindableNodeField =
   | 'paddingTop'
   | 'paddingBottom'
   | 'visible'
-  | 'cornerRadius'
   | 'topLeftRadius'
   | 'topRightRadius'
   | 'bottomLeftRadius'
@@ -1642,15 +1645,7 @@ interface DeprecatedBackgroundMixin {
   backgrounds: ReadonlyArray<Paint>
   backgroundStyleId: string
 }
-declare type StrokeCap =
-  | 'NONE'
-  | 'ROUND'
-  | 'SQUARE'
-  | 'ARROW_LINES'
-  | 'ARROW_EQUILATERAL'
-  | 'TRIANGLE_FILLED'
-  | 'DIAMOND_FILLED'
-  | 'CIRCLE_FILLED'
+declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
 interface AutoLayoutMixin {
@@ -2163,7 +2158,7 @@ declare type ComponentProperties = {
     type: ComponentPropertyType
     value: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
-    readonly boundVariables?: {
+    readonly boundVariables: {
       [field in VariableBindableComponentPropertyField]?: VariableAlias
     }
   }
@@ -2524,7 +2519,7 @@ interface BaseStyleMixin extends PublishableMixin, PluginDataMixin {
 interface PaintStyle extends BaseStyleMixin {
   type: 'PAINT'
   paints: ReadonlyArray<Paint>
-  readonly boundVariables?: {
+  readonly boundVariables: {
     readonly [field in VariableBindablePaintStyleField]?: VariableAlias[]
   }
 }
@@ -2542,7 +2537,7 @@ interface TextStyle extends BaseStyleMixin {
   hangingPunctuation: boolean
   hangingList: boolean
   textCase: TextCase
-  boundVariables?: {
+  readonly boundVariables: {
     [field in VariableBindableTextField]?: VariableAlias
   }
   setBoundVariable(field: VariableBindableTextField, variable: Variable | null): void
@@ -2550,14 +2545,14 @@ interface TextStyle extends BaseStyleMixin {
 interface EffectStyle extends BaseStyleMixin {
   type: 'EFFECT'
   effects: ReadonlyArray<Effect>
-  readonly boundVariables?: {
+  readonly boundVariables: {
     readonly [field in VariableBindableEffectStyleField]?: VariableAlias[]
   }
 }
 interface GridStyle extends BaseStyleMixin {
   type: 'GRID'
   layoutGrids: ReadonlyArray<LayoutGrid>
-  readonly boundVariables?: {
+  readonly boundVariables: {
     readonly [field in VariableBindableGridStyleField]?: VariableAlias[]
   }
 }
