@@ -1369,6 +1369,7 @@ declare type Trigger =
   | {
       readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE' | 'MOUSE_UP' | 'MOUSE_DOWN'
       readonly delay: number
+      readonly deprecatedVersion: boolean
     }
   | {
       readonly type: 'ON_KEY_DOWN'
