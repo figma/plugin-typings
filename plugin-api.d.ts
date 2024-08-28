@@ -1367,7 +1367,11 @@ declare type Trigger =
       readonly timeout: number
     }
   | {
-      readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE' | 'MOUSE_UP' | 'MOUSE_DOWN'
+      readonly type: 'MOUSE_UP' | 'MOUSE_DOWN'
+      readonly delay: number
+    }
+    | {
+      readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE'
       readonly delay: number
       readonly deprecatedVersion: boolean
     }
