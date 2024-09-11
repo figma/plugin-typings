@@ -1296,6 +1296,7 @@ declare type Action =
   | {
       readonly type: 'URL'
       url: string
+      openInNewTab?: boolean
     }
   | {
       readonly type: 'UPDATE_MEDIA_RUNTIME'
@@ -1367,8 +1368,13 @@ declare type Trigger =
       readonly timeout: number
     }
   | {
-      readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE' | 'MOUSE_UP' | 'MOUSE_DOWN'
+      readonly type: 'MOUSE_UP' | 'MOUSE_DOWN'
       readonly delay: number
+    }
+  | {
+      readonly type: 'MOUSE_ENTER' | 'MOUSE_LEAVE'
+      readonly delay: number
+      readonly deprecatedVersion: boolean
     }
   | {
       readonly type: 'ON_KEY_DOWN'
