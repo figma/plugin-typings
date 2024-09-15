@@ -6,6 +6,10 @@ rm -rf test-artifacts
 mkdir -p test-artifacts
 pushd test-artifacts
 
+echo "Running test 1 (include types in typeRoots so all types are available ambiently)"
+mkdir test-1
+pushd test-1
+
 cat > package.json << EOF
 {}
 EOF
@@ -143,9 +147,48 @@ function testParameters() {
 
 EOF
 
+npm install typescript
+npm install ../../
+npx tsc --noEmit
+
+popd
+
+echo "Running test 2 (import and use types selectively)"
+mkdir test-2
+pushd test-2
+
+cat > package.json << EOF
+{}
+EOF
+
+cat > tsconfig.json << EOF
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "target": "es6",
+    "lib": ["es6"],
+    "strict": true,
+    "typeRoots": []
+  }
+}
+EOF
+
+cat > code.ts << EOF
+/**
+ * Test file to test plugin-api-standalone.d.ts
+ */
+import { SceneNode, FrameNode } from "@figma/plugin-typings/plugin-api-standalone"
+
+function isFrameNode(x: SceneNode): x is FrameNode {
+  return x.type === "FRAME"
+}
+
+// @ts-expect-error No ambient types
+type VectorAlias = Vector
+EOF
 
 npm install typescript
-npm install ../
+npm install ../../
 npx tsc --noEmit
 
 popd
