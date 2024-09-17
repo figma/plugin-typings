@@ -177,10 +177,21 @@ cat > code.ts << EOF
 /**
  * Test file to test plugin-api-standalone.d.ts
  */
-import { SceneNode, FrameNode } from "@figma/plugin-typings/plugin-api-standalone"
+import { SceneNode, FrameNode, GradientPaint } from "@figma/plugin-typings/plugin-api-standalone"
 
 function isFrameNode(x: SceneNode): x is FrameNode {
   return x.type === "FRAME"
+}
+
+const gradient: GradientPaint = {
+  type: "GRADIENT_LINEAR",
+  gradientTransform: [[0, 0 ,0], [0, 0 ,0]],
+  gradientStops: [
+    {
+      position: 0,
+      color: { r: 1, g: 1, b: 1, a: 1 }
+    }
+  ]
 }
 
 // @ts-expect-error No ambient types
