@@ -1020,7 +1020,7 @@ interface Constraints {
 interface ColorStop {
   readonly position: number
   readonly color: RGBA
-  readonly boundVariables: {
+  readonly boundVariables?: {
     [field in VariableBindableColorStopField]?: VariableAlias
   }
 }
