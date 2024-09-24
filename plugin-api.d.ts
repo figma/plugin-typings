@@ -176,6 +176,8 @@ interface PluginAPI {
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
   loadAllPagesAsync(): Promise<void>
+  getSlideGrid(): Array<Array<SlideNode>>
+  setSlideGrid(slideGrid: Array<Array<SlideNode>>): void
 }
 interface VersionHistoryResult {
   id: string
@@ -428,6 +430,7 @@ interface ViewportAPI {
   zoom: number
   scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
   readonly bounds: Rect
+  slidesMode: 'grid' | 'single-slide'
 }
 interface TextReviewAPI {
   requestToBeEnabledAsync(): Promise<void>
@@ -2116,6 +2119,7 @@ interface PageNode
   on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   once(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   off(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
+  focusedSlide?: SlideNode | null
 }
 interface FrameNode extends DefaultFrameMixin {
   readonly type: 'FRAME'
@@ -2544,6 +2548,79 @@ interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin,
   sectionContentsHidden: boolean
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
+}
+interface SlideNode
+  extends BaseNodeMixin,
+    BlendMixin,
+    ChildrenMixin,
+    ExportMixin,
+    GeometryMixin,
+    AutoLayoutMixin,
+    IndividualStrokesMixin,
+    AnnotationsMixin,
+    DimensionAndPositionMixin,
+    ContainerMixin,
+    ConstraintMixin {
+  readonly type: 'SLIDE'
+  clone(): SlideNode
+  getSlideTransition(): SlideTransition
+  setSlideTransition(transition: SlideTransition): void
+  layoutGrids: ReadonlyArray<LayoutGrid>
+  gridStyleId: string
+  setGridStyleIdAsync(styleId: string): Promise<void>
+  guides: ReadonlyArray<Guide>
+  inferredAutoLayout: InferredAutoLayoutResult | null
+}
+interface SlideRowNode extends BaseNodeMixin, ChildrenMixin {
+  readonly type: 'SLIDE_ROW'
+  clone(): SlideRowNode
+}
+interface SlideGridNode extends BaseNodeMixin, ChildrenMixin {
+  readonly type: 'SLIDE_GRID'
+}
+interface InteractiveSlideElementNode extends BaseNodeMixin {
+  readonly type: 'INTERACTIVE_SLIDE_ELEMENT'
+  readonly interactiveSlideElementType: 'POLL' | 'EMBED' | 'FACEPILE' | 'ALIGNMENT' | 'YOUTUBE'
+}
+interface SlideTransition {
+  readonly type:
+    | 'NONE'
+    | 'DISSOLVE'
+    | 'SLIDE_FROM_LEFT'
+    | 'SLIDE_FROM_RIGHT'
+    | 'SLIDE_FROM_BOTTOM'
+    | 'SLIDE_FROM_TOP'
+    | 'PUSH_FROM_LEFT'
+    | 'PUSH_FROM_RIGHT'
+    | 'PUSH_FROM_BOTTOM'
+    | 'PUSH_FROM_TOP'
+    | 'MOVE_FROM_LEFT'
+    | 'MOVE_FROM_RIGHT'
+    | 'MOVE_FROM_TOP'
+    | 'MOVE_FROM_BOTTOM'
+    | 'SLIDE_OUT_TO_LEFT'
+    | 'SLIDE_OUT_TO_RIGHT'
+    | 'SLIDE_OUT_TO_TOP'
+    | 'SLIDE_OUT_TO_BOTTOM'
+    | 'MOVE_OUT_TO_LEFT'
+    | 'MOVE_OUT_TO_RIGHT'
+    | 'MOVE_OUT_TO_TOP'
+    | 'MOVE_OUT_TO_BOTTOM'
+    | 'SMART_ANIMATE'
+  readonly duration: number
+  readonly easing:
+    | 'IN_CUBIC'
+    | 'OUT_CUBIC'
+    | 'INOUT_CUBIC'
+    | 'LINEAR'
+    | 'GENTLE_SPRING'
+    | 'SPRING_PRESET_ONE'
+    | 'SPRING_PRESET_TWO'
+    | 'SPRING_PRESET_THREE'
+  readonly trigger: {
+    readonly type: 'ON_CLICK' | 'AFTER_DELAY'
+    readonly delay?: number
+  }
 }
 declare type BaseNode = DocumentNode | PageNode | SceneNode
 declare type SceneNode =
