@@ -2583,7 +2583,7 @@ interface InteractiveSlideElementNode extends BaseNodeMixin {
   readonly interactiveSlideElementType: 'POLL' | 'EMBED' | 'FACEPILE' | 'ALIGNMENT' | 'YOUTUBE'
 }
 interface SlideTransition {
-  readonly type:
+  readonly style:
     | 'NONE'
     | 'DISSOLVE'
     | 'SLIDE_FROM_LEFT'
@@ -2608,7 +2608,7 @@ interface SlideTransition {
     | 'MOVE_OUT_TO_BOTTOM'
     | 'SMART_ANIMATE'
   readonly duration: number
-  readonly easing:
+  readonly curve:
     | 'IN_CUBIC'
     | 'OUT_CUBIC'
     | 'INOUT_CUBIC'
@@ -2617,7 +2617,7 @@ interface SlideTransition {
     | 'SPRING_PRESET_ONE'
     | 'SPRING_PRESET_TWO'
     | 'SPRING_PRESET_THREE'
-  readonly trigger: {
+  readonly timing: {
     readonly type: 'ON_CLICK' | 'AFTER_DELAY'
     readonly delay?: number
   }
