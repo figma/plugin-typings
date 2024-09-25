@@ -93,6 +93,8 @@ interface PluginAPI {
   createPage(): PageNode
   createPageDivider(dividerName?: string): PageNode
   createSlice(): SliceNode
+  createSlide(row?: number, col?: number): SlideNode
+  createSlideRow(row?: number): SlideRowNode
   createSticky(): StickyNode
   createConnector(): ConnectorNode
   createShapeWithText(): ShapeWithTextNode
@@ -2655,6 +2657,10 @@ declare type SceneNode =
   | HighlightNode
   | WashiTapeNode
   | TableNode
+  | SlideNode
+  | SlideRowNode
+  | SlideGridNode
+  | InteractiveSlideElementNode
 declare type NodeType = BaseNode['type']
 declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 declare type InheritedStyleField =
