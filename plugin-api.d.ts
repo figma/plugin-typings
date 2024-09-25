@@ -2609,14 +2609,14 @@ interface SlideTransition {
     | 'SMART_ANIMATE'
   readonly duration: number
   readonly curve:
-    | 'IN_CUBIC'
-    | 'OUT_CUBIC'
-    | 'INOUT_CUBIC'
+    | 'EASE_IN'
+    | 'EASE_OUT'
+    | 'EASE_IN_AND_OUT'
     | 'LINEAR'
-    | 'GENTLE_SPRING'
-    | 'SPRING_PRESET_ONE'
-    | 'SPRING_PRESET_TWO'
-    | 'SPRING_PRESET_THREE'
+    | 'GENTLE'
+    | 'QUICK'
+    | 'BOUNCY'
+    | 'SLOW'
   readonly timing: {
     readonly type: 'ON_CLICK' | 'AFTER_DELAY'
     readonly delay?: number
