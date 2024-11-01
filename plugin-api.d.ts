@@ -52,6 +52,7 @@ interface PluginAPI {
   on(type: 'run', callback: (event: RunEvent) => void): void
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
   on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  on(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
   on(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -61,6 +62,7 @@ interface PluginAPI {
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
   once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  once(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
   once(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -70,6 +72,7 @@ interface PluginAPI {
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
   off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  off(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
   off(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -432,7 +435,7 @@ interface ViewportAPI {
   zoom: number
   scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
   readonly bounds: Rect
-  slidesMode: 'grid' | 'single-slide'
+  slidesView: 'grid' | 'single-slide'
 }
 interface TextReviewAPI {
   requestToBeEnabledAsync(): Promise<void>
@@ -481,6 +484,9 @@ interface OpenDevResourcesEvent {
   }
 }
 declare type RunEvent = RunParametersEvent | OpenDevResourcesEvent
+interface SlidesViewChangeEvent {
+  view: 'GRID' | 'SINGLE_SLIDE'
+}
 interface DropEvent {
   node: BaseNode | SceneNode
   x: number
@@ -1887,7 +1893,6 @@ interface Measurement {
     side: MeasurementSide
   }
   offset: MeasurementOffset
-  freeText: string
 }
 declare type MeasurementSide = 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'
 declare type MeasurementOffset =
@@ -1913,14 +1918,12 @@ interface MeasurementsMixin {
     },
     options?: {
       offset?: MeasurementOffset
-      freeText?: string
     },
   ): Measurement
   editMeasurement(
     id: string,
     newValue: {
-      offset?: MeasurementOffset
-      freeText?: string
+      offset: MeasurementOffset
     },
   ): Measurement
   deleteMeasurement(id: string): void
