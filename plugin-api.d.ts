@@ -1602,6 +1602,7 @@ declare type VariableBindableEffectStyleField = 'effects'
 declare type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
 declare type VariableBindableGridStyleField = 'layoutGrids'
 declare type VariableBindableComponentPropertyField = 'value'
+declare type VariableBindableComponentPropertyDefinitionField = 'defaultValue'
 interface StickableMixin {
   stuckTo: SceneNode | null
 }
@@ -1904,14 +1905,14 @@ interface ComponentPropertiesMixin {
   addComponentProperty(
     propertyName: string,
     type: ComponentPropertyType,
-    defaultValue: string | boolean,
+    defaultValue: string | boolean | VariableAlias,
     options?: ComponentPropertyOptions,
   ): string
   editComponentProperty(
     propertyName: string,
     newValue: {
       name?: string
-      defaultValue?: string | boolean
+      defaultValue?: string | boolean | VariableAlias
       preferredValues?: InstanceSwapPreferredValue[]
     },
   ): string
@@ -2148,6 +2149,9 @@ declare type ComponentPropertyDefinitions = {
     defaultValue: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
     variantOptions?: string[]
+    readonly boundVariables?: {
+      [field in VariableBindableComponentPropertyField]?: VariableAlias
+    }
   }
 }
 interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPropertiesMixin {
@@ -2499,6 +2503,7 @@ interface SlideNode
   clone(): SlideNode
   getSlideTransition(): SlideTransition
   setSlideTransition(transition: SlideTransition): void
+  isSkippedSlide: boolean
   layoutGrids: ReadonlyArray<LayoutGrid>
   gridStyleId: string
   setGridStyleIdAsync(styleId: string): Promise<void>
