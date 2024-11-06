@@ -2570,6 +2570,7 @@ interface SlideNode
   clone(): SlideNode
   getSlideTransition(): SlideTransition
   setSlideTransition(transition: SlideTransition): void
+  isSkippedSlide: boolean
   layoutGrids: ReadonlyArray<LayoutGrid>
   gridStyleId: string
   setGridStyleIdAsync(styleId: string): Promise<void>
