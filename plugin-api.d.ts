@@ -87,6 +87,7 @@ interface PluginAPI {
   createComponent(): ComponentNode
   createComponentFromNode(node: SceneNode): ComponentNode
   createPage(): PageNode
+  createPageDivider(dividerName?: string): PageNode
   createSlice(): SliceNode
   createSticky(): StickyNode
   createConnector(): ConnectorNode
@@ -2042,6 +2043,7 @@ interface PageNode
   backgrounds: ReadonlyArray<Paint>
   prototypeBackgrounds: ReadonlyArray<Paint>
   readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null
+  isPageDivider: boolean
   loadAsync(): Promise<void>
   on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   once(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
