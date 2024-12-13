@@ -233,7 +233,7 @@ interface TeamLibraryAPI {
   getAvailableLibraryVariableCollectionsAsync(): Promise<LibraryVariableCollection[]>
   getVariablesInLibraryCollectionAsync(libraryCollectionKey: string): Promise<LibraryVariable[]>
 }
-type PaymentStatus = {
+declare type PaymentStatus = {
   type: 'UNPAID' | 'PAID' | 'NOT_SUPPORTED'
 }
 interface PaymentsAPI {
@@ -261,7 +261,7 @@ interface NotificationOptions {
     action: () => boolean | void
   }
 }
-type NotifyDequeueReason = 'timeout' | 'dismiss' | 'action_button_click'
+declare type NotifyDequeueReason = 'timeout' | 'dismiss' | 'action_button_click'
 interface NotificationHandler {
   cancel: () => void
 }
@@ -282,7 +282,7 @@ interface UIPostMessageOptions {
 interface OnMessageProperties {
   origin: string
 }
-type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
+declare type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
 interface UIAPI {
   show(): void
   hide(): void
@@ -371,26 +371,26 @@ interface DevResource {
 interface DevResourceWithNodeId extends DevResource {
   nodeId: string
 }
-type LinkPreviewEvent = {
+declare type LinkPreviewEvent = {
   link: DevResource
 }
-type PlainTextElement = {
+declare type PlainTextElement = {
   type: 'PLAIN_TEXT'
   text: string
 }
-type LinkPreviewResult =
+declare type LinkPreviewResult =
   | {
       type: 'AUTH_REQUIRED'
     }
   | PlainTextElement
   | null
-type AuthEvent = {
+declare type AuthEvent = {
   links: DevResource[]
 }
-type DevResourceOpenEvent = {
+declare type DevResourceOpenEvent = {
   devResource: DevResourceWithNodeId
 }
-type AuthResult = {
+declare type AuthResult = {
   type: 'AUTH_SUCCESS'
 } | null
 interface VSCodeAPI {}
@@ -475,7 +475,7 @@ interface OpenDevResourcesEvent {
     name: string
   }
 }
-type RunEvent = RunParametersEvent | OpenDevResourcesEvent
+declare type RunEvent = RunParametersEvent | OpenDevResourcesEvent
 interface DropEvent {
   node: BaseNode | SceneNode
   x: number
@@ -502,7 +502,7 @@ interface DocumentChangeEvent {
 interface StyleChangeEvent {
   styleChanges: StyleChange[]
 }
-type StyleChange = StyleCreateChange | StyleDeleteChange | StylePropertyChange
+declare type StyleChange = StyleCreateChange | StyleDeleteChange | StylePropertyChange
 interface BaseDocumentChange {
   id: string
   origin: 'LOCAL' | 'REMOTE'
@@ -539,14 +539,14 @@ interface StylePropertyChange extends BaseStyleChange {
   type: 'STYLE_PROPERTY_CHANGE'
   properties: StyleChangeProperty[]
 }
-type DocumentChange =
+declare type DocumentChange =
   | CreateChange
   | DeleteChange
   | PropertyChange
   | StyleCreateChange
   | StyleDeleteChange
   | StylePropertyChange
-type NodeChangeProperty =
+declare type NodeChangeProperty =
   | 'pointCount'
   | 'name'
   | 'width'
@@ -676,8 +676,8 @@ type NodeChangeProperty =
 interface NodeChangeEvent {
   nodeChanges: NodeChange[]
 }
-type NodeChange = CreateChange | DeleteChange | PropertyChange
-type StyleChangeProperty =
+declare type NodeChange = CreateChange | DeleteChange | PropertyChange
+declare type StyleChangeProperty =
   | 'name'
   | 'pluginData'
   | 'type'
@@ -698,16 +698,16 @@ type StyleChangeProperty =
   | 'paint'
   | 'effects'
   | 'layoutGrids'
-type TextReviewEvent = {
+declare type TextReviewEvent = {
   text: string
 }
-type TextReviewRange = {
+declare type TextReviewRange = {
   start: number
   end: number
   suggestions: string[]
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
-type Transform = [[number, number, number], [number, number, number]]
+declare type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
   readonly x: number
   readonly y: number
@@ -733,9 +733,15 @@ interface FontName {
   readonly family: string
   readonly style: string
 }
-type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
-type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
-type OpenTypeFeature =
+declare type TextCase =
+  | 'ORIGINAL'
+  | 'UPPER'
+  | 'LOWER'
+  | 'TITLE'
+  | 'SMALL_CAPS'
+  | 'SMALL_CAPS_FORCED'
+declare type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
+declare type OpenTypeFeature =
   | 'PCAP'
   | 'C2PC'
   | 'CASE'
@@ -1003,8 +1009,8 @@ interface BlurEffect {
     ['radius']?: VariableAlias
   }
 }
-type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
-type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
+declare type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
+declare type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
 interface Constraints {
   readonly horizontal: ConstraintType
   readonly vertical: ConstraintType
@@ -1067,7 +1073,7 @@ interface VideoPaint {
   readonly opacity?: number
   readonly blendMode?: BlendMode
 }
-type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint
+declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint
 interface Guide {
   readonly axis: 'X' | 'Y'
   readonly offset: number
@@ -1094,7 +1100,7 @@ interface GridLayoutGrid {
     ['sectionSize']?: VariableAlias
   }
 }
-type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
+declare type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
 interface ExportSettingsConstraints {
   readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT'
   readonly value: number
@@ -1132,8 +1138,8 @@ interface ExportSettingsPDF {
 interface ExportSettingsREST {
   readonly format: 'JSON_REST_V1'
 }
-type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
-type WindingRule = 'NONZERO' | 'EVENODD'
+declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
+declare type WindingRule = 'NONZERO' | 'EVENODD'
 interface VectorVertex {
   readonly x: number
   readonly y: number
@@ -1163,12 +1169,12 @@ interface VectorPath {
   readonly windingRule: WindingRule | 'NONE'
   readonly data: string
 }
-type VectorPaths = ReadonlyArray<VectorPath>
+declare type VectorPaths = ReadonlyArray<VectorPath>
 interface LetterSpacing {
   readonly value: number
   readonly unit: 'PIXELS' | 'PERCENT'
 }
-type LineHeight =
+declare type LineHeight =
   | {
       readonly value: number
       readonly unit: 'PIXELS' | 'PERCENT'
@@ -1176,15 +1182,15 @@ type LineHeight =
   | {
       readonly unit: 'AUTO'
     }
-type LeadingTrim = 'CAP_HEIGHT' | 'NONE'
-type HyperlinkTarget = {
+declare type LeadingTrim = 'CAP_HEIGHT' | 'NONE'
+declare type HyperlinkTarget = {
   type: 'URL' | 'NODE'
   value: string
 }
-type TextListOptions = {
+declare type TextListOptions = {
   type: 'ORDERED' | 'UNORDERED' | 'NONE'
 }
-type BlendMode =
+declare type BlendMode =
   | 'PASS_THROUGH'
   | 'NORMAL'
   | 'DARKEN'
@@ -1204,11 +1210,11 @@ type BlendMode =
   | 'SATURATION'
   | 'COLOR'
   | 'LUMINOSITY'
-type MaskType = 'ALPHA' | 'VECTOR' | 'LUMINANCE'
+declare type MaskType = 'ALPHA' | 'VECTOR' | 'LUMINANCE'
 interface Font {
   fontName: FontName
 }
-type TextStyleOverrideType = {
+declare type TextStyleOverrideType = {
   type: 'SEMANTIC_ITALIC' | 'SEMANTIC_WEIGHT' | 'HYPERLINK' | 'TEXT_DECORATION'
 }
 interface StyledTextSegment {
@@ -1226,26 +1232,32 @@ interface StyledTextSegment {
   textStyleId: string
   fillStyleId: string
   listOptions: TextListOptions
+  listSpacing: number
   indentation: number
+  paragraphIndent: number
+  paragraphSpacing: number
   hyperlink: HyperlinkTarget | null
   openTypeFeatures: {
     readonly [feature in OpenTypeFeature]: boolean
   }
   boundVariables?: {
-    [field in Exclude<
-      VariableBindableTextField,
-      'paragraphSpacing' | 'paragraphIndent'
-    >]?: VariableAlias
+    [field in VariableBindableTextField]?: VariableAlias
   }
   textStyleOverrides: TextStyleOverrideType[]
 }
-type Reaction = {
+declare type Reaction = {
   action?: Action
   actions?: Action[]
   trigger: Trigger | null
 }
-type VariableDataType = 'BOOLEAN' | 'FLOAT' | 'STRING' | 'VARIABLE_ALIAS' | 'COLOR' | 'EXPRESSION'
-type ExpressionFunction =
+declare type VariableDataType =
+  | 'BOOLEAN'
+  | 'FLOAT'
+  | 'STRING'
+  | 'VARIABLE_ALIAS'
+  | 'COLOR'
+  | 'EXPRESSION'
+declare type ExpressionFunction =
   | 'ADDITION'
   | 'SUBTRACTION'
   | 'MULTIPLICATION'
@@ -1265,21 +1277,21 @@ interface Expression {
   expressionFunction: ExpressionFunction
   expressionArguments: VariableData[]
 }
-type VariableValueWithExpression = VariableValue | Expression
+declare type VariableValueWithExpression = VariableValue | Expression
 interface VariableData {
   type?: VariableDataType
   resolvedType?: VariableResolvedDataType
   value?: VariableValueWithExpression
 }
-type ConditionalBlock = {
+declare type ConditionalBlock = {
   condition?: VariableData
   actions: Action[]
 }
-type DevStatus = {
+declare type DevStatus = {
   type: 'READY_FOR_DEV' | 'COMPLETED'
   description?: string
 } | null
-type Action =
+declare type Action =
   | {
       readonly type: 'BACK' | 'CLOSE'
     }
@@ -1348,8 +1360,8 @@ interface DirectionalTransition {
   readonly easing: Easing
   readonly duration: number
 }
-type Transition = SimpleTransition | DirectionalTransition
-type Trigger =
+declare type Transition = SimpleTransition | DirectionalTransition
+declare type Trigger =
   | {
       readonly type: 'ON_CLICK' | 'ON_HOVER' | 'ON_PRESS' | 'ON_DRAG'
     }
@@ -1378,7 +1390,7 @@ type Trigger =
   | {
       readonly type: 'ON_MEDIA_END'
     }
-type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
+declare type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
 interface Easing {
   readonly type:
     | 'EASE_IN'
@@ -1409,8 +1421,8 @@ interface EasingFunctionSpring {
   damping: number
   initialVelocity: number
 }
-type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
-type OverlayPositionType =
+declare type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
+declare type OverlayPositionType =
   | 'CENTER'
   | 'TOP_LEFT'
   | 'TOP_CENTER'
@@ -1419,7 +1431,7 @@ type OverlayPositionType =
   | 'BOTTOM_CENTER'
   | 'BOTTOM_RIGHT'
   | 'MANUAL'
-type OverlayBackground =
+declare type OverlayBackground =
   | {
       readonly type: 'NONE'
     }
@@ -1427,8 +1439,8 @@ type OverlayBackground =
       readonly type: 'SOLID_COLOR'
       readonly color: RGBA
     }
-type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
-type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
+declare type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
+declare type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
 interface ConnectorEndpointPosition {
   position: {
     x: number
@@ -1446,11 +1458,11 @@ interface ConnectorEndpointEndpointNodeIdAndMagnet {
   endpointNodeId: string
   magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' | 'CENTER'
 }
-type ConnectorEndpoint =
+declare type ConnectorEndpoint =
   | ConnectorEndpointPosition
   | ConnectorEndpointEndpointNodeIdAndMagnet
   | ConnectorEndpointPositionAndEndpointNodeId
-type ConnectorStrokeCap =
+declare type ConnectorStrokeCap =
   | 'NONE'
   | 'ARROW_EQUILATERAL'
   | 'ARROW_LINES'
@@ -1539,7 +1551,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     [collectionId: string]: string
   }
 }
-type VariableBindableNodeField =
+declare type VariableBindableNodeField =
   | 'height'
   | 'width'
   | 'characters'
@@ -1564,7 +1576,7 @@ type VariableBindableNodeField =
   | 'strokeBottomWeight'
   | 'strokeLeftWeight'
   | 'opacity'
-type VariableBindableTextField =
+declare type VariableBindableTextField =
   | 'fontFamily'
   | 'fontSize'
   | 'fontStyle'
@@ -1573,15 +1585,15 @@ type VariableBindableTextField =
   | 'lineHeight'
   | 'paragraphSpacing'
   | 'paragraphIndent'
-type VariableBindablePaintField = 'color'
-type VariableBindablePaintStyleField = 'paints'
-type VariableBindableColorStopField = 'color'
-type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
-type VariableBindableEffectStyleField = 'effects'
-type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
-type VariableBindableGridStyleField = 'layoutGrids'
-type VariableBindableComponentPropertyField = 'value'
-type VariableBindableComponentPropertyDefinitionField = 'defaultValue'
+declare type VariableBindablePaintField = 'color'
+declare type VariableBindablePaintStyleField = 'paints'
+declare type VariableBindableColorStopField = 'color'
+declare type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
+declare type VariableBindableEffectStyleField = 'effects'
+declare type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
+declare type VariableBindableGridStyleField = 'layoutGrids'
+declare type VariableBindableComponentPropertyField = 'value'
+declare type VariableBindableComponentPropertyDefinitionField = 'defaultValue'
 interface StickableMixin {
   stuckTo: SceneNode | null
 }
@@ -1670,7 +1682,7 @@ interface AutoLayoutChildrenMixin {
   layoutPositioning: 'AUTO' | 'ABSOLUTE'
 }
 interface InferredAutoLayoutResult extends AutoLayoutChildrenMixin, AutoLayoutMixin {}
-type DetachedInfo =
+declare type DetachedInfo =
   | {
       type: 'local'
       componentId: string
@@ -1801,7 +1813,7 @@ interface Annotation {
 interface AnnotationProperty {
   readonly type: AnnotationPropertyType
 }
-type AnnotationPropertyType =
+declare type AnnotationPropertyType =
   | 'width'
   | 'height'
   | 'maxWidth'
@@ -1841,9 +1853,10 @@ interface Measurement {
     side: MeasurementSide
   }
   offset: MeasurementOffset
+  freeText: string
 }
-type MeasurementSide = 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'
-type MeasurementOffset =
+declare type MeasurementSide = 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'
+declare type MeasurementOffset =
   | {
       type: 'INNER'
       relative: number
@@ -1866,12 +1879,14 @@ interface MeasurementsMixin {
     },
     options?: {
       offset?: MeasurementOffset
+      freeText?: string
     },
   ): Measurement
   editMeasurement(
     id: string,
     newValue: {
-      offset: MeasurementOffset
+      offset?: MeasurementOffset
+      freeText?: string
     },
   ): Measurement
   deleteMeasurement(id: string): void
@@ -1957,17 +1972,23 @@ interface NonResizableTextMixin {
   setRangeFillStyleId(start: number, end: number, value: string): void
   getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
   setRangeListOptions(start: number, end: number, value: TextListOptions): void
+  getRangeListSpacing(start: number, end: number): number | PluginAPI['mixed']
+  setRangeListSpacing(start: number, end: number, value: number): void
   getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
   setRangeIndentation(start: number, end: number, value: number): void
+  getRangeParagraphIndent(start: number, end: number): number | PluginAPI['mixed']
+  setRangeParagraphIndent(start: number, end: number, value: number): void
+  getRangeParagraphSpacing(start: number, end: number): number | PluginAPI['mixed']
+  setRangeParagraphSpacing(start: number, end: number, value: number): void
   getRangeBoundVariable(
     start: number,
     end: number,
-    field: Exclude<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
+    field: VariableBindableTextField,
   ): number | PluginAPI['mixed']
   setRangeBoundVariable(
     start: number,
     end: number,
-    field: Exclude<VariableBindableTextField, 'paragraphSpacing' | 'paragraphIndent'>,
+    field: VariableBindableTextField,
     variable: Variable | null,
   ): void
   getStyledTextSegments<
@@ -2116,15 +2137,15 @@ interface TextNode
   textStyleId: string | PluginAPI['mixed']
   setTextStyleIdAsync(styleId: string): Promise<void>
 }
-type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
-type InstanceSwapPreferredValue = {
+declare type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
+declare type InstanceSwapPreferredValue = {
   type: 'COMPONENT' | 'COMPONENT_SET'
   key: string
 }
-type ComponentPropertyOptions = {
+declare type ComponentPropertyOptions = {
   preferredValues?: InstanceSwapPreferredValue[]
 }
-type ComponentPropertyDefinitions = {
+declare type ComponentPropertyDefinitions = {
   [propertyName: string]: {
     type: ComponentPropertyType
     defaultValue: string | boolean
@@ -2156,7 +2177,7 @@ interface ComponentNode
   getInstancesAsync(): Promise<InstanceNode[]>
   readonly instances: InstanceNode[]
 }
-type ComponentProperties = {
+declare type ComponentProperties = {
   [propertyName: string]: {
     type: ComponentPropertyType
     value: string | boolean
@@ -2327,13 +2348,13 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   rotation: number
   clone(): ConnectorNode
 }
-type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
+declare type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
 interface VariableAlias {
   type: 'VARIABLE_ALIAS'
   id: string
 }
-type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
-type VariableScope =
+declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
+declare type VariableScope =
   | 'ALL_SCOPES'
   | 'TEXT_CONTENT'
   | 'CORNER_RADIUS'
@@ -2356,7 +2377,7 @@ type VariableScope =
   | 'LETTER_SPACING'
   | 'PARAGRAPH_SPACING'
   | 'PARAGRAPH_INDENT'
-type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
+declare type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
 interface Variable extends PluginDataMixin {
   readonly id: string
   name: string
@@ -2468,8 +2489,8 @@ interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin,
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
 }
-type BaseNode = DocumentNode | PageNode | SceneNode
-type SceneNode =
+declare type BaseNode = DocumentNode | PageNode | SceneNode
+declare type SceneNode =
   | SliceNode
   | FrameNode
   | GroupNode
@@ -2497,9 +2518,9 @@ type SceneNode =
   | HighlightNode
   | WashiTapeNode
   | TableNode
-type NodeType = BaseNode['type']
-type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
-type InheritedStyleField =
+declare type NodeType = BaseNode['type']
+declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
+declare type InheritedStyleField =
   | 'fillStyleId'
   | 'strokeStyleId'
   | 'backgroundStyleId'
@@ -2559,7 +2580,7 @@ interface GridStyle extends BaseStyleMixin {
     readonly [field in VariableBindableGridStyleField]?: VariableAlias[]
   }
 }
-type BaseStyle = PaintStyle | TextStyle | EffectStyle | GridStyle
+declare type BaseStyle = PaintStyle | TextStyle | EffectStyle | GridStyle
 interface Image {
   readonly hash: string
   getBytesAsync(): Promise<Uint8Array>
