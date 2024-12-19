@@ -741,6 +741,30 @@ declare type TextCase =
   | 'SMALL_CAPS'
   | 'SMALL_CAPS_FORCED'
 declare type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
+declare type TextDecorationStyle = 'SOLID' | 'WAVY' | 'DOTTED'
+declare type TextDecorationOffset =
+  | {
+      readonly value: number
+      readonly unit: 'PIXELS' | 'PERCENT'
+    }
+  | {
+      readonly unit: 'AUTO'
+    }
+declare type TextDecorationThickness =
+  | {
+      readonly value: number
+      readonly unit: 'PIXELS' | 'PERCENT'
+    }
+  | {
+      readonly unit: 'AUTO'
+    }
+declare type TextDecorationColor =
+  | {
+      readonly value: SolidPaint
+    }
+  | {
+      readonly value: 'AUTO'
+    }
 declare type OpenTypeFeature =
   | 'PCAP'
   | 'C2PC'
@@ -1225,6 +1249,11 @@ interface StyledTextSegment {
   fontName: FontName
   fontWeight: number
   textDecoration: TextDecoration
+  textDecorationStyle: TextDecorationStyle | null
+  textDecorationOffset: TextDecorationOffset | null
+  textDecorationThickness: TextDecorationThickness | null
+  textDecorationColor: TextDecorationColor | null
+  textDecorationSkipInk: boolean | null
   textCase: TextCase
   lineHeight: LineHeight
   letterSpacing: LetterSpacing
@@ -1931,6 +1960,11 @@ interface NonResizableTextMixin {
       }
     | PluginAPI['mixed']
   textDecoration: TextDecoration | PluginAPI['mixed']
+  textDecorationStyle: TextDecorationStyle | PluginAPI['mixed'] | null
+  textDecorationOffset: TextDecorationOffset | PluginAPI['mixed'] | null
+  textDecorationThickness: TextDecorationThickness | PluginAPI['mixed'] | null
+  textDecorationColor: TextDecorationColor | PluginAPI['mixed'] | null
+  textDecorationSkipInk: boolean | PluginAPI['mixed'] | null
   letterSpacing: LetterSpacing | PluginAPI['mixed']
   lineHeight: LineHeight | PluginAPI['mixed']
   leadingTrim: LeadingTrim | PluginAPI['mixed']
@@ -1956,6 +1990,28 @@ interface NonResizableTextMixin {
     | PluginAPI['mixed']
   getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
   setRangeTextDecoration(start: number, end: number, value: TextDecoration): void
+  getRangeTextDecorationStyle(
+    start: number,
+    end: number,
+  ): TextDecorationStyle | PluginAPI['mixed'] | null
+  setRangeTextDecorationStyle(start: number, end: number, value: TextDecorationStyle): void
+  getRangeTextDecorationOffset(
+    start: number,
+    end: number,
+  ): TextDecorationOffset | PluginAPI['mixed'] | null
+  setRangeTextDecorationOffset(start: number, end: number, value: TextDecorationOffset): void
+  getRangeTextDecorationThickness(
+    start: number,
+    end: number,
+  ): TextDecorationThickness | PluginAPI['mixed'] | null
+  setRangeTextDecorationThickness(start: number, end: number, value: TextDecorationThickness): void
+  getRangeTextDecorationColor(
+    start: number,
+    end: number,
+  ): TextDecorationColor | PluginAPI['mixed'] | null
+  setRangeTextDecorationColor(start: number, end: number, value: TextDecorationColor): void
+  getRangeTextDecorationSkipInk(start: number, end: number): boolean | PluginAPI['mixed'] | null
+  setRangeTextDecorationSkipInk(start: number, end: number, value: boolean): void
   getRangeLetterSpacing(start: number, end: number): LetterSpacing | PluginAPI['mixed']
   setRangeLetterSpacing(start: number, end: number, value: LetterSpacing): void
   getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
