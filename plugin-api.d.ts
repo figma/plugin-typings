@@ -1893,6 +1893,7 @@ interface Measurement {
     side: MeasurementSide
   }
   offset: MeasurementOffset
+  freeText: string
 }
 declare type MeasurementSide = 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'
 declare type MeasurementOffset =
@@ -1918,12 +1919,14 @@ interface MeasurementsMixin {
     },
     options?: {
       offset?: MeasurementOffset
+      freeText?: string
     },
   ): Measurement
   editMeasurement(
     id: string,
     newValue: {
-      offset: MeasurementOffset
+      offset?: MeasurementOffset
+      freeText?: string
     },
   ): Measurement
   deleteMeasurement(id: string): void
