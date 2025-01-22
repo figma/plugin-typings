@@ -2561,37 +2561,21 @@ interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin,
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
 }
-interface SlideNode
-  extends BaseNodeMixin,
-    BlendMixin,
-    ChildrenMixin,
-    ExportMixin,
-    GeometryMixin,
-    AutoLayoutMixin,
-    IndividualStrokesMixin,
-    AnnotationsMixin,
-    DimensionAndPositionMixin,
-    ContainerMixin,
-    ConstraintMixin {
+interface SlideNode extends BaseFrameMixin {
   readonly type: 'SLIDE'
   clone(): SlideNode
   getSlideTransition(): SlideTransition
   setSlideTransition(transition: SlideTransition): void
   isSkippedSlide: boolean
-  layoutGrids: ReadonlyArray<LayoutGrid>
-  gridStyleId: string
-  setGridStyleIdAsync(styleId: string): Promise<void>
-  guides: ReadonlyArray<Guide>
-  inferredAutoLayout: InferredAutoLayoutResult | null
 }
-interface SlideRowNode extends BaseNodeMixin, ChildrenMixin {
+interface SlideRowNode extends OpaqueNodeMixin, ChildrenMixin {
   readonly type: 'SLIDE_ROW'
   clone(): SlideRowNode
 }
-interface SlideGridNode extends BaseNodeMixin, ChildrenMixin {
+interface SlideGridNode extends OpaqueNodeMixin, ChildrenMixin {
   readonly type: 'SLIDE_GRID'
 }
-interface InteractiveSlideElementNode extends BaseNodeMixin {
+interface InteractiveSlideElementNode extends OpaqueNodeMixin {
   readonly type: 'INTERACTIVE_SLIDE_ELEMENT'
   readonly interactiveSlideElementType: 'POLL' | 'EMBED' | 'FACEPILE' | 'ALIGNMENT' | 'YOUTUBE'
 }
