@@ -1669,6 +1669,11 @@ interface LayoutMixin extends DimensionAndPositionMixin, AutoLayoutChildrenMixin
   resizeWithoutConstraints(width: number, height: number): void
   rescale(scale: number): void
 }
+interface AspectRatioLockMixin {
+  readonly targetAspectRatio: Vector | null
+  lockAspectRatio(): void
+  unlockAspectRatio(): void
+}
 interface BlendMixin extends MinimalBlendMixin {
   isMask: boolean
   maskType: MaskType
@@ -1814,6 +1819,7 @@ interface BaseFrameMixin
     ExportMixin,
     IndividualStrokesMixin,
     AutoLayoutMixin,
+    AspectRatioLockMixin,
     AnnotationsMixin,
     DevStatusMixin {
   readonly detachedInfo: DetachedInfo | null
@@ -2130,7 +2136,8 @@ interface GroupNode
     DeprecatedBackgroundMixin,
     BlendMixin,
     LayoutMixin,
-    ExportMixin {
+    ExportMixin,
+    AspectRatioLockMixin {
   readonly type: 'GROUP'
   clone(): GroupNode
 }
@@ -2144,7 +2151,8 @@ interface RectangleNode
     CornerMixin,
     RectangleCornerMixin,
     IndividualStrokesMixin,
-    AnnotationsMixin {
+    AnnotationsMixin,
+    AspectRatioLockMixin {
   readonly type: 'RECTANGLE'
   clone(): RectangleNode
 }
@@ -2152,17 +2160,32 @@ interface LineNode extends DefaultShapeMixin, ConstraintMixin, AnnotationsMixin 
   readonly type: 'LINE'
   clone(): LineNode
 }
-interface EllipseNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, AnnotationsMixin {
+interface EllipseNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    CornerMixin,
+    AnnotationsMixin,
+    AspectRatioLockMixin {
   readonly type: 'ELLIPSE'
   clone(): EllipseNode
   arcData: ArcData
 }
-interface PolygonNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, AnnotationsMixin {
+interface PolygonNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    CornerMixin,
+    AnnotationsMixin,
+    AspectRatioLockMixin {
   readonly type: 'POLYGON'
   clone(): PolygonNode
   pointCount: number
 }
-interface StarNode extends DefaultShapeMixin, ConstraintMixin, CornerMixin, AnnotationsMixin {
+interface StarNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    CornerMixin,
+    AnnotationsMixin,
+    AspectRatioLockMixin {
   readonly type: 'STAR'
   clone(): StarNode
   pointCount: number
@@ -2173,7 +2196,8 @@ interface VectorNode
     ConstraintMixin,
     CornerMixin,
     VectorLikeMixin,
-    AnnotationsMixin {
+    AnnotationsMixin,
+    AspectRatioLockMixin {
   readonly type: 'VECTOR'
   clone(): VectorNode
 }
@@ -2181,7 +2205,8 @@ interface TextNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     NonResizableTextMixin,
-    AnnotationsMixin {
+    AnnotationsMixin,
+    AspectRatioLockMixin {
   readonly type: 'TEXT'
   clone(): TextNode
   textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
@@ -2265,7 +2290,8 @@ interface BooleanOperationNode
   extends DefaultShapeMixin,
     ChildrenMixin,
     CornerMixin,
-    ContainerMixin {
+    ContainerMixin,
+    AspectRatioLockMixin {
   readonly type: 'BOOLEAN_OPERATION'
   clone(): BooleanOperationNode
   booleanOperation: 'UNION' | 'INTERSECT' | 'SUBTRACT' | 'EXCLUDE'
@@ -2278,7 +2304,11 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
   isWideWidth: boolean
   clone(): StickyNode
 }
-interface StampNode extends DefaultShapeMixin, ConstraintMixin, StickableMixin {
+interface StampNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    StickableMixin,
+    AspectRatioLockMixin {
   readonly type: 'STAMP'
   clone(): StampNode
   getAuthorAsync(): Promise<BaseUser | null>
@@ -2313,11 +2343,12 @@ interface HighlightNode
     ConstraintMixin,
     CornerMixin,
     VectorLikeMixin,
-    StickableMixin {
+    StickableMixin,
+    AspectRatioLockMixin {
   readonly type: 'HIGHLIGHT'
   clone(): HighlightNode
 }
-interface WashiTapeNode extends DefaultShapeMixin, StickableMixin {
+interface WashiTapeNode extends DefaultShapeMixin, StickableMixin, AspectRatioLockMixin {
   readonly type: 'WASHI_TAPE'
   clone(): WashiTapeNode
 }
