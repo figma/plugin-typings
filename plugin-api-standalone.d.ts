@@ -16,7 +16,7 @@ declare type ArgFreeEventType =
 interface PluginAPI {
   readonly apiVersion: '1.0.0'
   readonly command: string
-  readonly editorType: 'figma' | 'figjam' | 'dev'
+  readonly editorType: 'figma' | 'figjam' | 'dev' | 'slides'
   readonly mode: 'default' | 'textreview' | 'inspect' | 'codegen' | 'linkpreview' | 'auth'
   readonly pluginId?: string
   readonly widgetId?: string
@@ -56,6 +56,7 @@ interface PluginAPI {
   on(type: 'run', callback: (event: RunEvent) => void): void
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
   on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  on(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
   on(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -65,6 +66,7 @@ interface PluginAPI {
   once(type: 'run', callback: (event: RunEvent) => void): void
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
   once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  once(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
   once(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -74,6 +76,7 @@ interface PluginAPI {
   off(type: 'run', callback: (event: RunEvent) => void): void
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
   off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+  off(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
   off(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -93,6 +96,8 @@ interface PluginAPI {
   createPage(): PageNode
   createPageDivider(dividerName?: string): PageNode
   createSlice(): SliceNode
+  createSlide(row?: number, col?: number): SlideNode
+  createSlideRow(row?: number): SlideRowNode
   createSticky(): StickyNode
   createConnector(): ConnectorNode
   createShapeWithText(): ShapeWithTextNode
@@ -180,6 +185,8 @@ interface PluginAPI {
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
   ): Promise<void>
   loadAllPagesAsync(): Promise<void>
+  getSlideGrid(): Array<Array<SlideNode>>
+  setSlideGrid(slideGrid: Array<Array<SlideNode>>): void
 }
 interface VersionHistoryResult {
   id: string
@@ -432,6 +439,7 @@ interface ViewportAPI {
   zoom: number
   scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
   readonly bounds: Rect
+  slidesView: 'grid' | 'single-slide'
 }
 interface TextReviewAPI {
   requestToBeEnabledAsync(): Promise<void>
@@ -480,6 +488,9 @@ interface OpenDevResourcesEvent {
   }
 }
 declare type RunEvent = RunParametersEvent | OpenDevResourcesEvent
+interface SlidesViewChangeEvent {
+  view: 'GRID' | 'SINGLE_SLIDE'
+}
 interface DropEvent {
   node: BaseNode | SceneNode
   x: number
@@ -1517,6 +1528,7 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   getCSSAsync(): Promise<{
     [key: string]: string
   }>
+  getTopLevelFrame(): FrameNode | undefined
 }
 interface PluginDataMixin {
   getPluginData(key: string): string
@@ -2126,6 +2138,7 @@ interface PageNode
   on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   once(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   off(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
+  focusedSlide?: SlideNode | null
 }
 interface FrameNode extends DefaultFrameMixin {
   readonly type: 'FRAME'
@@ -2574,11 +2587,74 @@ interface MediaNode extends OpaqueNodeMixin {
   resizeWithoutConstraints(width: number, height: number): void
   clone(): MediaNode
 }
-interface SectionNode extends ChildrenMixin, MinimalFillsMixin, OpaqueNodeMixin, DevStatusMixin {
+interface SectionNode
+  extends ChildrenMixin,
+    MinimalFillsMixin,
+    OpaqueNodeMixin,
+    DevStatusMixin,
+    AspectRatioLockMixin {
   readonly type: 'SECTION'
   sectionContentsHidden: boolean
   clone(): SectionNode
   resizeWithoutConstraints(width: number, height: number): void
+}
+interface SlideNode extends BaseFrameMixin {
+  readonly type: 'SLIDE'
+  clone(): SlideNode
+  getSlideTransition(): SlideTransition
+  setSlideTransition(transition: SlideTransition): void
+  isSkippedSlide: boolean
+}
+interface SlideRowNode extends OpaqueNodeMixin, ChildrenMixin {
+  readonly type: 'SLIDE_ROW'
+  clone(): SlideRowNode
+}
+interface SlideGridNode extends OpaqueNodeMixin, ChildrenMixin {
+  readonly type: 'SLIDE_GRID'
+}
+interface InteractiveSlideElementNode extends OpaqueNodeMixin {
+  readonly type: 'INTERACTIVE_SLIDE_ELEMENT'
+  readonly interactiveSlideElementType: 'POLL' | 'EMBED' | 'FACEPILE' | 'ALIGNMENT' | 'YOUTUBE'
+}
+interface SlideTransition {
+  readonly style:
+    | 'NONE'
+    | 'DISSOLVE'
+    | 'SLIDE_FROM_LEFT'
+    | 'SLIDE_FROM_RIGHT'
+    | 'SLIDE_FROM_BOTTOM'
+    | 'SLIDE_FROM_TOP'
+    | 'PUSH_FROM_LEFT'
+    | 'PUSH_FROM_RIGHT'
+    | 'PUSH_FROM_BOTTOM'
+    | 'PUSH_FROM_TOP'
+    | 'MOVE_FROM_LEFT'
+    | 'MOVE_FROM_RIGHT'
+    | 'MOVE_FROM_TOP'
+    | 'MOVE_FROM_BOTTOM'
+    | 'SLIDE_OUT_TO_LEFT'
+    | 'SLIDE_OUT_TO_RIGHT'
+    | 'SLIDE_OUT_TO_TOP'
+    | 'SLIDE_OUT_TO_BOTTOM'
+    | 'MOVE_OUT_TO_LEFT'
+    | 'MOVE_OUT_TO_RIGHT'
+    | 'MOVE_OUT_TO_TOP'
+    | 'MOVE_OUT_TO_BOTTOM'
+    | 'SMART_ANIMATE'
+  readonly duration: number
+  readonly curve:
+    | 'EASE_IN'
+    | 'EASE_OUT'
+    | 'EASE_IN_AND_OUT'
+    | 'LINEAR'
+    | 'GENTLE'
+    | 'QUICK'
+    | 'BOUNCY'
+    | 'SLOW'
+  readonly timing: {
+    readonly type: 'ON_CLICK' | 'AFTER_DELAY'
+    readonly delay?: number
+  }
 }
 declare type BaseNode = DocumentNode | PageNode | SceneNode
 declare type SceneNode =
@@ -2609,6 +2685,10 @@ declare type SceneNode =
   | HighlightNode
   | WashiTapeNode
   | TableNode
+  | SlideNode
+  | SlideRowNode
+  | SlideGridNode
+  | InteractiveSlideElementNode
 declare type NodeType = BaseNode['type']
 declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 declare type InheritedStyleField =
@@ -2709,4 +2789,4 @@ interface FindAllCriteria<T extends NodeType[]> {
 }
 
 // prettier-ignore
-export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, AutoLayoutChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, NonResizableTextMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
+export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, AutoLayoutChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, NonResizableTextMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
