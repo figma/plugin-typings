@@ -2062,7 +2062,7 @@ interface NonResizableTextMixin {
     start: number,
     end: number,
     field: VariableBindableTextField,
-  ): number | PluginAPI['mixed']
+  ): VariableAlias | null | PluginAPI['mixed']
   setRangeBoundVariable(
     start: number,
     end: number,
