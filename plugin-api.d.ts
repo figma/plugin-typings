@@ -45,6 +45,7 @@ interface PluginAPI {
   getStyleById(id: string): BaseStyle | null
   readonly variables: VariablesAPI
   readonly teamLibrary: TeamLibraryAPI
+  readonly annotations: AnnotationsAPI
   readonly root: DocumentNode
   currentPage: PageNode
   setCurrentPageAsync(page: PageNode): Promise<void>
@@ -235,6 +236,14 @@ interface LibraryVariable {
   name: string
   key: string
   resolvedType: VariableResolvedDataType
+}
+interface AnnotationsAPI {
+  getAnnotationCategoriesAsync(): Promise<AnnotationCategory[]>
+  getAnnotationCategoryByIdAsync(id: string): Promise<AnnotationCategory | null>
+  addAnnotationCategoryAsync(categoryInput: {
+    label: string
+    color: AnnotationCategoryColor
+  }): Promise<AnnotationCategory>
 }
 interface TeamLibraryAPI {
   getAvailableLibraryVariableCollectionsAsync(): Promise<LibraryVariableCollection[]>
@@ -1856,6 +1865,7 @@ interface Annotation {
   readonly label?: string
   readonly labelMarkdown?: string
   readonly properties?: ReadonlyArray<AnnotationProperty>
+  readonly categoryId?: string
 }
 interface AnnotationProperty {
   readonly type: AnnotationPropertyType
@@ -2521,6 +2531,24 @@ interface VariableCollection extends PluginDataMixin {
   removeMode(modeId: string): void
   addMode(name: string): string
   renameMode(modeId: string, newName: string): void
+}
+declare type AnnotationCategoryColor =
+  | 'yellow'
+  | 'orange'
+  | 'red'
+  | 'pink'
+  | 'violet'
+  | 'blue'
+  | 'teal'
+  | 'green'
+interface AnnotationCategory {
+  readonly id: string
+  readonly label: string
+  readonly color: AnnotationCategoryColor
+  readonly isPreset: boolean
+  remove(): void
+  setColor(color: AnnotationCategoryColor): void
+  setLabel(label: string): void
 }
 interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
   readonly type: 'WIDGET'
