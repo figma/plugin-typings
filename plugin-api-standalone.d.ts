@@ -1049,7 +1049,7 @@ interface InnerShadowEffect {
     [field in VariableBindableEffectField]?: VariableAlias
   }
 }
-interface BlurEffect {
+interface BlurEffectBase {
   readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
   readonly radius: number
   readonly visible: boolean
@@ -1057,7 +1057,46 @@ interface BlurEffect {
     ['radius']?: VariableAlias
   }
 }
-declare type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
+interface BlurEffectNormal extends BlurEffectBase {
+  readonly blurType: 'NORMAL'
+}
+interface BlurEffectProgressive extends BlurEffectBase {
+  readonly blurType: 'PROGRESSIVE'
+  readonly startRadius: number
+  readonly startOffset: Vector
+  readonly endOffset: Vector
+}
+declare type BlurEffect = BlurEffectNormal | BlurEffectProgressive
+interface NoiseEffectBase {
+  readonly type: 'NOISE'
+  readonly blendMode: BlendMode
+  readonly noiseSize: number
+  readonly density: number
+}
+interface NoiseEffectMonotone extends NoiseEffectBase {
+  readonly noiseType: 'MONOTONE'
+}
+interface NoiseEffectDuotone extends NoiseEffectBase {
+  readonly noiseType: 'DUOTONE'
+  readonly secondaryColor: RGBA
+}
+interface NoiseEffectMultitone extends NoiseEffectBase {
+  readonly noiseType: 'MULTITONE'
+  readonly opacity: number
+}
+declare type NoiseEffect = NoiseEffectMonotone | NoiseEffectDuotone | NoiseEffectMultitone
+interface TextureEffect {
+  readonly type: 'TEXTURE'
+  readonly noiseSize: number
+  readonly radius: number
+  readonly clipToShape: boolean
+}
+declare type Effect =
+  | DropShadowEffect
+  | InnerShadowEffect
+  | BlurEffect
+  | NoiseEffect
+  | TextureEffect
 declare type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
 interface Constraints {
   readonly horizontal: ConstraintType
@@ -1121,7 +1160,15 @@ interface VideoPaint {
   readonly opacity?: number
   readonly blendMode?: BlendMode
 }
-declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint
+interface PatternPaint {
+  readonly type: 'PATTERN'
+  readonly sourceNodeId: string
+  readonly tileType: 'RECTANGULAR' | 'HORIZONTAL_HEXAGONAL' | 'VERTICAL_HEXAGONAL'
+  readonly scalingFactor: number
+  readonly spacing: Vector
+  readonly horizontalAlignment: 'START' | 'CENTER' | 'END'
+}
+declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
 interface Guide {
   readonly axis: 'X' | 'Y'
   readonly offset: number
@@ -1975,13 +2022,8 @@ interface ComponentPropertiesMixin {
   ): string
   deleteComponentProperty(propertyName: string): void
 }
-interface NonResizableTextMixin {
+interface BaseNonResizableTextMixin {
   readonly hasMissingFont: boolean
-  paragraphIndent: number
-  paragraphSpacing: number
-  listSpacing: number
-  hangingPunctuation: boolean
-  hangingList: boolean
   fontSize: number | PluginAPI['mixed']
   fontName: FontName | PluginAPI['mixed']
   readonly fontWeight: number | PluginAPI['mixed']
@@ -1991,15 +2033,7 @@ interface NonResizableTextMixin {
         readonly [feature in OpenTypeFeature]: boolean
       }
     | PluginAPI['mixed']
-  textDecoration: TextDecoration | PluginAPI['mixed']
-  textDecorationStyle: TextDecorationStyle | PluginAPI['mixed'] | null
-  textDecorationOffset: TextDecorationOffset | PluginAPI['mixed'] | null
-  textDecorationThickness: TextDecorationThickness | PluginAPI['mixed'] | null
-  textDecorationColor: TextDecorationColor | PluginAPI['mixed'] | null
-  textDecorationSkipInk: boolean | PluginAPI['mixed'] | null
   letterSpacing: LetterSpacing | PluginAPI['mixed']
-  lineHeight: LineHeight | PluginAPI['mixed']
-  leadingTrim: LeadingTrim | PluginAPI['mixed']
   hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
   characters: string
   insertCharacters(start: number, characters: string, useStyle?: 'BEFORE' | 'AFTER'): void
@@ -2020,34 +2054,8 @@ interface NonResizableTextMixin {
         readonly [feature in OpenTypeFeature]: boolean
       }
     | PluginAPI['mixed']
-  getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
-  setRangeTextDecoration(start: number, end: number, value: TextDecoration): void
-  getRangeTextDecorationStyle(
-    start: number,
-    end: number,
-  ): TextDecorationStyle | PluginAPI['mixed'] | null
-  setRangeTextDecorationStyle(start: number, end: number, value: TextDecorationStyle): void
-  getRangeTextDecorationOffset(
-    start: number,
-    end: number,
-  ): TextDecorationOffset | PluginAPI['mixed'] | null
-  setRangeTextDecorationOffset(start: number, end: number, value: TextDecorationOffset): void
-  getRangeTextDecorationThickness(
-    start: number,
-    end: number,
-  ): TextDecorationThickness | PluginAPI['mixed'] | null
-  setRangeTextDecorationThickness(start: number, end: number, value: TextDecorationThickness): void
-  getRangeTextDecorationColor(
-    start: number,
-    end: number,
-  ): TextDecorationColor | PluginAPI['mixed'] | null
-  setRangeTextDecorationColor(start: number, end: number, value: TextDecorationColor): void
-  getRangeTextDecorationSkipInk(start: number, end: number): boolean | PluginAPI['mixed'] | null
-  setRangeTextDecorationSkipInk(start: number, end: number, value: boolean): void
   getRangeLetterSpacing(start: number, end: number): LetterSpacing | PluginAPI['mixed']
   setRangeLetterSpacing(start: number, end: number, value: LetterSpacing): void
-  getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
-  setRangeLineHeight(start: number, end: number, value: LineHeight): void
   getRangeHyperlink(start: number, end: number): HyperlinkTarget | null | PluginAPI['mixed']
   setRangeHyperlink(start: number, end: number, value: HyperlinkTarget | null): void
   getRangeFills(start: number, end: number): Paint[] | PluginAPI['mixed']
@@ -2058,16 +2066,6 @@ interface NonResizableTextMixin {
   getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
   setRangeFillStyleIdAsync(start: number, end: number, styleId: string): Promise<void>
   setRangeFillStyleId(start: number, end: number, value: string): void
-  getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
-  setRangeListOptions(start: number, end: number, value: TextListOptions): void
-  getRangeListSpacing(start: number, end: number): number | PluginAPI['mixed']
-  setRangeListSpacing(start: number, end: number, value: number): void
-  getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
-  setRangeIndentation(start: number, end: number, value: number): void
-  getRangeParagraphIndent(start: number, end: number): number | PluginAPI['mixed']
-  setRangeParagraphIndent(start: number, end: number, value: number): void
-  getRangeParagraphSpacing(start: number, end: number): number | PluginAPI['mixed']
-  setRangeParagraphSpacing(start: number, end: number, value: number): void
   getRangeBoundVariable(
     start: number,
     end: number,
@@ -2092,6 +2090,58 @@ interface NonResizableTextMixin {
     Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>
   >
 }
+interface NonResizableTextMixin extends BaseNonResizableTextMixin {
+  paragraphIndent: number
+  paragraphSpacing: number
+  listSpacing: number
+  hangingPunctuation: boolean
+  hangingList: boolean
+  textDecoration: TextDecoration | PluginAPI['mixed']
+  textDecorationStyle: TextDecorationStyle | PluginAPI['mixed'] | null
+  textDecorationOffset: TextDecorationOffset | PluginAPI['mixed'] | null
+  textDecorationThickness: TextDecorationThickness | PluginAPI['mixed'] | null
+  textDecorationColor: TextDecorationColor | PluginAPI['mixed'] | null
+  textDecorationSkipInk: boolean | PluginAPI['mixed'] | null
+  lineHeight: LineHeight | PluginAPI['mixed']
+  leadingTrim: LeadingTrim | PluginAPI['mixed']
+  getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
+  setRangeTextDecoration(start: number, end: number, value: TextDecoration): void
+  getRangeTextDecorationStyle(
+    start: number,
+    end: number,
+  ): TextDecorationStyle | PluginAPI['mixed'] | null
+  setRangeTextDecorationStyle(start: number, end: number, value: TextDecorationStyle): void
+  getRangeTextDecorationOffset(
+    start: number,
+    end: number,
+  ): TextDecorationOffset | PluginAPI['mixed'] | null
+  setRangeTextDecorationOffset(start: number, end: number, value: TextDecorationOffset): void
+  getRangeTextDecorationThickness(
+    start: number,
+    end: number,
+  ): TextDecorationThickness | PluginAPI['mixed'] | null
+  setRangeTextDecorationThickness(start: number, end: number, value: TextDecorationThickness): void
+  getRangeTextDecorationColor(
+    start: number,
+    end: number,
+  ): TextDecorationColor | PluginAPI['mixed'] | null
+  setRangeTextDecorationColor(start: number, end: number, value: TextDecorationColor): void
+  getRangeTextDecorationSkipInk(start: number, end: number): boolean | PluginAPI['mixed'] | null
+  setRangeTextDecorationSkipInk(start: number, end: number, value: boolean): void
+  getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
+  setRangeLineHeight(start: number, end: number, value: LineHeight): void
+  getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
+  setRangeListOptions(start: number, end: number, value: TextListOptions): void
+  getRangeListSpacing(start: number, end: number): number | PluginAPI['mixed']
+  setRangeListSpacing(start: number, end: number, value: number): void
+  getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
+  setRangeIndentation(start: number, end: number, value: number): void
+  getRangeParagraphIndent(start: number, end: number): number | PluginAPI['mixed']
+  setRangeParagraphIndent(start: number, end: number, value: number): void
+  getRangeParagraphSpacing(start: number, end: number): number | PluginAPI['mixed']
+  setRangeParagraphSpacing(start: number, end: number, value: number): void
+}
+interface NonResizableTextPathMixin extends BaseNonResizableTextMixin {}
 interface TextSublayerNode extends NonResizableTextMixin, MinimalFillsMixin {}
 interface DocumentNode extends BaseNodeMixin {
   readonly type: 'DOCUMENT'
@@ -2167,6 +2217,20 @@ interface GroupNode
     AspectRatioLockMixin {
   readonly type: 'GROUP'
   clone(): GroupNode
+}
+interface TransformGroupNode
+  extends BaseNodeMixin,
+    SceneNodeMixin,
+    ReactionMixin,
+    ChildrenMixin,
+    ContainerMixin,
+    DeprecatedBackgroundMixin,
+    BlendMixin,
+    LayoutMixin,
+    ExportMixin,
+    AspectRatioLockMixin {
+  readonly type: 'TRANSFORM_GROUP'
+  clone(): TransformGroupNode
 }
 interface SliceNode extends BaseNodeMixin, SceneNodeMixin, LayoutMixin, ExportMixin {
   readonly type: 'SLICE'
@@ -2244,6 +2308,23 @@ interface TextNode
   autoRename: boolean
   textStyleId: string | PluginAPI['mixed']
   setTextStyleIdAsync(styleId: string): Promise<void>
+}
+interface TextPathNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    NonResizableTextPathMixin,
+    AnnotationsMixin,
+    AspectRatioLockMixin {
+  readonly type: 'TEXT_PATH'
+  clone(): TextPathNode
+  textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
+  textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM'
+  autoRename: boolean
+  textStyleId: string | PluginAPI['mixed']
+  setTextStyleIdAsync(styleId: string): Promise<void>
+  readonly vectorPaths: VectorPaths
+  readonly vectorNetwork: VectorNetwork
+  readonly handleMirroring: HandleMirroring | PluginAPI['mixed']
 }
 declare type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
 declare type InstanceSwapPreferredValue = {
@@ -2454,7 +2535,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   readonly text: TextSublayerNode
   readonly textBackground: LabelSublayerNode
   readonly cornerRadius?: number
-  connectorLineType: 'ELBOWED' | 'STRAIGHT'
+  connectorLineType: 'ELBOWED' | 'STRAIGHT' | 'CURVED'
   connectorStart: ConnectorEndpoint
   connectorEnd: ConnectorEndpoint
   connectorStartStrokeCap: ConnectorStrokeCap
@@ -2700,6 +2781,8 @@ declare type SceneNode =
   | PolygonNode
   | RectangleNode
   | TextNode
+  | TextPathNode
+  | TransformGroupNode
   | StickyNode
   | ConnectorNode
   | ShapeWithTextNode
@@ -2817,4 +2900,4 @@ interface FindAllCriteria<T extends NodeType[]> {
 }
 
 // prettier-ignore
-export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, AutoLayoutChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, NonResizableTextMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
+export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, AutoLayoutChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
