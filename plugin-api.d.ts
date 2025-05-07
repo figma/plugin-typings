@@ -1045,7 +1045,7 @@ interface InnerShadowEffect {
     [field in VariableBindableEffectField]?: VariableAlias
   }
 }
-interface BlurEffect {
+interface BlurEffectBase {
   readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
   readonly radius: number
   readonly visible: boolean
@@ -1053,7 +1053,46 @@ interface BlurEffect {
     ['radius']?: VariableAlias
   }
 }
-declare type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
+interface BlurEffectNormal extends BlurEffectBase {
+  readonly blurType: 'NORMAL'
+}
+interface BlurEffectProgressive extends BlurEffectBase {
+  readonly blurType: 'PROGRESSIVE'
+  readonly startRadius: number
+  readonly startOffset: Vector
+  readonly endOffset: Vector
+}
+declare type BlurEffect = BlurEffectNormal | BlurEffectProgressive
+interface NoiseEffectBase {
+  readonly type: 'NOISE'
+  readonly blendMode: BlendMode
+  readonly noiseSize: number
+  readonly density: number
+}
+interface NoiseEffectMonotone extends NoiseEffectBase {
+  readonly noiseType: 'MONOTONE'
+}
+interface NoiseEffectDuotone extends NoiseEffectBase {
+  readonly noiseType: 'DUOTONE'
+  readonly secondaryColor: RGBA
+}
+interface NoiseEffectMultitone extends NoiseEffectBase {
+  readonly noiseType: 'MULTITONE'
+  readonly opacity: number
+}
+declare type NoiseEffect = NoiseEffectMonotone | NoiseEffectDuotone | NoiseEffectMultitone
+interface TextureEffect {
+  readonly type: 'TEXTURE'
+  readonly noiseSize: number
+  readonly radius: number
+  readonly clipToShape: boolean
+}
+declare type Effect =
+  | DropShadowEffect
+  | InnerShadowEffect
+  | BlurEffect
+  | NoiseEffect
+  | TextureEffect
 declare type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
 interface Constraints {
   readonly horizontal: ConstraintType
@@ -1117,7 +1156,15 @@ interface VideoPaint {
   readonly opacity?: number
   readonly blendMode?: BlendMode
 }
-declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint
+interface PatternPaint {
+  readonly type: 'PATTERN'
+  readonly sourceNodeId: string
+  readonly tileType: 'RECTANGULAR' | 'HORIZONTAL_HEXAGONAL' | 'VERTICAL_HEXAGONAL'
+  readonly scalingFactor: number
+  readonly spacing: Vector
+  readonly horizontalAlignment: 'START' | 'CENTER' | 'END'
+}
+declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
 interface Guide {
   readonly axis: 'X' | 'Y'
   readonly offset: number
@@ -1971,13 +2018,8 @@ interface ComponentPropertiesMixin {
   ): string
   deleteComponentProperty(propertyName: string): void
 }
-interface NonResizableTextMixin {
+interface BaseNonResizableTextMixin {
   readonly hasMissingFont: boolean
-  paragraphIndent: number
-  paragraphSpacing: number
-  listSpacing: number
-  hangingPunctuation: boolean
-  hangingList: boolean
   fontSize: number | PluginAPI['mixed']
   fontName: FontName | PluginAPI['mixed']
   readonly fontWeight: number | PluginAPI['mixed']
@@ -1987,15 +2029,7 @@ interface NonResizableTextMixin {
         readonly [feature in OpenTypeFeature]: boolean
       }
     | PluginAPI['mixed']
-  textDecoration: TextDecoration | PluginAPI['mixed']
-  textDecorationStyle: TextDecorationStyle | PluginAPI['mixed'] | null
-  textDecorationOffset: TextDecorationOffset | PluginAPI['mixed'] | null
-  textDecorationThickness: TextDecorationThickness | PluginAPI['mixed'] | null
-  textDecorationColor: TextDecorationColor | PluginAPI['mixed'] | null
-  textDecorationSkipInk: boolean | PluginAPI['mixed'] | null
   letterSpacing: LetterSpacing | PluginAPI['mixed']
-  lineHeight: LineHeight | PluginAPI['mixed']
-  leadingTrim: LeadingTrim | PluginAPI['mixed']
   hyperlink: HyperlinkTarget | null | PluginAPI['mixed']
   characters: string
   insertCharacters(start: number, characters: string, useStyle?: 'BEFORE' | 'AFTER'): void
@@ -2016,34 +2050,8 @@ interface NonResizableTextMixin {
         readonly [feature in OpenTypeFeature]: boolean
       }
     | PluginAPI['mixed']
-  getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
-  setRangeTextDecoration(start: number, end: number, value: TextDecoration): void
-  getRangeTextDecorationStyle(
-    start: number,
-    end: number,
-  ): TextDecorationStyle | PluginAPI['mixed'] | null
-  setRangeTextDecorationStyle(start: number, end: number, value: TextDecorationStyle): void
-  getRangeTextDecorationOffset(
-    start: number,
-    end: number,
-  ): TextDecorationOffset | PluginAPI['mixed'] | null
-  setRangeTextDecorationOffset(start: number, end: number, value: TextDecorationOffset): void
-  getRangeTextDecorationThickness(
-    start: number,
-    end: number,
-  ): TextDecorationThickness | PluginAPI['mixed'] | null
-  setRangeTextDecorationThickness(start: number, end: number, value: TextDecorationThickness): void
-  getRangeTextDecorationColor(
-    start: number,
-    end: number,
-  ): TextDecorationColor | PluginAPI['mixed'] | null
-  setRangeTextDecorationColor(start: number, end: number, value: TextDecorationColor): void
-  getRangeTextDecorationSkipInk(start: number, end: number): boolean | PluginAPI['mixed'] | null
-  setRangeTextDecorationSkipInk(start: number, end: number, value: boolean): void
   getRangeLetterSpacing(start: number, end: number): LetterSpacing | PluginAPI['mixed']
   setRangeLetterSpacing(start: number, end: number, value: LetterSpacing): void
-  getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
-  setRangeLineHeight(start: number, end: number, value: LineHeight): void
   getRangeHyperlink(start: number, end: number): HyperlinkTarget | null | PluginAPI['mixed']
   setRangeHyperlink(start: number, end: number, value: HyperlinkTarget | null): void
   getRangeFills(start: number, end: number): Paint[] | PluginAPI['mixed']
@@ -2054,16 +2062,6 @@ interface NonResizableTextMixin {
   getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
   setRangeFillStyleIdAsync(start: number, end: number, styleId: string): Promise<void>
   setRangeFillStyleId(start: number, end: number, value: string): void
-  getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
-  setRangeListOptions(start: number, end: number, value: TextListOptions): void
-  getRangeListSpacing(start: number, end: number): number | PluginAPI['mixed']
-  setRangeListSpacing(start: number, end: number, value: number): void
-  getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
-  setRangeIndentation(start: number, end: number, value: number): void
-  getRangeParagraphIndent(start: number, end: number): number | PluginAPI['mixed']
-  setRangeParagraphIndent(start: number, end: number, value: number): void
-  getRangeParagraphSpacing(start: number, end: number): number | PluginAPI['mixed']
-  setRangeParagraphSpacing(start: number, end: number, value: number): void
   getRangeBoundVariable(
     start: number,
     end: number,
@@ -2088,6 +2086,58 @@ interface NonResizableTextMixin {
     Pick<StyledTextSegment, StyledTextSegmentFields[number] | 'characters' | 'start' | 'end'>
   >
 }
+interface NonResizableTextMixin extends BaseNonResizableTextMixin {
+  paragraphIndent: number
+  paragraphSpacing: number
+  listSpacing: number
+  hangingPunctuation: boolean
+  hangingList: boolean
+  textDecoration: TextDecoration | PluginAPI['mixed']
+  textDecorationStyle: TextDecorationStyle | PluginAPI['mixed'] | null
+  textDecorationOffset: TextDecorationOffset | PluginAPI['mixed'] | null
+  textDecorationThickness: TextDecorationThickness | PluginAPI['mixed'] | null
+  textDecorationColor: TextDecorationColor | PluginAPI['mixed'] | null
+  textDecorationSkipInk: boolean | PluginAPI['mixed'] | null
+  lineHeight: LineHeight | PluginAPI['mixed']
+  leadingTrim: LeadingTrim | PluginAPI['mixed']
+  getRangeTextDecoration(start: number, end: number): TextDecoration | PluginAPI['mixed']
+  setRangeTextDecoration(start: number, end: number, value: TextDecoration): void
+  getRangeTextDecorationStyle(
+    start: number,
+    end: number,
+  ): TextDecorationStyle | PluginAPI['mixed'] | null
+  setRangeTextDecorationStyle(start: number, end: number, value: TextDecorationStyle): void
+  getRangeTextDecorationOffset(
+    start: number,
+    end: number,
+  ): TextDecorationOffset | PluginAPI['mixed'] | null
+  setRangeTextDecorationOffset(start: number, end: number, value: TextDecorationOffset): void
+  getRangeTextDecorationThickness(
+    start: number,
+    end: number,
+  ): TextDecorationThickness | PluginAPI['mixed'] | null
+  setRangeTextDecorationThickness(start: number, end: number, value: TextDecorationThickness): void
+  getRangeTextDecorationColor(
+    start: number,
+    end: number,
+  ): TextDecorationColor | PluginAPI['mixed'] | null
+  setRangeTextDecorationColor(start: number, end: number, value: TextDecorationColor): void
+  getRangeTextDecorationSkipInk(start: number, end: number): boolean | PluginAPI['mixed'] | null
+  setRangeTextDecorationSkipInk(start: number, end: number, value: boolean): void
+  getRangeLineHeight(start: number, end: number): LineHeight | PluginAPI['mixed']
+  setRangeLineHeight(start: number, end: number, value: LineHeight): void
+  getRangeListOptions(start: number, end: number): TextListOptions | PluginAPI['mixed']
+  setRangeListOptions(start: number, end: number, value: TextListOptions): void
+  getRangeListSpacing(start: number, end: number): number | PluginAPI['mixed']
+  setRangeListSpacing(start: number, end: number, value: number): void
+  getRangeIndentation(start: number, end: number): number | PluginAPI['mixed']
+  setRangeIndentation(start: number, end: number, value: number): void
+  getRangeParagraphIndent(start: number, end: number): number | PluginAPI['mixed']
+  setRangeParagraphIndent(start: number, end: number, value: number): void
+  getRangeParagraphSpacing(start: number, end: number): number | PluginAPI['mixed']
+  setRangeParagraphSpacing(start: number, end: number, value: number): void
+}
+interface NonResizableTextPathMixin extends BaseNonResizableTextMixin {}
 interface TextSublayerNode extends NonResizableTextMixin, MinimalFillsMixin {}
 interface DocumentNode extends BaseNodeMixin {
   readonly type: 'DOCUMENT'
@@ -2163,6 +2213,20 @@ interface GroupNode
     AspectRatioLockMixin {
   readonly type: 'GROUP'
   clone(): GroupNode
+}
+interface TransformGroupNode
+  extends BaseNodeMixin,
+    SceneNodeMixin,
+    ReactionMixin,
+    ChildrenMixin,
+    ContainerMixin,
+    DeprecatedBackgroundMixin,
+    BlendMixin,
+    LayoutMixin,
+    ExportMixin,
+    AspectRatioLockMixin {
+  readonly type: 'TRANSFORM_GROUP'
+  clone(): TransformGroupNode
 }
 interface SliceNode extends BaseNodeMixin, SceneNodeMixin, LayoutMixin, ExportMixin {
   readonly type: 'SLICE'
@@ -2240,6 +2304,23 @@ interface TextNode
   autoRename: boolean
   textStyleId: string | PluginAPI['mixed']
   setTextStyleIdAsync(styleId: string): Promise<void>
+}
+interface TextPathNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    NonResizableTextPathMixin,
+    AnnotationsMixin,
+    AspectRatioLockMixin {
+  readonly type: 'TEXT_PATH'
+  clone(): TextPathNode
+  textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED'
+  textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM'
+  autoRename: boolean
+  textStyleId: string | PluginAPI['mixed']
+  setTextStyleIdAsync(styleId: string): Promise<void>
+  readonly vectorPaths: VectorPaths
+  readonly vectorNetwork: VectorNetwork
+  readonly handleMirroring: HandleMirroring | PluginAPI['mixed']
 }
 declare type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
 declare type InstanceSwapPreferredValue = {
@@ -2450,7 +2531,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   readonly text: TextSublayerNode
   readonly textBackground: LabelSublayerNode
   readonly cornerRadius?: number
-  connectorLineType: 'ELBOWED' | 'STRAIGHT'
+  connectorLineType: 'ELBOWED' | 'STRAIGHT' | 'CURVED'
   connectorStart: ConnectorEndpoint
   connectorEnd: ConnectorEndpoint
   connectorStartStrokeCap: ConnectorStrokeCap
@@ -2696,6 +2777,8 @@ declare type SceneNode =
   | PolygonNode
   | RectangleNode
   | TextNode
+  | TextPathNode
+  | TransformGroupNode
   | StickyNode
   | ConnectorNode
   | ShapeWithTextNode
