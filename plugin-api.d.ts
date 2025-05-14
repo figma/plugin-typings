@@ -332,7 +332,7 @@ declare type CodegenEvent = {
   language: string
 }
 declare type CodegenPreferences = {
-  readonly unit: 'pixel' | 'scaled'
+  readonly unit: 'PIXEL' | 'SCALED'
   readonly scaleFactor?: number
   readonly customSettings: Record<string, string>
 }
