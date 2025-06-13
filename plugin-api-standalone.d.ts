@@ -3767,6 +3767,10 @@ interface NoiseEffectBase {
    */
   readonly type: 'NOISE'
   /**
+   * The color of the noise effect.
+   */
+  readonly color: RGBA
+  /**
    * The blend mode of the noise.
    */
   readonly blendMode: BlendMode
@@ -5998,7 +6002,15 @@ interface DeprecatedBackgroundMixin {
    */
   backgroundStyleId: string
 }
-declare type StrokeCap = 'NONE' | 'ROUND' | 'SQUARE' | 'ARROW_LINES' | 'ARROW_EQUILATERAL'
+declare type StrokeCap =
+  | 'NONE'
+  | 'ROUND'
+  | 'SQUARE'
+  | 'ARROW_LINES'
+  | 'ARROW_EQUILATERAL'
+  | 'DIAMOND_FILLED'
+  | 'TRIANGLE_FILLED'
+  | 'CIRCLE_FILLED'
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
 /**
