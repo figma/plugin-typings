@@ -2305,6 +2305,13 @@ interface UIAPI {
    */
   reposition(x: number, y: number): void
   /**
+   * Fetches the position of the UI in window space and canvas space. Throws an error when no UI is available.
+   */
+  getPosition(): {
+    windowSpace: Vector
+    canvasSpace: Vector
+  }
+  /**
    * Destroys the UI and its containing `<iframe>`. Once this has been called, the code inside the iframe will be stopped and you can no longer send messages to and from it.
    */
   close(): void
@@ -5718,7 +5725,10 @@ interface DimensionAndPositionMixin {
 /**
  * @see https://www.figma.com/plugin-docs/api/node-properties
  */
-interface LayoutMixin extends DimensionAndPositionMixin, AutoLayoutChildrenMixin {
+interface LayoutMixin
+  extends DimensionAndPositionMixin,
+    AutoLayoutChildrenMixin,
+    GridChildrenMixin {
   /**
    * The actual bounds of a node accounting for drop shadows, thick strokes, and anything else that may fall outside the node's regular bounding box defined in `x`, `y`, `width`, and `height`. The `x` and `y` inside this property represent the absolute position of the node on the page. This value will be `null` if the node is invisible.
    */
@@ -6064,17 +6074,7 @@ interface AutoLayoutMixin {
    * // +-------------+
    * parentFrame.layoutMode = 'VERTICAL'
    */
-  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
-  /**
-   * Determines whether this layer should use wrapping auto-layout. Defaults to "NO_WRAP".
-   *
-   * @remarks
-   *
-   * This property can only be set on layers with `layoutMode === "HORIZONTAL"`. Setting it on layers without this property will throw an Error.
-   *
-   * This property must be set to `"WRAP"` in order for the {@link AutoLayoutMixin.counterAxisSpacing} and {@link AutoLayoutMixin.counterAxisAlignContent} properties to be applicable.
-   */
-  layoutWrap: 'NO_WRAP' | 'WRAP'
+  layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'GRID'
   /**
    * Applicable only on auto-layout frames. Determines the left padding between the border of the frame and its children.
    */
@@ -6160,7 +6160,58 @@ interface AutoLayoutMixin {
    */
   counterAxisSizingMode: 'FIXED' | 'AUTO'
   /**
-   * Applicable only on auto-layout frames. Determines how the auto-layout frame’s children should be aligned in the primary axis direction.
+   * Applicable only on auto-layout frames. Determines whether strokes are included in [layout calculations](https://help.figma.com/hc/en-us/articles/31289464393751-Use-the-horizontal-and-vertical-flows-in-auto-layout#01JT9NA4HVT02ZPE7BA86SFCD6). When true, auto-layout frames behave like css `box-sizing: border-box`.
+   *
+   * @remarks
+   *
+   * ```ts title="Auto-layout frame with strokes included in layout"
+   * const parentFrame = figma.createFrame()
+   * parentFrame.appendChild(figma.createFrame())
+   * parentFrame.appendChild(figma.createFrame())
+   * parentFrame.layoutMode = 'HORIZONTAL'
+   * // Let the height of the parent frame resize to fit the children
+   * parentFrame.counterAxisSizingMode = 'AUTO'
+   *
+   * // Thick stroke around parent frame to illustrate layout differences
+   * parentFrame.strokes = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }}]
+   * parentFrame.strokeWeight = 10
+   *
+   * // Parent frame (strokes overlap with children)
+   * // +--------------------------+
+   * // |+-----------++-----------+|
+   * // ||           ||           ||
+   * // ||  Child 1  ||  Child 2  ||
+   * // ||           ||           ||
+   * // |+-----------++-----------+|
+   * // +--------------------------+
+   * parentFrame.strokesIncludedInLayout = false
+   *
+   * // Parent frame (strokes do not overlap with children)
+   * // +--------------------------------+
+   * // |                                |
+   * // |   +-----------++-----------+   |
+   * // |   |           ||           |   |
+   * // |   |  Child 1  ||  Child 2  |   |
+   * // |   |           ||           |   |
+   * // |   +-----------++-----------+   |
+   * // |                                |
+   * // +--------------------------------+
+   * parentFrame.strokesIncludedInLayout = true
+   * ```
+   */
+  strokesIncludedInLayout: boolean
+  /**
+   * Determines whether this layer should use wrapping auto-layout. Defaults to `"NO_WRAP"`.
+   *
+   * @remarks
+   *
+   * This property can only be set on layers with `layoutMode === "HORIZONTAL"`. Setting it on layers without this property will throw an Error.
+   *
+   * This property must be set to `"WRAP"` in order for the {@link AutoLayoutMixin.counterAxisSpacing} and {@link AutoLayoutMixin.counterAxisAlignContent} properties to be applicable.
+   */
+  layoutWrap: 'NO_WRAP' | 'WRAP'
+  /**
+   * Applicable only on "HORIZONTAL" or "VERTICAL" auto-layout frames. Determines how the auto-layout frame’s children should be aligned in the primary axis direction.
    *
    * @remarks
    *
@@ -6225,7 +6276,7 @@ interface AutoLayoutMixin {
    */
   primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
   /**
-   * Applicable only on auto-layout frames. Determines how the auto-layout frame’s children should be aligned in the counter axis direction.
+   * Applicable only on "HORIZONTAL" or "VERTICAL" auto-layout frames. Determines how the auto-layout frame’s children should be aligned in the counter axis direction.
    *
    * @remarks
    *
@@ -6318,7 +6369,7 @@ interface AutoLayoutMixin {
    */
   counterAxisAlignContent: 'AUTO' | 'SPACE_BETWEEN'
   /**
-   * Applicable only on auto-layout frames. Determines distance between children of the frame.
+   * Applicable only on "HORIZONTAL" or "VERTICAL" auto-layout frames. Determines distance between children of the frame.
    *
    * @remarks
    *
@@ -6370,7 +6421,7 @@ interface AutoLayoutMixin {
    */
   itemSpacing: number
   /**
-   * Applicable only on auto-layout frames with {@link AutoLayoutMixin.layoutWrap} set to `"WRAP"`. Determines the distance between wrapped tracks. The value must be positive.
+   * Applicable only on "HORIZONTAL" or "VERTICAL" auto-layout frames with {@link AutoLayoutMixin.layoutWrap} set to `"WRAP"`. Determines the distance between wrapped tracks. The value must be positive.
    *
    * @remarks
    *
@@ -6418,7 +6469,7 @@ interface AutoLayoutMixin {
    */
   counterAxisSpacing: number | null
   /**
-   * Applicable only on auto-layout frames. Determines the [canvas stacking order](https://help.figma.com/hc/en-us/articles/360040451373-Explore-auto-layout-properties#Canvas_stacking_order) of layers in this frame. When true, the first layer will be draw on top.
+   * Applicable only on "HORIZONTAL" or "VERTICAL" auto-layout frames. Determines the [canvas stacking order](https://help.figma.com/hc/en-us/articles/360040451373-Explore-auto-layout-properties#Canvas_stacking_order) of layers in this frame. When true, the first layer will be draw on top.
    *
    * @remarks
    *
@@ -6457,47 +6508,143 @@ interface AutoLayoutMixin {
    * ```
    */
   itemReverseZIndex: boolean
+}
+/**
+ * @see https://www.figma.com/plugin-docs/api/GridTrackSize
+ */
+interface GridTrackSize {
   /**
-   * Applicable only on auto-layout frames. Determines whether strokes are included in [layout calculations](https://help.figma.com/hc/en-us/articles/360040451373-Explore-auto-layout-properties#strokes-in-layout). When true, auto-layout frames behave like css `box-sizing: border-box`.
+   * Applicable only on FIXED grid tracks. The size of the track in pixels.
+   * If the setter for this value is called on a `FLEX` track, the track will be converted to a `FIXED` track.
+   */
+  value: number
+  /**
+   * The type of the grid track. `FLEX` indicates that the track will grow to fill the available space in the container (evenly divided among all flex tracks in the grid), while `FIXED` indicates that the track will have a fixed size.
+   **/
+  type: 'FLEX' | 'FIXED'
+}
+/**
+ * @see https://www.figma.com/plugin-docs/api/node-properties
+ */
+interface GridLayoutMixin {
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`. Determines the number of rows in the grid.
    *
    * @remarks
    *
-   * ```ts title="Auto-layout frame with strokes included in layout"
+   * If the setter for this value is called on a grid with a value less than 1, it will throw an error.
+   * Users cannot remove rows from a grid if they are occupied by children, so if you try to reduce the count of rows in a grid and some of those rows have children, it will throw an error.
+   * By default, when the row count is increased, the new rows will be added as {@link GridTrackSize} objects with type `"FLEX"`. If you want to change the type of the new rows, you can use the setters on GridTrackSize objects returned by {@link GridLayoutMixin.gridRowSizes} or {@link GridLayoutMixin.gridColumnSizes}.
+   *
+   * ```ts title="Grid layout with 2 rows and 3 columns"
    * const parentFrame = figma.createFrame()
-   * parentFrame.appendChild(figma.createFrame())
-   * parentFrame.appendChild(figma.createFrame())
-   * parentFrame.layoutMode = 'HORIZONTAL'
-   * // Let the height of the parent frame resize to fit the children
-   * parentFrame.counterAxisSizingMode = 'AUTO'
+   * parentFrame.layoutMode = 'GRID'
+   * parentFrame.gridRowCount = 2
+   * parentFrame.gridColumnCount = 3
    *
-   * // Thick stroke around parent frame to illustrate layout differences
-   * parentFrame.strokes = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }}]
-   * parentFrame.strokeWeight = 10
+   * // Grid frame with 2 rows and 3 columns
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // + --- + --- + --- +
+   */
+  gridRowCount: number
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`. Determines the number of columns in the grid.
+   * @remarks
+   * If the setter for this value is called on a grid with a value less than 1, it will throw an error.
+   * Users cannot remove columns from a grid if they are occupied by children, so if you try to reduce the count of columns in a grid and some of those columns have children, it will throw an error.
+   * By default, when the column count is increased, the new columns will be added as {@link GridTrackSize} objects with type `"FLEX"`. If you want to change the type of the new columns, you can use the setters on GridTrackSize objects returned by {@link GridLayoutMixin.gridRowSizes} or {@link GridLayoutMixin.gridColumnSizes}.
+   */
+  gridColumnCount: number
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`. Determines the gap between rows in the grid.
+   * @remarks
+   * If the setter for this value is called on a grid with a value less than 0, it will throw an error.
+   */
+  gridRowGap: number
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`. Determines the gap between columns in the grid.
+   * @remarks
+   * If the setter for this value is called on a grid with a value less than 0, it will throw an error.
+   */
+  gridColumnGap: number
+  /**
+   * Only applicable on auto-layout frames with `layoutMode` set to `"GRID"`.
+   * Returns an array of {@link GridTrackSize} objects representing the rows in the grid in order.
    *
-   * // Parent frame (strokes overlap with children)
-   * // +--------------------------+
-   * // |+-----------++-----------+|
-   * // ||           ||           ||
-   * // ||  Child 1  ||  Child 2  ||
-   * // ||           ||           ||
-   * // |+-----------++-----------+|
-   * // +--------------------------+
-   * parentFrame.strokesIncludedInLayout = false
+   * @remarks
+   * The order of the rows is from top to bottom.
+   * The {@link GridTrackSize} can be used to change the type of the row (either `"FLEX"` or `"FIXED"`) and the size of the track (if it is a `"FIXED"` track).
    *
-   * // Parent frame (strokes do not overlap with children)
-   * // +--------------------------------+
-   * // |                                |
-   * // |   +-----------++-----------+   |
-   * // |   |           ||           |   |
-   * // |   |  Child 1  ||  Child 2  |   |
-   * // |   |           ||           |   |
-   * // |   +-----------++-----------+   |
-   * // |                                |
-   * // +--------------------------------+
-   * parentFrame.strokesIncludedInLayout = true
+   * ```ts title="Grid layout with mixed track sizes and types"
+   * const parentFrame = figma.createFrame()
+   * parentFrame.layoutMode = 'GRID'
+   * parentFrame.gridRowCount = 2
+   * parentFrame.gridColumnCount = 3
+   *
+   * // Change the first row to be a fixed size of 100px
+   * parentFrame.gridRowSizes[0].type // 'FLEX'
+   * parentFrame.gridRowSizes[0].value = 100
+   * parentFrame.gridRowSizes[0].type // 'FIXED'
+   * // Grid with one fixed row and one flexible rows
+   * // + --- + --- + --- +
+   * // |     |     |     | 100px height
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // |     |     |     | 'flex' height
+   * // |     |     |     |  occupies remaining height in the container, because there is only one flex row.
+   * // |     |     |     |
+   * // + --- + --- + --- +
    * ```
    */
-  strokesIncludedInLayout: boolean
+  gridRowSizes: Array<GridTrackSize>
+  /**
+   * Only applicable on auto-layout frames with `layoutMode` set to `"GRID"`.
+   * Returns an array of {@link GridTrackSize} objects representing the columns in the grid in order.
+   * @remarks
+   * The order of the columns is from left to right.
+   * The {@link GridTrackSize} can be used to change the type of the column (either `"FLEX"` or `"FIXED"`) and the size of the track (if it is a `"FIXED"` track).
+   */
+  gridColumnSizes: Array<GridTrackSize>
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`.
+   * Appends a node to the grid at the specified row and column index.
+   * @remarks
+   * If the specified row or column index is out of bounds, it will throw an error.
+   * If the specified row or column index is occupied by another node, it will throw an error.
+   * If the node is already a child of the grid, it will be removed from its current position and appended to the new position.
+   * ```ts title="Appending a node to a grid at a specific row and column index"
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // + --- + --- + --- +
+   * const grid = figma.createFrame()
+   * grid.layoutMode = 'GRID'
+   * grid.gridRowCount = 3
+   * grid.gridColumnCount = 3
+   *
+   * const child1 = figma.createFrame()
+   * const child2 = figma.createFrame()
+   * const child2 = figma.createFrame()
+   *
+   * // + --- + --- + --- +
+   * // |  1  |     |     |
+   * // + --- + --- + --- +
+   * // |  2  |     |     |
+   * // + --- + --- + --- +
+   * // |  3  |     |     |
+   * // + --- + --- + --- +
+   * grid.appendChildAt(child1, 0, 0)
+   * grid.appendChildAt(child2, 1, 0)
+   * grid.appendChildAt(child3, 2, 0)
+   * ```
+   */
+  appendChildAt(node: SceneNode, rowIndex: number, columnIndex: number): void
 }
 /**
  * @see https://www.figma.com/plugin-docs/api/node-properties
@@ -6561,6 +6708,109 @@ interface AutoLayoutChildrenMixin {
    * ```
    */
   layoutPositioning: 'AUTO' | 'ABSOLUTE'
+}
+/**
+ * @see https://www.figma.com/plugin-docs/api/node-properties
+ */
+interface GridChildrenMixin {
+  /**
+   * Applicable only on direct children of 'GRID' auto-layout frames. Sets the position of the node
+   *
+   * @remarks
+   * This method sets the position of the node within the grid based on the specified row and column indices.
+   * The row and column indices are 0-based, where 0 is the top row in the grid, and 0 is the left-most column in the grid.
+   * If the specified row or column index is out of bounds, it will throw an error.
+   * If the specified row or column index is occupied by another node, it will throw an error.
+   * ```ts title="Setting the position of a node in a grid"
+   * const grid = figma.createFrame()
+   * grid.layoutMode = 'GRID'
+   * grid.gridRowCount = 3
+   * grid.gridColumnCount = 3
+   * const child1 = figma.createFrame()
+   * const child2 = figma.createFrame()
+   * const child2 = figma.createFrame()
+   * // + --- + --- + --- +
+   * // |  1  |  2  |  3  |
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // + --- + --- + --- +
+   * // |     |     |     |
+   * // + --- + --- + --- +
+   *
+   * // If calling `appendChild` instead of {@link GridLayoutMixin.appendChildAt}, nodes will be added to the first available position in the grid.
+   * grid.appendChild(child1)
+   * grid.appendChild(child2)
+   * grid.appendChild(child3)
+   * // Move the children to specific grid positions
+   * child2.setGridPosition(1, 0)
+   * child3.setGridPosition(2, 1)
+   * // + --- + --- + --- +
+   * // |  1  |     |     |
+   * // + --- + --- + --- +
+   * // |  2  |     |     |
+   * // + --- + --- + --- +
+   * // |     |  3  |     |
+   * // + --- + --- + --- +
+   */
+  setGridChildPosition(rowIndex: number, columnIndex: number): void
+  /**
+   * Applicable only on direct children of grid auto-layout frames. Determines the starting row index for this node within the parent grid.
+   *
+   * @remarks
+   * The row index is 0-based, where 0 is the first row in the grid. This property works in conjunction with gridRowSpan to determine the node's row position and size in the grid.
+   * If the index provided is greater than the number of rows in the grid, the setter will throw an error.
+   * If the index provided results in the node overlapping with another node in the grid, the setter will throw an error.
+   */
+  readonly gridRowAnchorIndex: number
+  /**
+   * Applicable only on direct children of grid auto-layout frames. Determines the starting column index for this node within the parent grid.
+   *
+   * @remarks
+   * The column index is 0-based, where 0 is the first column in the grid. This property works in conjunction with gridColumnSpan to determine the node's column position and size in the grid.
+   * If the index provided is greater than the number of columns in the grid, the setter will throw an error.
+   * If the index provided results in the node overlapping with another node in the grid, the setter will throw an error.
+   */
+  readonly gridColumnAnchorIndex: number
+  /**
+   * Applicable only on direct children of grid auto-layout frames. Determines the number of rows this node will span within the parent grid.
+   *
+   * @remarks
+   * Must be a positive integer. This property defines how many rows the node will occupy starting from gridRowAnchorIndex.
+   * If the span provided results in the node overlapping with another node in the grid, the setter will throw an error.
+   * If the span provided results in the node extending beyond the grid's defined rows, the setter will throw an error.
+   */
+  gridRowSpan: number
+  /**
+   * Applicable only on direct children of grid auto-layout frames. Determines the number of columns this node will span within the parent grid.
+   *
+   * @remarks
+   * Must be a positive integer. This property defines how many columns the node will occupy starting from gridColumnAnchorIndex.
+   * If the span provided results in the node overlapping with another node in the grid, the setter will throw an error.
+   * If the span provided results in the node extending beyond the grid's defined columns, the setter will throw an error.
+   */
+  gridColumnSpan: number
+  /**
+   * Applicable only on direct children of grid auto-layout frames. Controls the horizontal alignment of the node within its grid cell.
+   *
+   * @remarks
+   * Possible values are:
+   * - `"MIN"`: Aligns to the left of the grid cell
+   * - `"CENTER"`: Centers horizontally within the grid cell
+   * - `"MAX"`: Aligns to the right of the grid cell
+   * - `"AUTO"`: Uses the default alignment
+   */
+  gridChildHorizontalAlign: 'MIN' | 'CENTER' | 'MAX' | 'AUTO'
+  /**
+   * Applicable only on direct children of grid auto-layout frames. Controls the vertical alignment of the node within its grid cell.
+   *
+   * @remarks
+   * Possible values are:
+   * - `"MIN"`: Aligns to the top of the grid cell
+   * - `"CENTER"`: Centers vertically within the grid cell
+   * - `"MAX"`: Aligns to the bottom of the grid cell
+   * - `"AUTO"`: Uses the default alignment
+   */
+  gridChildVerticalAlign: 'MIN' | 'CENTER' | 'MAX' | 'AUTO'
 }
 /**
  * @see https://www.figma.com/plugin-docs/api/InferredAutoLayoutResult
@@ -7130,6 +7380,7 @@ interface BaseFrameMixin
     ExportMixin,
     IndividualStrokesMixin,
     AutoLayoutMixin,
+    GridLayoutMixin,
     AspectRatioLockMixin,
     AnnotationsMixin,
     DevStatusMixin {
@@ -10325,4 +10576,4 @@ interface FindAllCriteria<T extends NodeType[]> {
 }
 
 // prettier-ignore
-export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, AutoLayoutChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
+export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
