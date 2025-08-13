@@ -5383,6 +5383,8 @@ declare type VariableBindableNodeField =
   | 'strokeBottomWeight'
   | 'strokeLeftWeight'
   | 'opacity'
+  | 'gridRowGap'
+  | 'gridColumnGap'
 declare type VariableBindableTextField =
   | 'fontFamily'
   | 'fontSize'
@@ -7535,6 +7537,14 @@ declare type AnnotationPropertyType =
   | 'alignItems'
   | 'opacity'
   | 'mainComponent'
+  | 'gridRowGap'
+  | 'gridColumnGap'
+  | 'gridRowCount'
+  | 'gridColumnCount'
+  | 'gridRowAnchorIndex'
+  | 'gridColumnAnchorIndex'
+  | 'gridRowSpan'
+  | 'gridColumnSpan'
 interface AnnotationsMixin {
   /**
    * Annotations on the node.
@@ -8660,7 +8670,7 @@ interface PageNode
    *
    * When `start == end`, it means that no characters is currently selected -- i.e., there is just a cursor.
    *
-   * Changing `selectedTextRange` will trigger a `selectionchanged` message.
+   * Changing `selectedTextRange` will trigger a `selectionchange` message.
    */
   selectedTextRange: {
     node: TextNode
