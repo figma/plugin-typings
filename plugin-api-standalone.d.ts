@@ -1,10 +1,10 @@
-/* plugin-typings are auto-generated. Do not update them directly. See plugin-docs/ for instructions. */
+/* plugin-typings are auto-generated. Do not update them directly. See developer-docs/ for instructions. */
 /**
  * NOTE: This file is useful if you want to import specific types eg.
  * import type { SceneNode } from "@figma/plugin-typings/plugin-api-standalone"
  */
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-on
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-on
  */
 declare type ArgFreeEventType =
   | 'selectionchange'
@@ -17,7 +17,7 @@ declare type ArgFreeEventType =
   | 'timeradjust'
   | 'timerdone'
 /**
- * @see https://www.figma.com/plugin-docs/api/figma
+ * @see https://developers.figma.com/docs/plugins/api/figma
  */
 interface PluginAPI {
   /**
@@ -25,11 +25,11 @@ interface PluginAPI {
    */
   readonly apiVersion: '1.0.0'
   /**
-   * The currently executing command from the `manifest.json` file. It is the command string in the `ManifestMenuItem` (more details in the [manifest guide](https://www.figma.com/plugin-docs/manifest)). If the plugin does not have any menu item, this property is undefined.
+   * The currently executing command from the `manifest.json` file. It is the command string in the `ManifestMenuItem` (more details in the [manifest guide](https://developers.figma.com/docs/plugins/manifest)). If the plugin does not have any menu item, this property is undefined.
    */
   readonly command: string
   /**
-   * The current editor type this plugin is running in. See also [Setting editor type](https://www.figma.com/plugin-docs/setting-editor-type/).
+   * The current editor type this plugin is running in. See also [Setting editor type](https://developers.figma.com/docs/plugins/setting-editor-type).
    */
   readonly editorType: 'figma' | 'figjam' | 'dev' | 'slides'
   /**
@@ -117,13 +117,13 @@ interface PluginAPI {
    *
    * This property contains methods used to read, set, and modify the built in FigJam timer.
    *
-   * Read more in the [timer section](https://www.figma.com/plugin-docs/api/figma-timer).
+   * Read more in the [timer section](https://developers.figma.com/docs/plugins/api/figma-timer).
    */
   readonly timer?: TimerAPI
   /**
    * This property contains methods used to read and set the viewport, the user-visible area of the current page.
    *
-   * Read more in the [viewport section](https://www.figma.com/plugin-docs/api/figma-viewport).
+   * Read more in the [viewport section](https://developers.figma.com/docs/plugins/api/figma-viewport).
    */
   readonly viewport: ViewportAPI
   /**
@@ -149,13 +149,13 @@ interface PluginAPI {
   /**
    * This property contains methods used to integrate with the Dev Mode codegen functionality.
    *
-   * Read more in the [codegen section](https://www.figma.com/plugin-docs/api/figma-codegen).
+   * Read more in the [codegen section](https://developers.figma.com/docs/plugins/api/figma-codegen).
    */
   readonly codegen: CodegenAPI
   /**
    * This property contains methods used to integrate with the Figma for VS Code extension. If `undefined`, the plugin is not running in VS Code.
    *
-   * Read more in [Dev Mode plugins in Visual Studio Code](https://www.figma.com/plugin-docs/working-in-dev-mode/#dev-mode-plugins-in-visual-studio-code)
+   * Read more in [Dev Mode plugins in Visual Studio Code](https://developers.figma.com/docs/plugins/working-in-dev-mode#dev-mode-plugins-in-visual-studio-code)
    */
   readonly vscode?: VSCodeAPI
   /**
@@ -346,26 +346,26 @@ interface PluginAPI {
    *
    * @remarks
    *
-   * In the VS Code Extension, this API is required to open a url in the browser. Read more in [Dev Mode plugins in Visual Studio Code](https://www.figma.com/plugin-docs/working-in-dev-mode/#dev-mode-plugins-in-visual-studio-code).
+   * In the VS Code Extension, this API is required to open a url in the browser. Read more in [Dev Mode plugins in Visual Studio Code](https://developers.figma.com/docs/plugins/working-in-dev-mode#dev-mode-plugins-in-visual-studio-code).
    */
   openExternal(url: string): void
   /**
    * Enables you to render UI to interact with the user, or simply to access browser APIs. This function creates a modal dialog with an `<iframe>` containing the HTML markup in the `html` argument.
    *
-   * @param html - The HTML to insert into the iframe. You can pass in the HTML code as a string here, but this will often be the global value [`__html__`](https://www.figma.com/plugin-docs/api/global-objects#html).
+   * @param html - The HTML to insert into the iframe. You can pass in the HTML code as a string here, but this will often be the global value [`__html__`](https://developers.figma.com/docs/plugins/api/global-objects#html).
    * @param options - An object that may contain the following optional parameters:
    * - `visible`: Whether the UI starts out displayed to the user. Defaults to `true`. You can use `figma.ui.show()` and `figma.ui.hide()` to change the visibility later.
    * - `width`: The width of the UI. Defaults to 300. Minimum is 70. Can be changed later using `figma.ui.resize(width, height)`
    * - `height`: The height of the UI. Defaults to 200. Minimum is 0. Can be changed later using `figma.ui.resize(width, height)`
    * - `title`: The title of the UI window. Defaults to the plugin name.
    * - `position`: The position of the UI window. Defaults to the last position of the iframe or the center of the viewport. If specified, expects an X/Y coordinate in the canvas space (i.e matches x/y values returned by `<PluginNode>.x` and `<PluginNode>.y`)
-   * - `themeColors`: Defaults to `false`. When enabled, CSS variables will be added to the plugin iframe to allow [support for light and dark themes](https://www.figma.com/plugin-docs/css-variables).
+   * - `themeColors`: Defaults to `false`. When enabled, CSS variables will be added to the plugin iframe to allow [support for light and dark themes](https://developers.figma.com/docs/plugins/css-variables).
    *
    * Note: If the position specified is outside of the user's viewport, the iframe will be moved so that it remains in the user's viewport.
    *
    * @remarks
    *
-   * The easiest way to use this API is to load the HTML file defined in the manifest. This enables writing a separate HTML file which can be accessed through the [`__html__`](https://www.figma.com/plugin-docs/api/global-objects#html) global variable.
+   * The easiest way to use this API is to load the HTML file defined in the manifest. This enables writing a separate HTML file which can be accessed through the [`__html__`](https://developers.figma.com/docs/plugins/api/global-objects#html) global variable.
    *
    * If the `<iframe>` UI is already showing when this function is called, the previous UI will be closed before the new one is displayed.
    *
@@ -389,29 +389,29 @@ interface PluginAPI {
   /**
    * This property contains methods used to modify and communicate with the UI created via `figma.showUI(...)`.
    *
-   * Read more in the [UI section](https://www.figma.com/plugin-docs/api/figma-ui).
+   * Read more in the [UI section](https://developers.figma.com/docs/plugins/api/figma-ui).
    */
   readonly ui: UIAPI
   /**
    * This property contains convenience functions for common operations.
    *
-   * Read more in the [util section](https://www.figma.com/plugin-docs/api/figma-util).
+   * Read more in the [util section](https://developers.figma.com/docs/plugins/api/figma-util).
    */
   readonly util: UtilAPI
   /**
    * This property contains constants that can be accessed by the plugin API.
    *
-   * Read more in the [constants section](https://www.figma.com/plugin-docs/api/figma-constants).
+   * Read more in the [constants section](https://developers.figma.com/docs/plugins/api/figma-constants).
    */
   readonly constants: ConstantsAPI
   /**
    * This property contains methods to store persistent data on the user's local machine.
    *
-   * Read more in the [client storage section](https://www.figma.com/plugin-docs/api/figma-clientStorage).
+   * Read more in the [client storage section](https://developers.figma.com/docs/plugins/api/figma-clientStorage).
    */
   readonly clientStorage: ClientStorageAPI
   /**
-   * This property contains methods to handle user inputs when a plugin is launched in query mode. See [Accepting Parameters as Input](https://www.figma.com/plugin-docs/plugin-parameters) for more details.
+   * This property contains methods to handle user inputs when a plugin is launched in query mode. See [Accepting Parameters as Input](https://developers.figma.com/docs/plugins/plugin-parameters) for more details.
    */
   readonly parameters: ParametersAPI
   /**
@@ -571,12 +571,12 @@ interface PluginAPI {
    *
    * | Change                                                           | `type` property           | Description                                                                                                                                                                                                        |
    * |------------------------------------------------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-   * | [`CreateChange`](https://www.figma.com/plugin-docs/api/DocumentChange#createchange)               | `'CREATE'`                | A node has been created in the document. If a node with nested children is being added to the document a `CreateChange` will only be made for the highest level parent that was added to the document.             |
-   * | [`DeleteChange`](https://www.figma.com/plugin-docs/api/DocumentChange#deletechange)               | `'DELETE'`                | A node has been removed from the document. If a node with nested children is being removed from the document a  `DeleteChange`  will only be made for the highest level parent that was removed from the document. |
-   * | [`PropertyChange`](https://www.figma.com/plugin-docs/api/DocumentChange#propertychange)           | `'PROPERTY_CHANGE'`       | A property of a node has changed.                                                                                                                                                                                  |
-   * | [`StyleCreateChange`](https://www.figma.com/plugin-docs/api/DocumentChange#stylecreatechange)     | `'STYLE_CREATE'`          | A style has been added to the document.                                                                                                                                                                            |
-   * | [`StyleDeleteChange`](https://www.figma.com/plugin-docs/api/DocumentChange#styledeletechange)     | `'STYLE_DELETE'`          | A style has been removed from the document.                                                                                                                                                                        |
-   * | [`StylePropertyChange`](https://www.figma.com/plugin-docs/api/DocumentChange#stylepropertychange) | `'STYLE_PROPERTY_CHANGE'` | A style has had a property changed.                                                                                                                                                                                |
+   * | [`CreateChange`](https://developers.figma.com/docs/plugins/api/DocumentChange#createchange)               | `'CREATE'`                | A node has been created in the document. If a node with nested children is being added to the document a `CreateChange` will only be made for the highest level parent that was added to the document.             |
+   * | [`DeleteChange`](https://developers.figma.com/docs/plugins/api/DocumentChange#deletechange)               | `'DELETE'`                | A node has been removed from the document. If a node with nested children is being removed from the document a  `DeleteChange`  will only be made for the highest level parent that was removed from the document. |
+   * | [`PropertyChange`](https://developers.figma.com/docs/plugins/api/DocumentChange#propertychange)           | `'PROPERTY_CHANGE'`       | A property of a node has changed.                                                                                                                                                                                  |
+   * | [`StyleCreateChange`](https://developers.figma.com/docs/plugins/api/DocumentChange#stylecreatechange)     | `'STYLE_CREATE'`          | A style has been added to the document.                                                                                                                                                                            |
+   * | [`StyleDeleteChange`](https://developers.figma.com/docs/plugins/api/DocumentChange#styledeletechange)     | `'STYLE_DELETE'`          | A style has been removed from the document.                                                                                                                                                                        |
+   * | [`StylePropertyChange`](https://developers.figma.com/docs/plugins/api/DocumentChange#stylepropertychange) | `'STYLE_PROPERTY_CHANGE'` | A style has had a property changed.                                                                                                                                                                                |
    *
    *
    * #### Special cases
@@ -670,13 +670,13 @@ interface PluginAPI {
    *
    * The `start` property is the index of the first character in the range. The `end` property is the index of the last character in the range. The `suggestions` property is an array of strings that represent the suggestions for the range. The `color` property is optional and can be used to change the color of the underline that is drawn under the range. If no color is specified the underline will be red.
    *
-   * For more information read our in depth guide on [text review plugins](https://www.figma.com/plugin-docs/textreview-plugins).
+   * For more information read our in depth guide on [text review plugins](https://developers.figma.com/docs/plugins/textreview-plugins).
    *
    * ### `"drop"`
    *
    * This event will trigger when objects outside Figma (such as elements from other browser windows, or files from the local filesystem) are dropped onto the canvas.
    *
-   * It can also be triggered by a special `pluginDrop` message sent from the UI. See the [Triggering drop events from the UI](https://www.figma.com/plugin-docs/creating-ui#triggering-drop-events-from-the-ui) section for more details.
+   * It can also be triggered by a special `pluginDrop` message sent from the UI. See the [Triggering drop events from the UI](https://developers.figma.com/docs/plugins/creating-ui#triggering-drop-events-from-the-ui) section for more details.
    *
    * The callback will be passed a `DropEvent` with the below interface. It should return `false` if it wants to handle the particular drop and stop Figma from performing the default drop behavior.
    * ```ts
@@ -697,7 +697,7 @@ interface PluginAPI {
    * - The `absoluteX` and `absoluteY` properties are absolute canvas coordinates
    * - The `items` property is an array of `DropItem` objects. You will see multiple objects if a drop contains multiple, non-file data types. If there are no data items, this array will be empty.
    * - The `files` property is an array of dropped files represented as `DropFile` objects. If no files are present, this array will be empty.
-   * - The `dropMetadata` property comes from drop events [explicitly triggered by the UI](https://www.figma.com/plugin-docs/creating-ui#triggering-drop-events-from-the-ui).
+   * - The `dropMetadata` property comes from drop events [explicitly triggered by the UI](https://developers.figma.com/docs/plugins/creating-ui#triggering-drop-events-from-the-ui).
    *
    * Items and files will conform to the below interfaces:
    *
@@ -719,9 +719,9 @@ interface PluginAPI {
    *
    * #### UI Recommendations
    *
-   * When the plugin registers a drop callback, it should give the user instructions with either text in the plugin UI or [`figma.notify()`](https://www.figma.com/plugin-docs/api/properties/figma-notify) (if the plugin does not show a UI) telling them what to do.
+   * When the plugin registers a drop callback, it should give the user instructions with either text in the plugin UI or [`figma.notify()`](https://developers.figma.com/docs/plugins/api/properties/figma-notify) (if the plugin does not show a UI) telling them what to do.
    *
-   * [`figma.notify()`](https://www.figma.com/plugin-docs/api/properties/figma-notify) can be called with the `timeout` option set to `Infinity` to make the notification show for as long as the plugin is open.
+   * [`figma.notify()`](https://developers.figma.com/docs/plugins/api/properties/figma-notify) can be called with the `timeout` option set to `Infinity` to make the notification show for as long as the plugin is open.
    *
    * ### `"close"`
    *
@@ -745,8 +745,8 @@ interface PluginAPI {
    * }
    * ```
    *
-   * - The `parameters` property is of type [`ParameterValues`](https://www.figma.com/plugin-docs/api/figma-parameters#parametervalues), and contains the value entered for each parameter.
-   * - The `command` argument is the same as [`figma.command`](https://www.figma.com/plugin-docs/api/figma#command), but provided here again for convenience.
+   * - The `parameters` property is of type [`ParameterValues`](https://developers.figma.com/docs/plugins/api/figma-parameters#parametervalues), and contains the value entered for each parameter.
+   * - The `command` argument is the same as [`figma.command`](https://developers.figma.com/docs/plugins/api/figma#command), but provided here again for convenience.
    *
    * Handling the `run` event is only required for plugins with parameters. For all plugins it can still be a convenient spot to put your top level code, since it is called
    * on every plugin run.
@@ -767,9 +767,9 @@ interface PluginAPI {
    *
    * | Change | `type` property | Description |
    * | --- | --- | --- |
-   * | [`StyleCreateChange`](https://www.figma.com/plugin-docs/api/StyleChange#stylecreatechange) | `'STYLE_CREATE'` | A style has been added to the document. |
-   * | [`StyleDeleteChange`](https://www.figma.com/plugin-docs/api/StyleChange#styledeletechange) | `'STYLE_DELETE'` | A style has been removed from the document. |
-   * | [`StylePropertyChange`](https://www.figma.com/plugin-docs/api/StyleChange#stylepropertychange) | `'STYLE_PROPERTY_CHANGE'` | A style has had a property changed. |
+   * | [`StyleCreateChange`](https://developers.figma.com/docs/plugins/api/StyleChange#stylecreatechange) | `'STYLE_CREATE'` | A style has been added to the document. |
+   * | [`StyleDeleteChange`](https://developers.figma.com/docs/plugins/api/StyleChange#styledeletechange) | `'STYLE_DELETE'` | A style has been removed from the document. |
+   * | [`StylePropertyChange`](https://developers.figma.com/docs/plugins/api/StyleChange#stylepropertychange) | `'STYLE_PROPERTY_CHANGE'` | A style has had a property changed. |
    *
    * ### `"timerstart"`
    *
@@ -1004,7 +1004,7 @@ interface PluginAPI {
    *
    * @remarks
    *
-   * By default, parented under `figma.currentPage`. Without setting additional properties, the vector has a bounding box but doesn’t have any vertices. There are two ways to assign vertices to a vector node - [`vectorPaths`](https://www.figma.com/plugin-docs/api/VectorNode#vectorpaths) and [`setVectorNetworkAsync`](https://www.figma.com/plugin-docs/api/VectorNode#setvectornetworkasync). Please refer to the documentation of those properties for more details.
+   * By default, parented under `figma.currentPage`. Without setting additional properties, the vector has a bounding box but doesn't have any vertices. There are two ways to assign vertices to a vector node - [`vectorPaths`](https://developers.figma.com/docs/plugins/api/VectorNode#vectorpaths) and [`setVectorNetworkAsync`](https://developers.figma.com/docs/plugins/api/VectorNode#setvectornetworkasync). Please refer to the documentation of those properties for more details.
    */
   createVector(): VectorNode
   /**
@@ -1012,7 +1012,7 @@ interface PluginAPI {
    *
    * @remarks
    *
-   * By default, parented under `figma.currentPage`. Without setting additional properties, the text has no characters. You can assign a string, to the [`characters`](https://www.figma.com/plugin-docs/api/properties/TextNode-characters) property of the returned node to provide it with text.
+   * By default, parented under `figma.currentPage`. Without setting additional properties, the text has no characters. You can assign a string, to the [`characters`](https://developers.figma.com/docs/plugins/api/properties/TextNode-characters) property of the returned node to provide it with text.
    *
    * ```ts title="Create a styled 'Hello world!' text node"
    * (async () => {
@@ -1547,7 +1547,7 @@ interface PluginAPI {
    *
    * You can either pass in a hardcoded font, a font loaded via `listAvailableFontsAsync`, or the font stored on an existing text node.
    *
-   * Read more about how to work with fonts, when to load them, and how to load them in the [Working with Text](https://www.figma.com/plugin-docs/working-with-text) page.
+   * Read more about how to work with fonts, when to load them, and how to load them in the [Working with Text](https://developers.figma.com/docs/plugins/working-with-text) page.
    *
    * @remarks
    *
@@ -1570,7 +1570,7 @@ interface PluginAPI {
   createNodeFromSvg(svg: string): FrameNode
   /**
    * Creates an `Image` object from the raw bytes of a file content. Note that `Image` objects **are not nodes**. They are handles to images stored by Figma. Frame backgrounds, or fills of shapes (e.g. a rectangle) may contain images.
-   * [Example: how to work with images](https://www.figma.com/plugin-docs/working-with-images).
+   * [Example: how to work with images](https://developers.figma.com/docs/plugins/working-with-images).
    * @remarks
    *
    * The `data` passed in must be encoded as a PNG, JPEG, or GIF. Images have a maximum size of 4096 pixels (4K) in width and height. Invalid images will throw an error.
@@ -1865,13 +1865,13 @@ interface PluginAPI {
   setSlideGrid(slideGrid: Array<Array<SlideNode>>): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-saveversionhistoryasync
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-saveversionhistoryasync
  */
 interface VersionHistoryResult {
   id: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-variables
+ * @see https://developers.figma.com/docs/plugins/api/figma-variables
  */
 interface VariablesAPI {
   /**
@@ -2029,7 +2029,7 @@ interface LibraryVariable {
   resolvedType: VariableResolvedDataType
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-annotations
+ * @see https://developers.figma.com/docs/plugins/api/figma-annotations
  */
 interface AnnotationsAPI {
   /**
@@ -2053,7 +2053,7 @@ interface AnnotationsAPI {
   }): Promise<AnnotationCategory>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-teamlibrary
+ * @see https://developers.figma.com/docs/plugins/api/figma-teamlibrary
  */
 interface TeamLibraryAPI {
   /**
@@ -2095,13 +2095,13 @@ interface TeamLibraryAPI {
   getVariablesInLibraryCollectionAsync(libraryCollectionKey: string): Promise<LibraryVariable[]>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-payments
+ * @see https://developers.figma.com/docs/plugins/api/figma-payments
  */
-declare type PaymentStatus = {
+type PaymentStatus = {
   type: 'UNPAID' | 'PAID' | 'NOT_SUPPORTED'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-payments
+ * @see https://developers.figma.com/docs/plugins/api/figma-payments
  */
 interface PaymentsAPI {
   /**
@@ -2158,7 +2158,7 @@ interface PaymentsAPI {
    * 1. While in query mode and accepting plugin parameters.
    * 2. During widget rendering. Instead, put calls to this function inside your widget event handlers.
    *
-   * See [our guide](https://www.figma.com/plugin-docs/requiring-payment#when-to-call-initiatecheckoutasync) for more information.
+   * See [our guide](https://developers.figma.com/docs/plugins/requiring-payment#when-to-call-initiatecheckoutasync) for more information.
    *
    * This function takes an `options` argument that controls the behavior of the
    * checkout flow.
@@ -2191,7 +2191,7 @@ interface PaymentsAPI {
     interstitial?: 'PAID_FEATURE' | 'TRIAL_ENDED' | 'SKIP'
   }): Promise<void>
   /**
-   * This is useful for [text review plugins](https://www.figma.com/plugin-docs/textreview-plugins). Since these
+   * This is useful for [text review plugins](https://developers.figma.com/docs/plugins/textreview-plugins). Since these
    * plugins can only run in query mode, they cannot call
    * `initiateCheckoutAsync` while a user is editing text as that will throw an
    * exception.
@@ -2207,12 +2207,12 @@ interface PaymentsAPI {
    * This method generates a token that can be used to securely communicate the
    * identity of the current user on the current plugin or widget. You can
    * provide its returned value as the `plugin_payment_token` query parameter to
-   * the [payments REST API](https://www.figma.com/developers/api#payments) endpoint.
+   * the [payments REST API](https://developers.figma.com/docs/rest-api/payments) endpoint.
    */
   getPluginPaymentTokenAsync(): Promise<string>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-clientStorage
+ * @see https://developers.figma.com/docs/plugins/api/figma-clientStorage
  */
 interface ClientStorageAPI {
   /**
@@ -2233,7 +2233,7 @@ interface ClientStorageAPI {
   keysAsync(): Promise<string[]>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-notify
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-notify
  */
 interface NotificationOptions {
   timeout?: number
@@ -2245,17 +2245,17 @@ interface NotificationOptions {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-notify
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-notify
  */
-declare type NotifyDequeueReason = 'timeout' | 'dismiss' | 'action_button_click'
+type NotifyDequeueReason = 'timeout' | 'dismiss' | 'action_button_click'
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-notify
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-notify
  */
 interface NotificationHandler {
   cancel: () => void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-showui
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-showui
  */
 interface ShowUIOptions {
   visible?: boolean
@@ -2269,23 +2269,23 @@ interface ShowUIOptions {
   themeColors?: boolean
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-ui-postmessage
  */
 interface UIPostMessageOptions {
   origin?: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-ui-onmessage
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-ui-onmessage
  */
 interface OnMessageProperties {
   origin: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-ui-onmessage
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-ui-onmessage
  */
-declare type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
+type MessageEventHandler = (pluginMessage: any, props: OnMessageProperties) => void
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-ui
+ * @see https://developers.figma.com/docs/plugins/api/figma-ui
  */
 interface UIAPI {
   /**
@@ -2329,7 +2329,7 @@ interface UIAPI {
    *
    * @remarks
    *
-   * Read more about how to use this API in the [Creating a User Interface](https://www.figma.com/plugin-docs/creating-ui) tutorial.
+   * Read more about how to use this API in the [Creating a User Interface](https://developers.figma.com/docs/plugins/creating-ui) tutorial.
    */
   postMessage(pluginMessage: any, options?: UIPostMessageOptions): void
   /**
@@ -2372,7 +2372,7 @@ interface UIAPI {
   off(type: 'message', callback: MessageEventHandler): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-util
+ * @see https://developers.figma.com/docs/plugins/api/figma-util
  */
 interface UtilAPI {
   /**
@@ -2480,7 +2480,7 @@ interface UtilAPI {
   normalizeMarkdown(markdown: string): string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ColorPalette
+ * @see https://developers.figma.com/docs/plugins/api/ColorPalette
  */
 interface ColorPalette {
   [key: string]: string
@@ -2490,7 +2490,7 @@ interface ColorPalettes {
   figJamBaseLight: ColorPalette
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-constants
+ * @see https://developers.figma.com/docs/plugins/api/figma-constants
  */
 interface ConstantsAPI {
   /**
@@ -2507,14 +2507,14 @@ interface ConstantsAPI {
   colors: ColorPalettes
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/CodegenEvent
+ * @see https://developers.figma.com/docs/plugins/api/CodegenEvent
  */
 declare type CodegenEvent = {
   node: SceneNode
   language: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/CodegenPreference
+ * @see https://developers.figma.com/docs/plugins/api/CodegenPreference
  */
 declare type CodegenPreferences = {
   readonly unit: 'PIXEL' | 'SCALED'
@@ -2522,13 +2522,13 @@ declare type CodegenPreferences = {
   readonly customSettings: Record<string, string>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/CodegenPreferencesEvent
+ * @see https://developers.figma.com/docs/plugins/api/CodegenPreferencesEvent
  */
 declare type CodegenPreferencesEvent = {
   propertyName: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/CodegenResult
+ * @see https://developers.figma.com/docs/plugins/api/CodegenResult
  */
 declare type CodegenResult = {
   title: string
@@ -2552,7 +2552,7 @@ declare type CodegenResult = {
     | 'PLAINTEXT'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-codegen
+ * @see https://developers.figma.com/docs/plugins/api/figma-codegen
  */
 interface CodegenAPI {
   /**
@@ -2567,7 +2567,7 @@ interface CodegenAPI {
    * This callback can be async if your plugin needs to do some data fetching or other async
    * operation to generate code.
    *
-   * Note: `figma.showUI` is not allowed within the generate callback. Instead, if [`figma.showUI`](https://www.figma.com/plugin-docs/api/properties/figma-showui/) is required in the generate callback, the `showUI` call should be moved outside of the callback and [`figma.ui.postMessage`](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage) should be used within the callback instead. This ensures that the plugin is able to handle concurrent "generate" events.
+   * Note: `figma.showUI` is not allowed within the generate callback. Instead, if [`figma.showUI`](https://developers.figma.com/docs/plugins/api/properties/figma-showui) is required in the generate callback, the `showUI` call should be moved outside of the callback and [`figma.ui.postMessage`](https://developers.figma.com/docs/plugins/api/properties/figma-ui-postmessage) should be used within the callback instead. This ensures that the plugin is able to handle concurrent "generate" events.
    *
    * A plugin can also register a callback to handle events when codegen preferences are modified.
    * This is useful for codegenPreferences that need to open an iframe to get more user input.
@@ -2642,7 +2642,7 @@ interface CodegenAPI {
   refresh: () => void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DevResource
+ * @see https://developers.figma.com/docs/plugins/api/DevResource
  */
 interface DevResource {
   /**
@@ -2665,7 +2665,7 @@ interface DevResource {
   readonly inheritedNodeId?: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DevResource
+ * @see https://developers.figma.com/docs/plugins/api/DevResource
  */
 interface DevResourceWithNodeId extends DevResource {
   /**
@@ -2673,53 +2673,37 @@ interface DevResourceWithNodeId extends DevResource {
    */
   nodeId: string
 }
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
-declare type LinkPreviewEvent = {
+
+type LinkPreviewEvent = {
   link: DevResource
 }
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
-declare type PlainTextElement = {
+
+type PlainTextElement = {
   type: 'PLAIN_TEXT'
   text: string
 }
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
-declare type LinkPreviewResult =
+
+type LinkPreviewResult =
   | {
       type: 'AUTH_REQUIRED'
     }
   | PlainTextElement
   | null
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
-declare type AuthEvent = {
+
+type AuthEvent = {
   links: DevResource[]
 }
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
-declare type DevResourceOpenEvent = {
+
+type DevResourceOpenEvent = {
   devResource: DevResourceWithNodeId
 }
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
-declare type AuthResult = {
+
+type AuthResult = {
   type: 'AUTH_SUCCESS'
 } | null
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
+
 interface VSCodeAPI {}
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
+
 interface DevResourcesAPI {
   /**
    * Create a handler for when the linkpreview, auth, and open events are triggered.
@@ -2750,7 +2734,7 @@ interface DevResourcesAPI {
   off(type: 'open', callback: (event: DevResourceOpenEvent) => void): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-timer
+ * @see https://developers.figma.com/docs/plugins/api/figma-timer
  */
 interface TimerAPI {
   /**
@@ -2783,7 +2767,7 @@ interface TimerAPI {
   stop: () => void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-viewport
+ * @see https://developers.figma.com/docs/plugins/api/figma-viewport
  */
 interface ViewportAPI {
   /**
@@ -2836,7 +2820,7 @@ interface ViewportAPI {
   slidesView: 'grid' | 'single-slide'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-textreview
+ * @see https://developers.figma.com/docs/plugins/api/figma-textreview
  */
 interface TextReviewAPI {
   /**
@@ -2858,13 +2842,13 @@ interface TextReviewAPI {
   readonly isEnabled: boolean
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-parameters
+ * @see https://developers.figma.com/docs/plugins/api/figma-parameters
  */
 interface ParameterValues {
   [key: string]: any
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-parameters
+ * @see https://developers.figma.com/docs/plugins/api/figma-parameters
  */
 interface SuggestionResults {
   /**
@@ -2953,7 +2937,7 @@ interface SuggestionResults {
   setLoadingMessage(message: string): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-parameters
+ * @see https://developers.figma.com/docs/plugins/api/figma-parameters
  */
 declare type ParameterInputEvent<ParametersType = ParameterValues> = {
   query: string
@@ -2962,7 +2946,7 @@ declare type ParameterInputEvent<ParametersType = ParameterValues> = {
   result: SuggestionResults
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/figma-parameters
+ * @see https://developers.figma.com/docs/plugins/api/figma-parameters
  */
 interface ParametersAPI {
   /**
@@ -2979,7 +2963,7 @@ interface ParametersAPI {
   off(type: 'input', callback: (event: ParameterInputEvent) => void): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/figma-on
+ * @see https://developers.figma.com/docs/plugins/api/properties/figma-on
  */
 interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
   command: string
@@ -2993,7 +2977,7 @@ interface OpenDevResourcesEvent {
     name: string
   }
 }
-declare type RunEvent = RunParametersEvent | OpenDevResourcesEvent
+type RunEvent = RunParametersEvent | OpenDevResourcesEvent
 interface SlidesViewChangeEvent {
   view: 'GRID' | 'SINGLE_SLIDE'
 }
@@ -3030,11 +3014,11 @@ interface StyleChangeEvent {
   styleChanges: StyleChange[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/StyleChange
+ * @see https://developers.figma.com/docs/plugins/api/StyleChange
  */
-declare type StyleChange = StyleCreateChange | StyleDeleteChange | StylePropertyChange
+type StyleChange = StyleCreateChange | StyleDeleteChange | StylePropertyChange
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface BaseDocumentChange {
   /**
@@ -3047,7 +3031,7 @@ interface BaseDocumentChange {
   origin: 'LOCAL' | 'REMOTE'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface BaseNodeChange extends BaseDocumentChange {
   /**
@@ -3056,7 +3040,7 @@ interface BaseNodeChange extends BaseDocumentChange {
   node: SceneNode | RemovedNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/RemovedNode
+ * @see https://developers.figma.com/docs/plugins/api/RemovedNode
  */
 interface RemovedNode {
   /**
@@ -3073,7 +3057,7 @@ interface RemovedNode {
   readonly id: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface CreateChange extends BaseNodeChange {
   /**
@@ -3082,7 +3066,7 @@ interface CreateChange extends BaseNodeChange {
   type: 'CREATE'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface DeleteChange extends BaseNodeChange {
   /**
@@ -3091,7 +3075,7 @@ interface DeleteChange extends BaseNodeChange {
   type: 'DELETE'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface PropertyChange extends BaseNodeChange {
   /**
@@ -3104,7 +3088,7 @@ interface PropertyChange extends BaseNodeChange {
   properties: NodeChangeProperty[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface BaseStyleChange extends BaseDocumentChange {
   /**
@@ -3113,7 +3097,7 @@ interface BaseStyleChange extends BaseDocumentChange {
   style: BaseStyle | null
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface StyleCreateChange extends BaseStyleChange {
   /**
@@ -3122,7 +3106,7 @@ interface StyleCreateChange extends BaseStyleChange {
   type: 'STYLE_CREATE'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface StyleDeleteChange extends BaseStyleChange {
   /**
@@ -3132,7 +3116,7 @@ interface StyleDeleteChange extends BaseStyleChange {
   style: null
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
 interface StylePropertyChange extends BaseStyleChange {
   /**
@@ -3145,9 +3129,9 @@ interface StylePropertyChange extends BaseStyleChange {
   properties: StyleChangeProperty[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentChange
+ * @see https://developers.figma.com/docs/plugins/api/DocumentChange
  */
-declare type DocumentChange =
+type DocumentChange =
   | CreateChange
   | DeleteChange
   | PropertyChange
@@ -3155,9 +3139,9 @@ declare type DocumentChange =
   | StyleDeleteChange
   | StylePropertyChange
 /**
- * @see https://www.figma.com/plugin-docs/api/NodeChangeProperty
+ * @see https://developers.figma.com/docs/plugins/api/NodeChangeProperty
  */
-declare type NodeChangeProperty =
+type NodeChangeProperty =
   | 'pointCount'
   | 'name'
   | 'width'
@@ -3288,13 +3272,13 @@ interface NodeChangeEvent {
   nodeChanges: NodeChange[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/NodeChange
+ * @see https://developers.figma.com/docs/plugins/api/NodeChange
  */
-declare type NodeChange = CreateChange | DeleteChange | PropertyChange
+type NodeChange = CreateChange | DeleteChange | PropertyChange
 /**
- * @see https://www.figma.com/plugin-docs/api/StyleChangeProperty
+ * @see https://developers.figma.com/docs/plugins/api/StyleChangeProperty
  */
-declare type StyleChangeProperty =
+type StyleChangeProperty =
   | 'name'
   | 'pluginData'
   | 'type'
@@ -3315,16 +3299,16 @@ declare type StyleChangeProperty =
   | 'paint'
   | 'effects'
   | 'layoutGrids'
-declare type TextReviewEvent = {
+type TextReviewEvent = {
   text: string
 }
-declare type TextReviewRange = {
+type TextReviewRange = {
   start: number
   end: number
   suggestions: string[]
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
-declare type Transform = [[number, number, number], [number, number, number]]
+type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
   readonly x: number
   readonly y: number
@@ -3336,7 +3320,7 @@ interface Rect {
   readonly height: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/RGB
+ * @see https://developers.figma.com/docs/plugins/api/RGB
  */
 interface RGB {
   readonly r: number
@@ -3344,7 +3328,7 @@ interface RGB {
   readonly b: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/RGB
+ * @see https://developers.figma.com/docs/plugins/api/RGB
  */
 interface RGBA {
   readonly r: number
@@ -3353,22 +3337,16 @@ interface RGBA {
   readonly a: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/FontName
+ * @see https://developers.figma.com/docs/plugins/api/FontName
  */
 interface FontName {
   readonly family: string
   readonly style: string
 }
-declare type TextCase =
-  | 'ORIGINAL'
-  | 'UPPER'
-  | 'LOWER'
-  | 'TITLE'
-  | 'SMALL_CAPS'
-  | 'SMALL_CAPS_FORCED'
-declare type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
-declare type TextDecorationStyle = 'SOLID' | 'WAVY' | 'DOTTED'
-declare type TextDecorationOffset =
+type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
+type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
+type TextDecorationStyle = 'SOLID' | 'WAVY' | 'DOTTED'
+type TextDecorationOffset =
   | {
       readonly value: number
       readonly unit: 'PIXELS' | 'PERCENT'
@@ -3376,7 +3354,7 @@ declare type TextDecorationOffset =
   | {
       readonly unit: 'AUTO'
     }
-declare type TextDecorationThickness =
+type TextDecorationThickness =
   | {
       readonly value: number
       readonly unit: 'PIXELS' | 'PERCENT'
@@ -3384,14 +3362,14 @@ declare type TextDecorationThickness =
   | {
       readonly unit: 'AUTO'
     }
-declare type TextDecorationColor =
+type TextDecorationColor =
   | {
       readonly value: SolidPaint
     }
   | {
       readonly value: 'AUTO'
     }
-declare type OpenTypeFeature =
+type OpenTypeFeature =
   | 'PCAP'
   | 'C2PC'
   | 'CASE'
@@ -3627,7 +3605,7 @@ interface ArcData {
   readonly innerRadius: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface DropShadowEffect {
   /**
@@ -3670,7 +3648,7 @@ interface DropShadowEffect {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface InnerShadowEffect {
   /**
@@ -3709,7 +3687,7 @@ interface InnerShadowEffect {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface BlurEffectBase {
   /**
@@ -3732,7 +3710,7 @@ interface BlurEffectBase {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface BlurEffectNormal extends BlurEffectBase {
   /**
@@ -3741,7 +3719,7 @@ interface BlurEffectNormal extends BlurEffectBase {
   readonly blurType: 'NORMAL'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface BlurEffectProgressive extends BlurEffectBase {
   /**
@@ -3762,11 +3740,11 @@ interface BlurEffectProgressive extends BlurEffectBase {
   readonly endOffset: Vector
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
-declare type BlurEffect = BlurEffectNormal | BlurEffectProgressive
+type BlurEffect = BlurEffectNormal | BlurEffectProgressive
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface NoiseEffectBase {
   /**
@@ -3799,7 +3777,7 @@ interface NoiseEffectBase {
   readonly boundVariables?: {}
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface NoiseEffectMonotone extends NoiseEffectBase {
   /**
@@ -3809,7 +3787,7 @@ interface NoiseEffectMonotone extends NoiseEffectBase {
   readonly noiseType: 'MONOTONE'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface NoiseEffectDuotone extends NoiseEffectBase {
   /**
@@ -3823,7 +3801,7 @@ interface NoiseEffectDuotone extends NoiseEffectBase {
   readonly secondaryColor: RGBA
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface NoiseEffectMultitone extends NoiseEffectBase {
   /**
@@ -3837,11 +3815,11 @@ interface NoiseEffectMultitone extends NoiseEffectBase {
   readonly opacity: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
-declare type NoiseEffect = NoiseEffectMonotone | NoiseEffectDuotone | NoiseEffectMultitone
+type NoiseEffect = NoiseEffectMonotone | NoiseEffectDuotone | NoiseEffectMultitone
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface TextureEffect {
   /**
@@ -3870,7 +3848,7 @@ interface TextureEffect {
   readonly boundVariables?: {}
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 interface GlassEffect {
   /**
@@ -3911,9 +3889,9 @@ interface GlassEffect {
   readonly boundVariables?: {}
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Effect
+ * @see https://developers.figma.com/docs/plugins/api/Effect
  */
-declare type Effect =
+type Effect =
   | DropShadowEffect
   | InnerShadowEffect
   | BlurEffect
@@ -3921,18 +3899,18 @@ declare type Effect =
   | TextureEffect
   | GlassEffect
 /**
- * @see https://www.figma.com/plugin-docs/api/Constraints
+ * @see https://developers.figma.com/docs/plugins/api/Constraints
  */
-declare type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
+type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
 /**
- * @see https://www.figma.com/plugin-docs/api/Constraints
+ * @see https://developers.figma.com/docs/plugins/api/Constraints
  */
 interface Constraints {
   readonly horizontal: ConstraintType
   readonly vertical: ConstraintType
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 interface ColorStop {
   /**
@@ -3951,7 +3929,7 @@ interface ColorStop {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 interface ImageFilters {
   readonly exposure?: number
@@ -3963,7 +3941,7 @@ interface ImageFilters {
   readonly shadows?: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 interface SolidPaint {
   /**
@@ -4018,7 +3996,7 @@ interface SolidPaint {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 interface GradientPaint {
   /**
@@ -4038,7 +4016,7 @@ interface GradientPaint {
   readonly blendMode?: BlendMode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 interface ImagePaint {
   /**
@@ -4074,7 +4052,7 @@ interface ImagePaint {
   readonly blendMode?: BlendMode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 interface VideoPaint {
   /**
@@ -4110,7 +4088,7 @@ interface VideoPaint {
   readonly blendMode?: BlendMode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 interface PatternPaint {
   /**
@@ -4142,15 +4120,15 @@ interface PatternPaint {
   readonly blendMode?: BlendMode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Paint
+ * @see https://developers.figma.com/docs/plugins/api/Paint
  */
-declare type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
+type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
 interface Guide {
   readonly axis: 'X' | 'Y'
   readonly offset: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/LayoutGrid
+ * @see https://developers.figma.com/docs/plugins/api/LayoutGrid
  */
 interface RowsColsLayoutGrid {
   /**
@@ -4193,7 +4171,7 @@ interface RowsColsLayoutGrid {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/LayoutGrid
+ * @see https://developers.figma.com/docs/plugins/api/LayoutGrid
  */
 interface GridLayoutGrid {
   /**
@@ -4211,18 +4189,18 @@ interface GridLayoutGrid {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/LayoutGrid
+ * @see https://developers.figma.com/docs/plugins/api/LayoutGrid
  */
-declare type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
+type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
 /**
- * @see https://www.figma.com/plugin-docs/api/ExportSettings
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
 interface ExportSettingsConstraints {
   readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT'
   readonly value: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ExportSettings
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
 interface ExportSettingsImage {
   /**
@@ -4295,7 +4273,7 @@ interface ExportSettingsSVGBase {
   readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ExportSettings
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
 interface ExportSettingsSVG extends ExportSettingsSVGBase {
   /**
@@ -4305,7 +4283,7 @@ interface ExportSettingsSVG extends ExportSettingsSVGBase {
   readonly format: 'SVG'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ExportSettings
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
 interface ExportSettingsSVGString extends ExportSettingsSVGBase {
   /**
@@ -4314,7 +4292,7 @@ interface ExportSettingsSVGString extends ExportSettingsSVGBase {
   readonly format: 'SVG_STRING'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ExportSettings
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
 interface ExportSettingsPDF {
   /**
@@ -4328,7 +4306,7 @@ interface ExportSettingsPDF {
   readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ExportSettings
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
 interface ExportSettingsREST {
   /**
@@ -4352,20 +4330,20 @@ interface ExportSettingsREST {
    * visitChildren(response.document);
    * ```
    *
-   * For more information on the shape of the output of the 'JSON_REST_V1' format, see: https://www.figma.com/developers/api#files
+   * For more information on the shape of the output of the 'JSON_REST_V1' format, see the [files](https://developers.figma.com/docs/rest-api/files) documentation.
    */
   readonly format: 'JSON_REST_V1'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ExportSettings
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
-declare type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
+type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
 /**
- * @see https://www.figma.com/plugin-docs/api/properties/VectorPath-windingrule
+ * @see https://developers.figma.com/docs/plugins/api/properties/VectorPath-windingrule
  */
-declare type WindingRule = 'NONZERO' | 'EVENODD'
+type WindingRule = 'NONZERO' | 'EVENODD'
 /**
- * @see https://www.figma.com/plugin-docs/api/VectorNetwork
+ * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
  */
 interface VectorVertex {
   /**
@@ -4394,7 +4372,7 @@ interface VectorVertex {
   readonly handleMirroring?: HandleMirroring
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/VectorNetwork
+ * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
  */
 interface VectorSegment {
   /**
@@ -4406,16 +4384,16 @@ interface VectorSegment {
    */
   readonly end: number
   /**
-   * The tangent on the start side of this segment. Defaults to { x: 0, y: 0 }
+   * The tangent on the start side of this segment. Defaults to `{ x: 0, y: 0 }`
    */
   readonly tangentStart?: Vector
   /**
-   * The tangent on the end side of this segment. Defaults to { x: 0, y: 0 }
+   * The tangent on the end side of this segment. Defaults to `{ x: 0, y: 0 }`
    */
   readonly tangentEnd?: Vector
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/VectorNetwork
+ * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
  */
 interface VectorRegion {
   /**
@@ -4436,7 +4414,7 @@ interface VectorRegion {
   readonly fillStyleId?: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/VectorNetwork
+ * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
  */
 interface VectorNetwork {
   /**
@@ -4453,7 +4431,7 @@ interface VectorNetwork {
   readonly regions?: ReadonlyArray<VectorRegion>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/VectorPath
+ * @see https://developers.figma.com/docs/plugins/api/VectorPath
  */
 interface VectorPath {
   /**
@@ -4486,14 +4464,14 @@ interface VectorPath {
   readonly data: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/VectorPath
+ * @see https://developers.figma.com/docs/plugins/api/VectorPath
  */
-declare type VectorPaths = ReadonlyArray<VectorPath>
+type VectorPaths = ReadonlyArray<VectorPath>
 interface LetterSpacing {
   readonly value: number
   readonly unit: 'PIXELS' | 'PERCENT'
 }
-declare type LineHeight =
+type LineHeight =
   | {
       readonly value: number
       readonly unit: 'PIXELS' | 'PERCENT'
@@ -4501,18 +4479,18 @@ declare type LineHeight =
   | {
       readonly unit: 'AUTO'
     }
-declare type LeadingTrim = 'CAP_HEIGHT' | 'NONE'
-declare type HyperlinkTarget = {
+type LeadingTrim = 'CAP_HEIGHT' | 'NONE'
+type HyperlinkTarget = {
   type: 'URL' | 'NODE'
   value: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TextListOptions
+ * @see https://developers.figma.com/docs/plugins/api/TextListOptions
  */
-declare type TextListOptions = {
+type TextListOptions = {
   type: 'ORDERED' | 'UNORDERED' | 'NONE'
 }
-declare type BlendMode =
+type BlendMode =
   | 'PASS_THROUGH'
   | 'NORMAL'
   | 'DARKEN'
@@ -4532,17 +4510,17 @@ declare type BlendMode =
   | 'SATURATION'
   | 'COLOR'
   | 'LUMINOSITY'
-declare type MaskType = 'ALPHA' | 'VECTOR' | 'LUMINANCE'
+type MaskType = 'ALPHA' | 'VECTOR' | 'LUMINANCE'
 /**
- * @see https://www.figma.com/plugin-docs/api/FontName
+ * @see https://developers.figma.com/docs/plugins/api/FontName
  */
 interface Font {
   fontName: FontName
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TextStyleOverrides
+ * @see https://developers.figma.com/docs/plugins/api/TextStyleOverrides
  */
-declare type TextStyleOverrideType = {
+type TextStyleOverrideType = {
   type: 'SEMANTIC_ITALIC' | 'SEMANTIC_WEIGHT' | 'HYPERLINK' | 'TEXT_DECORATION'
 }
 interface StyledTextSegment {
@@ -4659,7 +4637,7 @@ interface StyledTextSegment {
    */
   textStyleOverrides: TextStyleOverrideType[]
 }
-declare type Reaction = {
+type Reaction = {
   /**
    * @deprecated Use the `actions` field instead of the `action` field.
    */
@@ -4667,14 +4645,8 @@ declare type Reaction = {
   actions?: Action[]
   trigger: Trigger | null
 }
-declare type VariableDataType =
-  | 'BOOLEAN'
-  | 'FLOAT'
-  | 'STRING'
-  | 'VARIABLE_ALIAS'
-  | 'COLOR'
-  | 'EXPRESSION'
-declare type ExpressionFunction =
+type VariableDataType = 'BOOLEAN' | 'FLOAT' | 'STRING' | 'VARIABLE_ALIAS' | 'COLOR' | 'EXPRESSION'
+type ExpressionFunction =
   | 'ADDITION'
   | 'SUBTRACTION'
   | 'MULTIPLICATION'
@@ -4694,27 +4666,27 @@ interface Expression {
   expressionFunction: ExpressionFunction
   expressionArguments: VariableData[]
 }
-declare type VariableValueWithExpression = VariableValue | Expression
+type VariableValueWithExpression = VariableValue | Expression
 interface VariableData {
   type?: VariableDataType
   resolvedType?: VariableResolvedDataType
   value?: VariableValueWithExpression
 }
-declare type ConditionalBlock = {
+type ConditionalBlock = {
   condition?: VariableData
   actions: Action[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DevStatus
+ * @see https://developers.figma.com/docs/plugins/api/DevStatus
  */
-declare type DevStatus = {
+type DevStatus = {
   type: 'READY_FOR_DEV' | 'COMPLETED'
   description?: string
 } | null
 /**
- * @see https://www.figma.com/plugin-docs/api/Action
+ * @see https://developers.figma.com/docs/plugins/api/Action
  */
-declare type Action =
+type Action =
   | {
       readonly type: 'BACK' | 'CLOSE'
     }
@@ -4775,7 +4747,7 @@ declare type Action =
       readonly resetInteractiveComponents?: boolean
     }
 /**
- * @see https://www.figma.com/plugin-docs/api/Transition
+ * @see https://developers.figma.com/docs/plugins/api/Transition
  */
 interface SimpleTransition {
   readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
@@ -4783,7 +4755,7 @@ interface SimpleTransition {
   readonly duration: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Transition
+ * @see https://developers.figma.com/docs/plugins/api/Transition
  */
 interface DirectionalTransition {
   readonly type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT'
@@ -4793,10 +4765,10 @@ interface DirectionalTransition {
   readonly duration: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Transition
+ * @see https://developers.figma.com/docs/plugins/api/Transition
  */
-declare type Transition = SimpleTransition | DirectionalTransition
-declare type Trigger =
+type Transition = SimpleTransition | DirectionalTransition
+type Trigger =
   | {
       readonly type: 'ON_CLICK' | 'ON_HOVER' | 'ON_PRESS' | 'ON_DRAG'
     }
@@ -4826,11 +4798,11 @@ declare type Trigger =
       readonly type: 'ON_MEDIA_END'
     }
 /**
- * @see https://www.figma.com/plugin-docs/api/Action
+ * @see https://developers.figma.com/docs/plugins/api/Action
  */
-declare type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
+type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
 /**
- * @see https://www.figma.com/plugin-docs/api/Transition
+ * @see https://developers.figma.com/docs/plugins/api/Transition
  */
 interface Easing {
   readonly type:
@@ -4851,7 +4823,7 @@ interface Easing {
   readonly easingFunctionSpring?: EasingFunctionSpring
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Transition
+ * @see https://developers.figma.com/docs/plugins/api/Transition
  */
 interface EasingFunctionBezier {
   x1: number
@@ -4865,11 +4837,11 @@ interface EasingFunctionSpring {
   damping: number
   initialVelocity: number
 }
-declare type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
+type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
 /**
- * @see https://www.figma.com/plugin-docs/api/Overlay
+ * @see https://developers.figma.com/docs/plugins/api/Overlay
  */
-declare type OverlayPositionType =
+type OverlayPositionType =
   | 'CENTER'
   | 'TOP_LEFT'
   | 'TOP_CENTER'
@@ -4879,9 +4851,9 @@ declare type OverlayPositionType =
   | 'BOTTOM_RIGHT'
   | 'MANUAL'
 /**
- * @see https://www.figma.com/plugin-docs/api/Overlay
+ * @see https://developers.figma.com/docs/plugins/api/Overlay
  */
-declare type OverlayBackground =
+type OverlayBackground =
   | {
       readonly type: 'NONE'
     }
@@ -4890,13 +4862,13 @@ declare type OverlayBackground =
       readonly color: RGBA
     }
 /**
- * @see https://www.figma.com/plugin-docs/api/Overlay
+ * @see https://developers.figma.com/docs/plugins/api/Overlay
  */
-declare type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
+type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
 /**
- * @see https://www.figma.com/plugin-docs/api/PublishStatus
+ * @see https://developers.figma.com/docs/plugins/api/PublishStatus
  */
-declare type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
+type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
 interface ConnectorEndpointPosition {
   position: {
     x: number
@@ -4915,16 +4887,16 @@ interface ConnectorEndpointEndpointNodeIdAndMagnet {
   magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' | 'CENTER'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ConnectorEndpoint
+ * @see https://developers.figma.com/docs/plugins/api/ConnectorEndpoint
  */
-declare type ConnectorEndpoint =
+type ConnectorEndpoint =
   | ConnectorEndpointPosition
   | ConnectorEndpointEndpointNodeIdAndMagnet
   | ConnectorEndpointPositionAndEndpointNodeId
 /**
- * @see https://www.figma.com/plugin-docs/api/ConnectorStrokeCap
+ * @see https://developers.figma.com/docs/plugins/api/ConnectorStrokeCap
  */
-declare type ConnectorStrokeCap =
+type ConnectorStrokeCap =
   | 'NONE'
   | 'ARROW_EQUILATERAL'
   | 'ARROW_LINES'
@@ -4932,7 +4904,7 @@ declare type ConnectorStrokeCap =
   | 'DIAMOND_FILLED'
   | 'CIRCLE_FILLED'
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   /**
@@ -5003,7 +4975,7 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   /**
    * Sets state on the node to show a button and description when the node is selected. Clears the button and description when `relaunchData` is `{}`.
    *
-   * Note: In Figma and Dev Mode, this shows up in the properties panel. In FigJam, this shows up in the property menu. See [here](https://www.figma.com/plugin-docs/api/properties/nodes-setrelaunchdata#example-figma-design-ui) for examples.
+   * Note: In Figma and Dev Mode, this shows up in the properties panel. In FigJam, this shows up in the property menu. See [here](https://developers.figma.com/docs/plugins/api/properties/nodes-setrelaunchdata#example-figma-design-ui) for examples.
    *
    * @param data -
    *
@@ -5013,14 +4985,14 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
    * }
    * ```
    * e.g. `data = { myCommand: 'Short description' }`
-   * @param command - The string that will be passed as `figma.command` when the plugin is run after the button is clicked. This command must be present in the [manifest](https://www.figma.com/plugin-docs/manifest#relaunchbuttons) under one of the `relaunchButtons`, which is used to look up the name to display for the button.
+   * @param command - The string that will be passed as `figma.command` when the plugin is run after the button is clicked. This command must be present in the [manifest](https://developers.figma.com/docs/plugins/manifest#relaunchbuttons) under one of the `relaunchButtons`, which is used to look up the name to display for the button.
    * @param description - Up to three lines of text that will be displayed under the button to provide plugin specific information about the node or any clarification about the action the button will perform. This method will throw if description exceeds 1000 characters, but the UI will display even less (only 3 lines).
    *
    * @remarks
    *
-   * Each call to this method sets entirely new relaunch data, removing any relaunch data and associated buttons/descriptions from before. To maintain buttons from a previous call one can store the button information using [setPluginData](https://www.figma.com/plugin-docs/api/properties/nodes-setplugindata/) and later fetch it with [getPluginData](https://www.figma.com/plugin-docs/api/PageNode/#getplugindata) before passing it on to `setRelaunchData`.
+   * Each call to this method sets entirely new relaunch data, removing any relaunch data and associated buttons/descriptions from before. To maintain buttons from a previous call one can store the button information using [setPluginData](https://developers.figma.com/docs/plugins/api/properties/nodes-setplugindata) and later fetch it with [getPluginData](https://developers.figma.com/docs/plugins/api/PageNode#getplugindata) before passing it on to `setRelaunchData`.
    *
-   * To use this API, the plugin manifest must include a `relaunchButtons` section: see the [manifest guide](https://www.figma.com/plugin-docs/manifest#relaunchbuttons) for more information.
+   * To use this API, the plugin manifest must include a `relaunchButtons` section: see the [manifest guide](https://developers.figma.com/docs/plugins/manifest#relaunchbuttons) for more information.
    *
    * Note: Note that if the `command` passed to this method does not match a command in the manifest, nothing will be displayed. Similarly if the name of a command in the manifest changes or is removed, then all buttons with that command will disappear. This behavior can be used to remove buttons when a particular action is no longer supported by the plugin.
    *
@@ -5057,10 +5029,10 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
    * ```
    *
    * ### Example Figma Design UI
-   * ![Relaunch UI in Figma Design](https://www.figma.com/plugin-docs/img/relaunch_ui_design.png)
+   * ![Relaunch UI in Figma Design](https://developers.figma.com/img/plugins/relaunch_ui_design.png)
    *
    * ### Example FigJam UI
-   * ![Relaunch UI in FigJam](https://www.figma.com/plugin-docs/img/relaunch_ui_figjam.png)
+   * ![Relaunch UI in FigJam](https://developers.figma.com/img/plugins/relaunch_ui_figjam.png)
    */
   setRelaunchData(data: { [command: string]: string }): void
   /**
@@ -5072,13 +5044,13 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   /**
    * Returns true if Figma detects that a node is an asset, otherwise returns false. An asset is is either an icon or a raster image.
    *
-   * This property is useful if you’re building a [plugin for code generation](https://www.figma.com/plugin-docs/codegen-plugins).
+   * This property is useful if you're building a [plugin for code generation](https://developers.figma.com/docs/plugins/codegen-plugins).
    *
    * Note: This property uses a set of heuristics to determine if a node is an asset. At a high level an icon is a small vector graphic and an image is a node with an image fill.
    */
   readonly isAsset: boolean
   /**
-   * Resolves to a JSON object of CSS properties of the node. This is the same CSS that Figma shows in the inspect panel and is helpful if you are building a [plugin for code generation](https://www.figma.com/plugin-docs/codegen-plugins).
+   * Resolves to a JSON object of CSS properties of the node. This is the same CSS that Figma shows in the inspect panel and is helpful if you are building a [plugin for code generation](https://developers.figma.com/docs/plugins/codegen-plugins).
    */
   getCSSAsync(): Promise<{
     [key: string]: string
@@ -5091,7 +5063,7 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   getTopLevelFrame(): FrameNode | undefined
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface PluginDataMixin {
   /**
@@ -5148,7 +5120,7 @@ interface PluginDataMixin {
   getSharedPluginDataKeys(namespace: string): string[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface DevResourcesMixin {
   /**
@@ -5196,7 +5168,7 @@ interface DevResourcesMixin {
   setDevResourcePreviewAsync(url: string, preview: PlainTextElement): Promise<void>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface DevStatusMixin {
   /**
@@ -5209,7 +5181,7 @@ interface DevStatusMixin {
   devStatus: DevStatus
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface SceneNodeMixin extends ExplicitVariableModesMixin {
   /**
@@ -5259,7 +5231,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
       }
     | null
   /**
-   * The variables bound to a particular field on this node. Please see the [Working with Variables](https://www.figma.com/plugin-docs/working-with-variables) guide for how to get and set variable bindings.
+   * The variables bound to a particular field on this node. Please see the [Working with Variables](https://developers.figma.com/docs/plugins/working-with-variables) guide for how to get and set variable bindings.
    */
   readonly boundVariables?: {
     readonly [field in VariableBindableNodeField]?: VariableAlias
@@ -5276,7 +5248,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     readonly textRangeFills?: VariableAlias[]
   }
   /**
-   * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://www.figma.com/plugin-docs/working-with-variables) guide for how to get and set variable bindings.
+   * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://developers.figma.com/docs/plugins/working-with-variables) guide for how to get and set variable bindings.
    *
    * @deprecated Use `setBoundVariable(VariableBindableNodeField, Variable)` instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
    */
@@ -5285,7 +5257,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     variableId: string | null,
   ): void
   /**
-   * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://www.figma.com/plugin-docs/working-with-variables) guide for how to get and set variable bindings.
+   * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://developers.figma.com/docs/plugins/working-with-variables) guide for how to get and set variable bindings.
    *
    * If `null` is provided as the variable, the given `field` will be unbound from any variables.
    *
@@ -5301,7 +5273,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
    *
    * @remarks
    *
-   * Inferred variables are only returned for a field when it is not using a [bound variable](https://www.figma.com/plugin-docs/api/node-properties/#boundvariables).
+   * Inferred variables are only returned for a field when it is not using a [bound variable](https://developers.figma.com/docs/plugins/api/node-properties#boundvariables).
    *
    * Variables can be inferred from:
    * - The collections of variables used in the file
@@ -5362,7 +5334,7 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     [collectionId: string]: string
   }
 }
-declare type VariableBindableNodeField =
+type VariableBindableNodeField =
   | 'height'
   | 'width'
   | 'characters'
@@ -5389,7 +5361,7 @@ declare type VariableBindableNodeField =
   | 'opacity'
   | 'gridRowGap'
   | 'gridColumnGap'
-declare type VariableBindableTextField =
+type VariableBindableTextField =
   | 'fontFamily'
   | 'fontSize'
   | 'fontStyle'
@@ -5398,17 +5370,17 @@ declare type VariableBindableTextField =
   | 'lineHeight'
   | 'paragraphSpacing'
   | 'paragraphIndent'
-declare type VariableBindablePaintField = 'color'
-declare type VariableBindablePaintStyleField = 'paints'
-declare type VariableBindableColorStopField = 'color'
-declare type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
-declare type VariableBindableEffectStyleField = 'effects'
-declare type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
-declare type VariableBindableGridStyleField = 'layoutGrids'
-declare type VariableBindableComponentPropertyField = 'value'
-declare type VariableBindableComponentPropertyDefinitionField = 'defaultValue'
+type VariableBindablePaintField = 'color'
+type VariableBindablePaintStyleField = 'paints'
+type VariableBindableColorStopField = 'color'
+type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
+type VariableBindableEffectStyleField = 'effects'
+type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
+type VariableBindableGridStyleField = 'layoutGrids'
+type VariableBindableComponentPropertyField = 'value'
+type VariableBindableComponentPropertyDefinitionField = 'defaultValue'
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface StickableMixin {
   /**
@@ -5421,7 +5393,7 @@ interface StickableMixin {
   stuckTo: SceneNode | null
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface ChildrenMixin {
   /**
@@ -5525,7 +5497,7 @@ interface ChildrenMixin {
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
    * If you only need to search immediate children, it is much faster to call `node.children.filter(callback)` or `node.findChildren(callback)`.
-   * Please refer to our [recommendations](https://www.figma.com/plugin-docs/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
    */
   findAll(callback?: (node: SceneNode) => boolean): SceneNode[]
   /**
@@ -5547,7 +5519,7 @@ interface ChildrenMixin {
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
    * If you only need to search immediate children, it is much faster to call `node.children.find(callback)` or `node.findChild(callback)`.
-   * Please refer to our [recommendations](https://www.figma.com/plugin-docs/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
    */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
   /**
@@ -5565,7 +5537,7 @@ interface ChildrenMixin {
    *
    * This is a faster but more limited search compared to {@link ChildrenMixin.findAll}, which lets you search nodes based on any logic you can include in a callback.
    *
-   * When paired with [`figma.skipInvisibleInstanceChildren = true`](https://www.figma.com/plugin-docs/api/properties/figma-skipinvisibleinstancechildren), this method can be hundreds of times faster in large documents with tens of thousands of nodes.
+   * When paired with [`figma.skipInvisibleInstanceChildren = true`](https://developers.figma.com/docs/plugins/api/properties/figma-skipinvisibleinstancechildren), this method can be hundreds of times faster in large documents with tens of thousands of nodes.
    *
    * The return value is narrowly typed to match the provided `types`, which makes it much easier to use node-type-specific properties. For example, `node.findAllWithCriteria({ types: ['TEXT'] })` will return `TextNode[]` instead of the more generic `SceneNode[]` from {@link ChildrenMixin.findAll}.
    *
@@ -5671,7 +5643,7 @@ interface ChildrenMixin {
   findWidgetNodesByWidgetId(widgetId: string): Array<WidgetNode>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface ConstraintMixin {
   /**
@@ -5684,7 +5656,7 @@ interface ConstraintMixin {
   constraints: Constraints
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface DimensionAndPositionMixin {
   /**
@@ -5783,7 +5755,7 @@ interface DimensionAndPositionMixin {
   readonly absoluteBoundingBox: Rect | null
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface LayoutMixin
   extends DimensionAndPositionMixin,
@@ -5918,7 +5890,7 @@ interface LayoutMixin
    *
    * This function will not cause its children to resize. Use {@link LayoutMixin.resize} if you need to apply constraints.
    *
-   * Caution: ⚠️ If this node is a text node with a missing font, the text node will be resized but the text will not re-layout until the next time the text node is opened on a machine that _has_ the font. This can cause the text node to re-layout immediately and be surprising to your user. Consider checking the text node property [`hasMissingFont`](https://www.figma.com/plugin-docs/api/TextNode#hasmissingfont) before using this function.
+   * Caution: ⚠️ If this node is a text node with a missing font, the text node will be resized but the text will not re-layout until the next time the text node is opened on a machine that _has_ the font. This can cause the text node to re-layout immediately and be surprising to your user. Consider checking the text node property [`hasMissingFont`](https://developers.figma.com/docs/plugins/api/TextNode#hasmissingfont) before using this function.
    *
    * Ignores `targetAspectRatio`. If `targetAspectRatio` has been set, it will be updated to correspond to the post-resize value.
    */
@@ -5935,7 +5907,7 @@ interface LayoutMixin
   rescale(scale: number): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface AspectRatioLockMixin {
   /**
@@ -5987,7 +5959,7 @@ interface AspectRatioLockMixin {
   unlockAspectRatio(): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface BlendMixin extends MinimalBlendMixin {
   /**
@@ -6036,7 +6008,7 @@ interface BlendMixin extends MinimalBlendMixin {
    */
   maskType: MaskType
   /**
-   * Array of effects. See {@link Effect} type. For help on how to change this value, see [Editing Properties](https://www.figma.com/plugin-docs/editing-properties).
+   * Array of effects. See {@link Effect} type. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
    */
   effects: ReadonlyArray<Effect>
   /**
@@ -6051,7 +6023,7 @@ interface BlendMixin extends MinimalBlendMixin {
   setEffectStyleIdAsync(styleId: string): Promise<void>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface ContainerMixin {
   /**
@@ -6060,7 +6032,7 @@ interface ContainerMixin {
   expanded: boolean
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface DeprecatedBackgroundMixin {
   /**
@@ -6084,7 +6056,7 @@ declare type StrokeCap =
 declare type StrokeJoin = 'MITER' | 'BEVEL' | 'ROUND'
 declare type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface AutoLayoutMixin {
   /**
@@ -6570,7 +6542,7 @@ interface AutoLayoutMixin {
   itemReverseZIndex: boolean
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/GridTrackSize
+ * @see https://developers.figma.com/docs/plugins/api/GridTrackSize
  */
 interface GridTrackSize {
   /**
@@ -6585,7 +6557,7 @@ interface GridTrackSize {
   type: 'FLEX' | 'FIXED'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface GridLayoutMixin {
   /**
@@ -6709,7 +6681,7 @@ interface GridLayoutMixin {
   appendChildAt(node: SceneNode, rowIndex: number, columnIndex: number): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface AutoLayoutChildrenMixin {
   /**
@@ -6772,7 +6744,7 @@ interface AutoLayoutChildrenMixin {
   layoutPositioning: 'AUTO' | 'ABSOLUTE'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface GridChildrenMixin {
   /**
@@ -6875,13 +6847,13 @@ interface GridChildrenMixin {
   gridChildVerticalAlign: 'MIN' | 'CENTER' | 'MAX' | 'AUTO'
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/InferredAutoLayoutResult
+ * @see https://developers.figma.com/docs/plugins/api/InferredAutoLayoutResult
  */
 interface InferredAutoLayoutResult extends AutoLayoutChildrenMixin, AutoLayoutMixin {}
 /**
- * @see https://www.figma.com/plugin-docs/api/DetachedInfo
+ * @see https://developers.figma.com/docs/plugins/api/DetachedInfo
  */
-declare type DetachedInfo =
+type DetachedInfo =
   | {
       type: 'local'
       componentId: string
@@ -6891,11 +6863,11 @@ declare type DetachedInfo =
       componentKey: string
     }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface MinimalStrokesMixin {
   /**
-   * The paints used to fill the area of the shape's strokes. For help on how to change this value, see [Editing Properties](https://www.figma.com/plugin-docs/editing-properties).
+   * The paints used to fill the area of the shape's strokes. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
    */
   strokes: ReadonlyArray<Paint>
   /**
@@ -6952,7 +6924,7 @@ interface MinimalStrokesMixin {
   readonly strokeGeometry: VectorPaths
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface IndividualStrokesMixin {
   /** Determines the top stroke weight on a rectangle node or frame-like node. Must be non-negative and can be fractional. */
@@ -6965,11 +6937,11 @@ interface IndividualStrokesMixin {
   strokeRightWeight: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface MinimalFillsMixin {
   /**
-   * The paints used to fill the area of the shape. For help on how to change this value, see [Editing Properties](https://www.figma.com/plugin-docs/editing-properties).
+   * The paints used to fill the area of the shape. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
    *
    * @remarks
    *
@@ -6977,7 +6949,7 @@ interface MinimalFillsMixin {
    *
    * Use {@link UtilAPI.solidPaint} to create solid paint fills with CSS color strings.
    *
-   * Page nodes have a [`backgrounds`](https://www.figma.com/plugin-docs/api/PageNode/#backgrounds) property instead of a `fills` property.
+   * Page nodes have a [`backgrounds`](https://developers.figma.com/docs/plugins/api/PageNode#backgrounds) property instead of a `fills` property.
    */
   fills: ReadonlyArray<Paint> | PluginAPI['mixed']
   /**
@@ -6996,7 +6968,7 @@ interface MinimalFillsMixin {
   setFillStyleIdAsync(styleId: string): Promise<void>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   /**
@@ -7023,7 +6995,7 @@ interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
   readonly fillGeometry: VectorPaths
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface CornerMixin {
   /**
@@ -7046,7 +7018,7 @@ interface CornerMixin {
   cornerSmoothing: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface RectangleCornerMixin {
   /**
@@ -7063,11 +7035,11 @@ interface RectangleCornerMixin {
   bottomRightRadius: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface ExportMixin {
   /**
-   * List of export settings stored on the node. For help on how to change this value, see [Editing Properties](https://www.figma.com/plugin-docs/editing-properties).
+   * List of export settings stored on the node. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
    */
   exportSettings: ReadonlyArray<ExportSettings>
   /**
@@ -7137,7 +7109,7 @@ interface ExportMixin {
   exportAsync(settings: ExportSettingsREST): Promise<Object>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface FramePrototypingMixin {
   /**
@@ -7190,11 +7162,11 @@ interface VectorLikeMixin {
   handleMirroring: HandleMirroring | PluginAPI['mixed']
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface ReactionMixin {
   /**
-   * List of [Reactions](https://www.figma.com/plugin-docs/api/Reaction) on this node, which includes both the method of interaction with this node in a prototype, and the behavior of that interaction. For help on how to change this value, see [Editing Properties](https://www.figma.com/plugin-docs/editing-properties).
+   * List of [Reactions](https://developers.figma.com/docs/plugins/api/Reaction) on this node, which includes both the method of interaction with this node in a prototype, and the behavior of that interaction. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
    *
    * If the manifest contains`"documentAccess": "dynamic-page"`, this property is read-only. Use `setReactionsAsync` to update the value.
    *
@@ -7355,13 +7327,13 @@ interface ReactionMixin {
   setReactionsAsync(reactions: Array<Reaction>): Promise<void>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/DocumentationLink
+ * @see https://developers.figma.com/docs/plugins/api/DocumentationLink
  */
 interface DocumentationLink {
   readonly uri: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface PublishableMixin {
   /**
@@ -7414,7 +7386,7 @@ interface PublishableMixin {
   getPublishStatusAsync(): Promise<PublishStatus>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface DefaultShapeMixin
   extends BaseNodeMixin,
@@ -7425,7 +7397,7 @@ interface DefaultShapeMixin
     LayoutMixin,
     ExportMixin {}
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface BaseFrameMixin
   extends BaseNodeMixin,
@@ -7451,7 +7423,7 @@ interface BaseFrameMixin
    */
   readonly detachedInfo: DetachedInfo | null
   /**
-   * Array of {@link LayoutGrid} objects used as layout grids on this node. For help on how to change this value, see [Editing Properties](https://www.figma.com/plugin-docs/editing-properties).
+   * Array of {@link LayoutGrid} objects used as layout grids on this node. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
    */
   layoutGrids: ReadonlyArray<LayoutGrid>
   /**
@@ -7469,7 +7441,7 @@ interface BaseFrameMixin
    */
   clipsContent: boolean
   /**
-   * Array of {@link Guide} used inside the frame. Note that each frame has its own guides, separate from the canvas-wide guides. For help on how to change this value, see [Editing Properties](https://www.figma.com/plugin-docs/editing-properties).
+   * Array of {@link Guide} used inside the frame. Note that each frame has its own guides, separate from the canvas-wide guides. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
    */
   guides: ReadonlyArray<Guide>
   /**
@@ -7482,20 +7454,16 @@ interface BaseFrameMixin
   inferredAutoLayout: InferredAutoLayoutResult | null
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
+
 interface OpaqueNodeMixin
   extends BaseNodeMixin,
     SceneNodeMixin,
     ExportMixin,
     DimensionAndPositionMixin {}
-/**
- * @see https://www.figma.com/plugin-docs/api/N/A
- */
+
 interface MinimalBlendMixin {
   /**
    * Opacity of the node, as shown in the Layer panel. Must be between 0 and 1.
@@ -7515,7 +7483,7 @@ interface Annotation {
 interface AnnotationProperty {
   readonly type: AnnotationPropertyType
 }
-declare type AnnotationPropertyType =
+type AnnotationPropertyType =
   | 'width'
   | 'height'
   | 'maxWidth'
@@ -7553,13 +7521,13 @@ interface AnnotationsMixin {
   /**
    * Annotations on the node.
    *
-   * Learn more about annotations in the [Help Center](https://help.figma.com/hc/en-us/articles/20774752502935) or see the [Annotation type](https://www.figma.com/plugin-docs/api/Annotation) for usage examples.
+   * Learn more about annotations in the [Help Center](https://help.figma.com/hc/en-us/articles/20774752502935) or see the [Annotation type](https://developers.figma.com/docs/plugins/api/Annotation) for usage examples.
    *
    */
   annotations: ReadonlyArray<Annotation>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/Measurement
+ * @see https://developers.figma.com/docs/plugins/api/Measurement
  */
 interface Measurement {
   id: string
@@ -7575,13 +7543,13 @@ interface Measurement {
   freeText: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/MeasurementSide
+ * @see https://developers.figma.com/docs/plugins/api/MeasurementSide
  */
-declare type MeasurementSide = 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'
+type MeasurementSide = 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'
 /**
- * @see https://www.figma.com/plugin-docs/api/MeasurementOffset
+ * @see https://developers.figma.com/docs/plugins/api/MeasurementOffset
  */
-declare type MeasurementOffset =
+type MeasurementOffset =
   | {
       type: 'INNER'
       relative: number
@@ -7608,7 +7576,7 @@ interface MeasurementsMixin {
    *
    * Measurements can only go on the same axis, i.e. from side `"LEFT"` -> `"LEFT"`, `"LEFT"` -> `"RIGHT"`, `"TOP"` -> `"BOTTOM"` etc. But not `"LEFT"` -> `"TOP"`.
    *
-   * See the [Measurement type](https://www.figma.com/plugin-docs/api/Measurement) for usage examples.
+   * See the [Measurement type](https://developers.figma.com/docs/plugins/api/Measurement) for usage examples.
    *
    * Note: This method is only available in Dev Mode. You can check the editor type of your plugin to know if the user is in Dev Mode or not:
    *
@@ -7638,7 +7606,7 @@ interface MeasurementsMixin {
   /**
    * Edit a measurement’s offset.
    *
-   * See the [Measurement type](https://www.figma.com/plugin-docs/api/Measurement) for usage examples.
+   * See the [Measurement type](https://developers.figma.com/docs/plugins/api/Measurement) for usage examples.
    *
    * Note: This method is only available in Dev Mode. You can check the editor type of your plugin to know if the user is in Dev Mode or not:
    *
@@ -7658,7 +7626,7 @@ interface MeasurementsMixin {
   /**
    * Delete a measurement.
    *
-   * See the [Measurement type](https://www.figma.com/plugin-docs/api/Measurement) for usage examples.
+   * See the [Measurement type](https://developers.figma.com/docs/plugins/api/Measurement) for usage examples.
    *
    * Note: This method is only available in Dev Mode. You can check the editor type of your plugin to know if the user is in Dev Mode or not:
    *
@@ -7671,7 +7639,7 @@ interface MeasurementsMixin {
   deleteMeasurement(id: string): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/node-properties
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface VariantMixin {
   /**
@@ -7908,7 +7876,7 @@ interface ComponentPropertiesMixin {
   deleteComponentProperty(propertyName: string): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TextNode
+ * @see https://developers.figma.com/docs/plugins/api/TextNode
  */
 interface BaseNonResizableTextMixin {
   /**
@@ -8149,7 +8117,7 @@ interface BaseNonResizableTextMixin {
    *
    * @remarks
    *
-   * This function provides an easy and performant way to get multiple text properties which may have [mixed values](https://www.figma.com/plugin-docs/working-with-text#mixed-styles), along with which characters these values apply to.
+   * This function provides an easy and performant way to get multiple text properties which may have [mixed values](https://developers.figma.com/docs/plugins/working-with-text#mixed-styles), along with which characters these values apply to.
    * It will return an array of {@link StyledTextSegment}s containing the desired fields, along with the characters and their start and end index.
    *
    * To illustrate the behavior of this function, here are a few examples:
@@ -8278,7 +8246,7 @@ interface BaseNonResizableTextMixin {
   >
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TextNode
+ * @see https://developers.figma.com/docs/plugins/api/TextNode
  */
 interface NonResizableTextMixin extends BaseNonResizableTextMixin {
   /**
@@ -8443,11 +8411,11 @@ interface NonResizableTextMixin extends BaseNonResizableTextMixin {
   setRangeParagraphSpacing(start: number, end: number, value: number): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TextPathNode
+ * @see https://developers.figma.com/docs/plugins/api/TextPathNode
  */
 interface NonResizableTextPathMixin extends BaseNonResizableTextMixin {}
 /**
- * @see https://www.figma.com/plugin-docs/api/TextNode
+ * @see https://developers.figma.com/docs/plugins/api/TextNode
  */
 interface TextSublayerNode extends NonResizableTextMixin, MinimalFillsMixin {}
 interface DocumentNode extends BaseNodeMixin {
@@ -8521,7 +8489,7 @@ interface DocumentNode extends BaseNodeMixin {
    * ```
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
-   * Please refer to our [recommendations](https://www.figma.com/plugin-docs/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
    */
   findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>
   /**
@@ -8544,7 +8512,7 @@ interface DocumentNode extends BaseNodeMixin {
    * ```
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
-   * Please refer to our [recommendations](https://www.figma.com/plugin-docs/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
    */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
   /**
@@ -8740,9 +8708,9 @@ interface PageNode
    *
    * | Change | `type` property | Description |
    * | --- | --- | --- |
-   * | [`CreateChange`](https://www.figma.com/plugin-docs/api/NodeChange#createchange) | `'CREATE'` | A node has been created in the page. If a node with nested children is being added to the page a `CreateChange` will only be made for the highest level parent that was added to the page. |
-   * | [`DeleteChange`](https://www.figma.com/plugin-docs/api/NodeChange#deletechange) | `'DELETE'` | A node has been removed from the page. If a node with nested children is being removed from the page a  `DeleteChange`  will only be made for the highest level parent that was removed from the page. |
-   * | [`PropertyChange`](https://www.figma.com/plugin-docs/api/NodeChange#propertychange) | `'PROPERTY_CHANGE'` | A property of a node has changed. |
+   * | [`CreateChange`](https://developers.figma.com/docs/plugins/api/NodeChange#createchange) | `'CREATE'` | A node has been created in the page. If a node with nested children is being added to the page a `CreateChange` will only be made for the highest level parent that was added to the page. |
+   * | [`DeleteChange`](https://developers.figma.com/docs/plugins/api/NodeChange#deletechange) | `'DELETE'` | A node has been removed from the page. If a node with nested children is being removed from the page a  `DeleteChange`  will only be made for the highest level parent that was removed from the page. |
+   * | [`PropertyChange`](https://developers.figma.com/docs/plugins/api/NodeChange#propertychange) | `'PROPERTY_CHANGE'` | A property of a node has changed. |
    */
   on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   /**
@@ -8817,7 +8785,7 @@ interface GroupNode
   clone(): GroupNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TransformGroupNode
+ * @see https://developers.figma.com/docs/plugins/api/TransformGroupNode
  */
 interface TransformGroupNode
   extends BaseNodeMixin,
@@ -9023,7 +8991,7 @@ interface TextNode
   setTextStyleIdAsync(styleId: string): Promise<void>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TextPathNode
+ * @see https://developers.figma.com/docs/plugins/api/TextPathNode
  */
 interface TextPathNode
   extends DefaultShapeMixin,
@@ -9079,26 +9047,26 @@ interface TextPathNode
   readonly handleMirroring: HandleMirroring | PluginAPI['mixed']
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ComponentPropertyType
+ * @see https://developers.figma.com/docs/plugins/api/ComponentPropertyType
  */
-declare type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
+type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
 /**
- * @see https://www.figma.com/plugin-docs/api/InstanceSwapPreferredValue
+ * @see https://developers.figma.com/docs/plugins/api/InstanceSwapPreferredValue
  */
-declare type InstanceSwapPreferredValue = {
+type InstanceSwapPreferredValue = {
   type: 'COMPONENT' | 'COMPONENT_SET'
   key: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ComponentPropertyOptions
+ * @see https://developers.figma.com/docs/plugins/api/ComponentPropertyOptions
  */
-declare type ComponentPropertyOptions = {
+type ComponentPropertyOptions = {
   preferredValues?: InstanceSwapPreferredValue[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ComponentPropertyDefinitions
+ * @see https://developers.figma.com/docs/plugins/api/ComponentPropertyDefinitions
  */
-declare type ComponentPropertyDefinitions = {
+type ComponentPropertyDefinitions = {
   [propertyName: string]: {
     type: ComponentPropertyType
     defaultValue: string | boolean
@@ -9132,7 +9100,7 @@ interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPr
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ComponentNode
+ * @see https://developers.figma.com/docs/plugins/api/ComponentNode
  */
 interface ComponentNode
   extends DefaultFrameMixin,
@@ -9163,9 +9131,9 @@ interface ComponentNode
   readonly instances: InstanceNode[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ComponentProperties
+ * @see https://developers.figma.com/docs/plugins/api/ComponentProperties
  */
-declare type ComponentProperties = {
+type ComponentProperties = {
   [propertyName: string]: {
     type: ComponentPropertyType
     value: string | boolean
@@ -9310,7 +9278,7 @@ interface StampNode
   getAuthorAsync(): Promise<BaseUser | null>
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TableNode
+ * @see https://developers.figma.com/docs/plugins/api/TableNode
  */
 interface TableNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin {
   /**
@@ -9334,59 +9302,59 @@ interface TableNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixi
   /**
    * Returns the table cell node at a specific cell coordinate.
    *
-   * @param rowIndex - The index of the row. Must satisfy 0 <= rowIndex < numRows.
-   * @param columnIndex - The index of the column. Must satisfy 0 <= columnInde < numColumns.
+   * @param rowIndex - The index of the row. Must satisfy `0 <= rowIndex < numRows`.
+   * @param columnIndex - The index of the column. Must satisfy `0 <= columnInde < numColumns`.
    *
    */
   cellAt(rowIndex: number, columnIndex: number): TableCellNode
   /**
    * Inserts a row before the specified index.
    *
-   * @param rowIndex - Index of the new row. Must satisfy 0 <= rowIndex <= numRows.
+   * @param rowIndex - Index of the new row. Must satisfy `0 <= rowIndex <= numRows`.
    *
    */
   insertRow(rowIndex: number): void
   /**
    * Inserts a column before the specified index.
    *
-   * @param columnIndex - Index of the new column. Must satisfy 0 <= columnIndex <= numColumns.
+   * @param columnIndex - Index of the new column. Must satisfy `0 <= columnIndex <= numColumns`.
    *
    */
   insertColumn(columnIndex: number): void
   /**
    * Removes the row at the specified index.
    *
-   * @param rowIndex - Index of the row to remove. Must satisfy 0 <= rowIndex < numRows.
+   * @param rowIndex - Index of the row to remove. Must satisfy `0 <= rowIndex < numRows`.
    *
    */
   removeRow(rowIndex: number): void
   /**
    * Removes the column at the specified index.
    *
-   * @param columnIndex - Index of the column to remove. Must satisfy 0 <= columnIndex < numColumns.
+   * @param columnIndex - Index of the column to remove. Must satisfy `0 <= columnIndex < numColumns`.
    *
    */
   removeColumn(columnIndex: number): void
   /**
    * Moves the row from the start index to the destination index.
    *
-   * @param fromIndex - Index of the row to move. Must satisfy 0 <= rowIndex < numRows.
-   * @param toIndex - Index that specifies where the row will be moved before. Must satisfy 0 <= rowIndex < numRows.
+   * @param fromIndex - Index of the row to move. Must satisfy `0 <= rowIndex < numRows`.
+   * @param toIndex - Index that specifies where the row will be moved before. Must satisfy `0 <= rowIndex < numRows`.
    *
    */
   moveRow(fromIndex: number, toIndex: number): void
   /**
    * Moves the column from the start index to the destination index.
    *
-   * @param fromIndex - Index of the column to move. Must satisfy 0 <= columnIndex < numColumns.
-   * @param toIndex - Index that specifies where the column will be moved before. Must satisfy 0 <= columnIndex < numColumns.
+   * @param fromIndex - Index of the column to move. Must satisfy `0 <= columnIndex < numColumns`.
+   * @param toIndex - Index that specifies where the column will be moved before. Must satisfy `0 <= columnIndex < numColumns`.
    *
    */
   moveColumn(fromIndex: number, toIndex: number): void
   /**
    * Resizes the row. Rows cannot be resized to be smaller than their minimum size.
    *
-   * @param height - New width of the row. Must be >= 0.01
+   * @param height - New width of the row. Must be `>= 0.01`
    *
    */
   resizeRow(rowIndex: number, height: number): void
@@ -9399,7 +9367,7 @@ interface TableNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixi
   resizeColumn(columnIndex: number, width: number): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/TableCellNode
+ * @see https://developers.figma.com/docs/plugins/api/TableCellNode
  */
 interface TableCellNode extends MinimalFillsMixin {
   /**
@@ -9528,7 +9496,7 @@ interface ShapeWithTextNode
   clone(): ShapeWithTextNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/CodeBlockNode
+ * @see https://developers.figma.com/docs/plugins/api/CodeBlockNode
  */
 interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
   /**
@@ -9566,7 +9534,7 @@ interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
   clone(): CodeBlockNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/LabelSublayer
+ * @see https://developers.figma.com/docs/plugins/api/LabelSublayer
  */
 interface LabelSublayerNode {
   fills: Paint[] | PluginAPI['mixed']
@@ -9621,13 +9589,13 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
    */
   clone(): ConnectorNode
 }
-declare type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
+type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
 interface VariableAlias {
   type: 'VARIABLE_ALIAS'
   id: string
 }
-declare type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
-declare type VariableScope =
+type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
+type VariableScope =
   | 'ALL_SCOPES'
   | 'TEXT_CONTENT'
   | 'CORNER_RADIUS'
@@ -9650,7 +9618,10 @@ declare type VariableScope =
   | 'LETTER_SPACING'
   | 'PARAGRAPH_SPACING'
   | 'PARAGRAPH_INDENT'
-declare type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
+/**
+ * @see https://developers.figma.com/docs/plugins/api/VariableCodeSyntaxPlatform
+ */
+type CodeSyntaxPlatform = 'WEB' | 'ANDROID' | 'iOS'
 interface Variable extends PluginDataMixin {
   /**
    * The unique identifier of this variable.
@@ -9870,7 +9841,7 @@ interface VariableCollection extends PluginDataMixin {
    * Returns the publishing status of this variable collection in the current file.
    */
   getPublishStatusAsync(): Promise<PublishStatus>
-  /** Whether this variable is remote or local. */
+  /** Whether this variable collection is remote or local. */
   readonly remote: boolean
   /** The list of modes defined for this variable collection. */
   readonly modes: Array<{
@@ -9911,7 +9882,7 @@ interface VariableCollection extends PluginDataMixin {
   /** Renames the given mode. */
   renameMode(modeId: string, newName: string): void
 }
-declare type AnnotationCategoryColor =
+type AnnotationCategoryColor =
   | 'yellow'
   | 'orange'
   | 'red'
@@ -9976,7 +9947,7 @@ interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
    *
    * Each key/value pair in this object will override the corresponding `useSyncedState(<key>)` value.
    *
-   * Similar to [`WidgetNode.clone`](https://www.figma.com/plugin-docs/api/WidgetNode/#clone), the duplicate will be parented under
+   * Similar to [`WidgetNode.clone`](https://developers.figma.com/docs/plugins/api/WidgetNode#clone), the duplicate will be parented under
    * `figma.currentPage`. If you are relying on the x, y or the relativeTransform of the original widget, make sure
    * to account for the case where the original widget is parented under a different node (eg. a section).
    *
@@ -10009,7 +9980,7 @@ interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
    *
    * If you try to set the synced state for a widget with a different version of the same widget, that widget will automatically update to match the running widget's version. This ensures that the synced state values you set will always be compatible with the widget. A side effect of this is that a widget may get downgraded to a lower version.
    *
-   * To get a list of other widgets with the same `widgetId`, check out [findWidgetNodesByWidgetId](https://www.figma.com/plugin-docs/api/properties/nodes-findwidgetnodesbywidgetid).
+   * To get a list of other widgets with the same `widgetId`, check out [findWidgetNodesByWidgetId](https://developers.figma.com/docs/plugins/api/properties/nodes-findwidgetnodesbywidgetid).
    */
   setWidgetSyncedState(
     syncedState: {
@@ -10141,7 +10112,7 @@ interface MediaNode extends OpaqueNodeMixin {
   clone(): MediaNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/SectionNode
+ * @see https://developers.figma.com/docs/plugins/api/SectionNode
  */
 interface SectionNode
   extends ChildrenMixin,
@@ -10171,7 +10142,7 @@ interface SectionNode
   resizeWithoutConstraints(width: number, height: number): void
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/SlideNode
+ * @see https://developers.figma.com/docs/plugins/api/SlideNode
  */
 interface SlideNode extends BaseFrameMixin {
   /**
@@ -10196,7 +10167,7 @@ interface SlideNode extends BaseFrameMixin {
   isSkippedSlide: boolean
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/SlideRowNode
+ * @see https://developers.figma.com/docs/plugins/api/SlideRowNode
  */
 interface SlideRowNode extends OpaqueNodeMixin, ChildrenMixin {
   /**
@@ -10209,7 +10180,7 @@ interface SlideRowNode extends OpaqueNodeMixin, ChildrenMixin {
   clone(): SlideRowNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/SlideGridNode
+ * @see https://developers.figma.com/docs/plugins/api/SlideGridNode
  */
 interface SlideGridNode extends OpaqueNodeMixin, ChildrenMixin {
   /**
@@ -10222,7 +10193,7 @@ interface SlideGridNode extends OpaqueNodeMixin, ChildrenMixin {
   clone(): SlideGridNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/InteractiveSlideElementNode
+ * @see https://developers.figma.com/docs/plugins/api/InteractiveSlideElementNode
  */
 interface InteractiveSlideElementNode extends OpaqueNodeMixin {
   /**
@@ -10239,7 +10210,7 @@ interface InteractiveSlideElementNode extends OpaqueNodeMixin {
   clone(): InteractiveSlideElementNode
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/SlideTransition
+ * @see https://developers.figma.com/docs/plugins/api/SlideTransition
  */
 interface SlideTransition {
   /**
@@ -10300,13 +10271,13 @@ interface SlideTransition {
   }
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/nodes
+ * @see https://developers.figma.com/docs/plugins/api/node-types
  */
-declare type BaseNode = DocumentNode | PageNode | SceneNode
+type BaseNode = DocumentNode | PageNode | SceneNode
 /**
- * @see https://www.figma.com/plugin-docs/api/nodes
+ * @see https://developers.figma.com/docs/plugins/api/node-types
  */
-declare type SceneNode =
+type SceneNode =
   | SliceNode
   | FrameNode
   | GroupNode
@@ -10341,14 +10312,14 @@ declare type SceneNode =
   | SlideGridNode
   | InteractiveSlideElementNode
 /**
- * @see https://www.figma.com/plugin-docs/api/nodes
+ * @see https://developers.figma.com/docs/plugins/api/node-types
  */
-declare type NodeType = BaseNode['type']
-declare type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
+type NodeType = BaseNode['type']
+type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
 /**
- * @see https://www.figma.com/plugin-docs/api/InheritedStyleField
+ * @see https://developers.figma.com/docs/plugins/api/InheritedStyleField
  */
-declare type InheritedStyleField =
+type InheritedStyleField =
   | 'fillStyleId'
   | 'strokeStyleId'
   | 'backgroundStyleId'
@@ -10357,7 +10328,7 @@ declare type InheritedStyleField =
   | 'gridStyleId'
   | 'strokeStyleId'
 /**
- * @see https://www.figma.com/plugin-docs/api/StyleConsumers
+ * @see https://developers.figma.com/docs/plugins/api/StyleConsumers
  */
 interface StyleConsumers {
   /**
@@ -10467,7 +10438,7 @@ interface TextStyle extends BaseStyleMixin {
     [field in VariableBindableTextField]?: VariableAlias
   }
   /**
-   * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://www.figma.com/plugin-docs/working-with-variables) guide for how to get and set variable bindings.
+   * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://developers.figma.com/docs/plugins/working-with-variables) guide for how to get and set variable bindings.
    *
    * If `null` is provided as the variable, the given `field` will be unbound from any variables.
    *
@@ -10508,7 +10479,7 @@ interface GridStyle extends BaseStyleMixin {
     readonly [field in VariableBindableGridStyleField]?: VariableAlias[]
   }
 }
-declare type BaseStyle = PaintStyle | TextStyle | EffectStyle | GridStyle
+type BaseStyle = PaintStyle | TextStyle | EffectStyle | GridStyle
 interface Image {
   /**
    * A unique hash of the contents of the image file.
@@ -10533,7 +10504,7 @@ interface Video {
   readonly hash: string
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/BaseUser
+ * @see https://developers.figma.com/docs/plugins/api/BaseUser
  */
 interface BaseUser {
   /**
@@ -10554,7 +10525,7 @@ interface BaseUser {
   readonly photoUrl: string | null
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/User
+ * @see https://developers.figma.com/docs/plugins/api/User
  */
 interface User extends BaseUser {
   /**
@@ -10569,7 +10540,7 @@ interface User extends BaseUser {
   readonly sessionId: number
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/ActiveUser
+ * @see https://developers.figma.com/docs/plugins/api/ActiveUser
  */
 interface ActiveUser extends User {
   /**
@@ -10586,7 +10557,7 @@ interface ActiveUser extends User {
   readonly selection: string[]
 }
 /**
- * @see https://www.figma.com/plugin-docs/api/FindAllCriteria
+ * @see https://developers.figma.com/docs/plugins/api/FindAllCriteria
  */
 interface FindAllCriteria<T extends NodeType[]> {
   /**
