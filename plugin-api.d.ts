@@ -3342,6 +3342,7 @@ interface FontName {
 type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
 type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
 type TextDecorationStyle = 'SOLID' | 'WAVY' | 'DOTTED'
+type FontStyle = 'REGULAR' | 'ITALIC'
 type TextDecorationOffset =
   | {
       readonly value: number
@@ -4544,6 +4545,10 @@ interface StyledTextSegment {
    * The weight of the font (e.g. 400 for "Regular", 700 for "Bold").
    */
   fontWeight: number
+  /**
+   * The style of the font (i.e. "REGULAR", "ITALIC").
+   */
+  fontStyle: FontStyle
   /**
    * Whether the text is underlined or has a strikethrough.
    */
@@ -8086,6 +8091,7 @@ interface BaseNonResizableTextMixin {
    * - fontSize
    * - fontName
    * - fontWeight
+   * - fontStyle
    * - textDecoration
    * - textDecorationStyle
    * - textDecorationOffset
