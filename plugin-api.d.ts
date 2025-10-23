@@ -27,7 +27,7 @@ interface PluginAPI {
   /**
    * The current editor type this plugin is running in. See also [Setting editor type](https://developers.figma.com/docs/plugins/setting-editor-type).
    */
-  readonly editorType: 'figma' | 'figjam' | 'dev' | 'slides'
+  readonly editorType: 'figma' | 'figjam' | 'dev' | 'slides' | 'buzz'
   /**
    * Return the context the plugin is current running in.
    *
@@ -443,6 +443,14 @@ interface PluginAPI {
    */
   readonly annotations: AnnotationsAPI
   /**
+   *
+   * This API is only available in Buzz.
+   *
+   * This property contains methods to work in Buzz.
+   *
+   */
+  readonly buzz: BuzzAPI
+  /**
    * The root of the entire Figma document. This node is used to access other pages. Each child is a {@link PageNode}.
    */
   readonly root: DocumentNode
@@ -803,6 +811,7 @@ interface PluginAPI {
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
   on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
   on(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
+  on(type: 'canvasviewchange', callback: (event: CanvasViewChangeEvent) => void): void
   on(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -816,6 +825,7 @@ interface PluginAPI {
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
   once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
   once(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
+  once(type: 'canvasviewchange', callback: (event: CanvasViewChangeEvent) => void): void
   once(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -846,6 +856,7 @@ interface PluginAPI {
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
   off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
   off(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
+  off(type: 'canvasviewchange', callback: (event: CanvasViewChangeEvent) => void): void
   off(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
@@ -1835,6 +1846,8 @@ interface PluginAPI {
    *   [SlideNode, SlideNode, SlideNode],
    * ]
    * ```
+   *
+   * @deprecated Use {@link PluginAPI.getCanvasGrid} instead.
    */
   getSlideGrid(): Array<Array<SlideNode>>
   /**
@@ -1857,8 +1870,82 @@ interface PluginAPI {
    *
    * So long as all the Slides in the current grid are passed back to `setSlideGrid` the update will succeed.
    * Meaning, you can change the amount of rows as you please - flatten all to one row, explode to many rows, etc, and the method will handle all updates for you.
+   *
+   * @deprecated Use {@link PluginAPI.setCanvasGrid} instead.
    */
   setSlideGrid(slideGrid: Array<Array<SlideNode>>): void
+  /**
+   * Gets the current canvas grid layout as a 2D array of nodes.
+   *
+   * Note: This API is only available in Figma Slides and Figma Buzz
+   *
+   * @remarks
+   *
+   * The canvas grid represents the organizational structure of assets in Slides and Buzz,
+   * where each position can contain a node (slide or asset).
+   *
+   * To visualize the nodes in the canvas grid in a 2D array, you can call this function.
+   *
+   * ```ts
+   * const grid = figma.getCanvasGrid()
+   * ```
+   *
+   */
+  getCanvasGrid(): Array<Array<SceneNode>>
+  /**
+   * Sets the canvas grid layout, reorganizing nodes in the canvas.
+   *
+   * Note: This API is only available in Figma Slides and Figma Buzz
+   *
+   * @remarks
+   *
+   * This allows you to programmatically rearrange the layout of slides or assets in the canvas grid.
+   * All nodes in the current grid must be included in the new layout.
+   *
+   * For example:
+   *
+   * ```ts
+   * const grid = figma.getCanvasGrid()
+   * const [firstRow, ...rest] = grid
+   *
+   * // move the first row to the end
+   * figma.setCanvasGrid([...rest, firstRow])
+   * ```
+   *
+   * @param canvasGrid - A 2D array representing the new canvas grid layout
+   */
+  setCanvasGrid(canvasGrid: Array<Array<SceneNode>>): void
+  /**
+   * Creates a new row in the canvas grid at the specified index.
+   *
+   * Note: This API is only available in Figma Slides and Figma Buzz
+   *
+   *
+   * @param rowIndex - The index where to insert the new row (optional)
+   *
+   * @remarks
+   *
+   * If no row index is provided, the row will be added at the end of the grid.
+   *
+   */
+  createCanvasRow(rowIndex?: number): SceneNode
+  /**
+   * Moves the specified nodes to a specific coordinate in the canvas grid.
+   *
+   * Note: This API is only available in Figma Slides and Figma Buzz
+   *
+   * This function allows precise positioning of multiple nodes within the
+   * canvas grid system used in Slides and Buzz.
+   *
+   * @param nodeIds - Array of node IDs to move
+   * @param rowIndex - The target row index in the canvas grid (optional)
+   * @param columnIndex - The target column index in the canvas grid (optional)
+   *
+   * @remarks
+   *
+   * Calling this function without rowIndex and columnIndex will move the node to the end of the grid
+   */
+  moveNodesToCoord(nodeIds: string[], rowIndex?: number, columnIndex?: number): void
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/properties/figma-saveversionhistoryasync
@@ -2048,6 +2135,167 @@ interface AnnotationsAPI {
     color: AnnotationCategoryColor
   }): Promise<AnnotationCategory>
 }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/figma-buzz
+ */
+interface BuzzAPI {
+  /**
+   * Creates a new frame in Buzz, optionally positioned at specific canvas coordinates.
+   *
+   * @param rowIndex - The row position on the canvas grid (optional)
+   * @param columnIndex - The column position on the canvas grid (optional)
+   * @returns A newly created FrameNode
+   *
+   * @remarks
+   *
+   * If no rowIndex and columnIndex are specified, the new frame will be created at the end of the canvas grid.
+   *
+   */
+  createFrame(rowIndex?: number, columnIndex?: number): FrameNode
+  /**
+   * Creates an instance of a component in Buzz, optionally positioned at specific canvas coordinates.
+   *
+   *
+   * @param component - The ComponentNode to create an instance from
+   * @param rowIndex - The row position on the canvas grid (optional)
+   * @param columnIndex - The column position on the canvas grid (optional)
+   * @returns A newly created InstanceNode
+   *
+   * @remarks
+   *
+   * If no rowIndex and columnIndex are specified, the new instance will be created at the end of the canvas grid.
+   */
+  createInstance(component: ComponentNode, rowIndex: number, columnIndex?: number): InstanceNode
+  /**
+   * Gets the Buzz asset type for a given node.
+   *
+   * @param node - The SceneNode to check
+   * @returns The BuzzAssetType of the node, or null if not set
+   */
+  getBuzzAssetTypeForNode(node: SceneNode): BuzzAssetType | null
+  /**
+   * Sets the Buzz asset type for a given node.
+   *
+   * @param node - The SceneNode to modify
+   * @param assetType - The BuzzAssetType to assign to the node
+   */
+  setBuzzAssetTypeForNode(node: SceneNode, assetType: BuzzAssetType): void
+  /**
+   * Extracts all text content fields from a node for dynamic content management.
+   *
+   * @param node - The SceneNode to extract text content from
+   * @returns An array of BuzzTextField objects containing text content
+   */
+  getTextContent(node: SceneNode): BuzzTextField[]
+  /**
+   * Extracts all media content fields from a node for dynamic content management.
+   *
+   * @param node - The SceneNode to extract media content from
+   * @returns An array of BuzzMediaField objects containing media content
+   */
+  getMediaContent(node: SceneNode): BuzzMediaField[]
+  /**
+   * Performs intelligent resizing of a node while maintaining layout integrity and aspect ratios.
+   *
+   * @param node - The SceneNode to resize
+   * @param width - The target width in pixels
+   * @param height - The target height in pixels
+   */
+  smartResize(node: SceneNode, width: number, height: number): void
+}
+/**
+ * Represents a text field within a Buzz media asset that can be dynamically updated.
+ * BuzzTextField objects are returned by {@link BuzzAPI.getTextContent} and provide access
+ * to both the current text content and the underlying text node.
+ */
+interface BuzzTextField {
+  /**
+   * The current text content of the field, or null if the field is empty.
+   */
+  readonly value: string | null
+  /**
+   * The underlying TextNode that contains this text content, or null if not found.
+   */
+  readonly node: TextNode | null
+  /**
+   * Updates the text content asynchronously
+   */
+  setValueAsync(value: string): Promise<void>
+}
+/**
+ * Represents a media field within a Buzz media asset that can contain images or videos.
+ * BuzzMediaField objects are returned by {@link BuzzAPI.getMediaContent} and provide access
+ * to the current media content and the ability to update it dynamically.
+ */
+interface BuzzMediaField {
+  /**
+   * The type of media content: 'IMAGE' for images, 'VIDEO' for videos, or null if no media is present.
+   */
+  readonly type: 'IMAGE' | 'VIDEO' | null
+  /**
+   * A unique identifier for the current media content, or null if no media is set.
+   */
+  readonly hash: string | null
+  /**
+   * The underlying SceneNode that contains this media content, or null if not found.
+   */
+  readonly node: SceneNode | null
+  /**
+   * Updates the media content with a new ImagePaint or VideoPaint
+   */
+  setMediaAsync(paint: ImagePaint | VideoPaint): Promise<void>
+}
+/**
+ * Represents the different types of media assets and formats supported in Figma Buzz.
+ * These asset types correspond to specific platform requirements and dimensions, ensuring
+ * content is optimized for each social media platform.
+ *
+ * Used with {@link BuzzAPI.setBuzzAssetTypeForNode} and {@link BuzzAPI.getBuzzAssetTypeForNode}
+ * to manage content categorization.
+ */
+type BuzzAssetType =
+  | 'CUSTOM'
+  | 'TWITTER_POST'
+  | 'LINKEDIN_POST'
+  | 'INSTA_POST_SQUARE'
+  | 'INSTA_POST_PORTRAIT'
+  | 'INSTA_STORY'
+  | 'INSTA_AD'
+  | 'FACEBOOK_POST'
+  | 'FACEBOOK_COVER_PHOTO'
+  | 'FACEBOOK_EVENT_COVER'
+  | 'FACEBOOK_AD_PORTRAIT'
+  | 'FACEBOOK_AD_SQUARE'
+  | 'PINTEREST_AD_PIN'
+  | 'TWITTER_BANNER'
+  | 'LINKEDIN_POST_SQUARE'
+  | 'LINKEDIN_POST_PORTRAIT'
+  | 'LINKEDIN_POST_LANDSCAPE'
+  | 'LINKEDIN_PROFILE_BANNER'
+  | 'LINKEDIN_ARTICLE_BANNER'
+  | 'LINKEDIN_AD_LANDSCAPE'
+  | 'LINKEDIN_AD_SQUARE'
+  | 'LINKEDIN_AD_VERTICAL'
+  | 'YOUTUBE_THUMBNAIL'
+  | 'YOUTUBE_BANNER'
+  | 'YOUTUBE_AD'
+  | 'TWITCH_BANNER'
+  | 'GOOGLE_LEADERBOARD_AD'
+  | 'GOOGLE_LARGE_AD'
+  | 'GOOGLE_MED_AD'
+  | 'GOOGLE_MOBILE_BANNER_AD'
+  | 'GOOGLE_SKYSCRAPER_AD'
+  | 'CARD_HORIZONTAL'
+  | 'CARD_VERTICAL'
+  | 'PRINT_US_LETTER'
+  | 'POSTER'
+  | 'BANNER_STANDARD'
+  | 'BANNER_WIDE'
+  | 'BANNER_ULTRAWIDE'
+  | 'NAME_TAG_PORTRAIT'
+  | 'NAME_TAG_LANDSCAPE'
+  | 'INSTA_REEL_COVER'
+  | 'ZOOM_BACKGROUND'
 /**
  * @see https://developers.figma.com/docs/plugins/api/figma-teamlibrary
  */
@@ -2814,6 +3062,33 @@ interface ViewportAPI {
    * not hidden off to the side of the larger grid view.
    */
   slidesView: 'grid' | 'single-slide'
+  /**
+   * Note: This API is only available in Figma Slides and Figma Buzz
+   *
+   * @remarks
+   *
+   * The viewport mode within the Slides and Buzz UI: In Asset View, the viewport is zoomed into the current asset or slide, and we only render that
+   * one asset/slide. In Grid View, the viewport is zoomed out to show the entire canvas grid.
+   *
+   * You can access the current view:
+   *
+   * ```ts
+   * const currentView = figma.viewport.canvasView
+   * ```
+   *
+   * And you can set the view:
+   *
+   * ```ts
+   * figma.viewport.canvasView = 'single-asset'
+   * ```
+   *
+   * ### A Note About Asset View:
+   *
+   * We have updated all of the create methods (`figma.createRectangle()`, `figma.createLine()`, etc) so that when the Figma Slides/Buzz file is in Asset View,
+   * they append that node to the focused asset/slide instead of to the canvas. This is to ensure that the node you are creating is viewable by the current user and
+   * not hidden off to the side of the larger grid view.
+   */
+  canvasView: 'grid' | 'single-asset'
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/figma-textreview
@@ -2976,6 +3251,20 @@ interface OpenDevResourcesEvent {
 type RunEvent = RunParametersEvent | OpenDevResourcesEvent
 interface SlidesViewChangeEvent {
   view: 'GRID' | 'SINGLE_SLIDE'
+}
+/**
+ * Event fired when the canvas view mode changes in Figma Slides and Figma Buzz.
+ *
+ * This event is triggered when users switch between Asset View and Grid View
+ * in the Slides or Buzz interface, allowing plugins to respond to view changes.
+ */
+interface CanvasViewChangeEvent {
+  /**
+   * The current view mode of the canvas.
+   * - 'SINGLE_ASSET': Focused view on a single slide or asset
+   * - 'GRID': Overview of the entire canvas grid
+   */
+  view: 'SINGLE_ASSET' | 'GRID'
 }
 interface DropEvent {
   node: BaseNode | SceneNode
@@ -8755,6 +9044,21 @@ interface PageNode
    * ```
    */
   focusedSlide?: SlideNode | null
+  /**
+   *
+   * Note: This API is only available in Figma Slides and Figma Buzz
+   *
+   * When in Asset View, the Slide/Asset that is currently focused is accessible via this property.
+   *
+   * @remarks
+   *
+   * You can also set this via:
+   *
+   * ```ts
+   * figma.currentPage.focusedNode = node
+   * ```
+   */
+  focusedNode: SceneNode | null
 }
 interface FrameNode extends DefaultFrameMixin {
   /**
