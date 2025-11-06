@@ -6836,7 +6836,7 @@ interface AutoLayoutMixin {
  */
 interface GridTrackSize {
   /**
-   * Applicable only on FIXED or FLEX grid tracks. In FIXED tracks, the size of the track in pixels. In FlEX tracks, the fractional unit value (equivalent to the [`fr` unit](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout#the_fr_unit) in CSS)
+   * Applicable only on FIXED or FLEX grid tracks. In FIXED tracks, the size of the track in pixels. In FLEX tracks, the fractional unit value (equivalent to the [`fr` unit](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout#the_fr_unit) in CSS)
    * Optional for `FLEX` tracks.
    */
   value?: number
