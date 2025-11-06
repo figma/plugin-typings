@@ -6836,15 +6836,17 @@ interface AutoLayoutMixin {
  */
 interface GridTrackSize {
   /**
-   * Applicable only on FIXED grid tracks. The size of the track in pixels.
+   * Applicable only on FIXED or FLEX grid tracks. In FIXED tracks, the size of the track in pixels. In FLEX tracks, the fractional unit value (equivalent to the [`fr` unit](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout#the_fr_unit) in CSS)
    * Optional for `FLEX` tracks.
-   * If the setter for this value is called on a `FLEX` track, the track will be converted to a `FIXED` track.
    */
   value?: number
   /**
-   * The type of the grid track. `FLEX` indicates that the track will grow to fill the available space in the container (evenly divided among all flex tracks in the grid), while `FIXED` indicates that the track will have a fixed size.
+   * The type of the grid track. `FLEX` indicates that the track behaves like the CSS grid [`fr` unit](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout#the_fr_unit).
+   * `FIXED` indicates that the track will have a fixed pixel size.
+   * `HUG` indicates that the track will size to fit its content, equivalent to a CSS setting of `fit-content(100%)`.
+   * It is not a valid state for 'FLEX' tracks to be set on a grid when the container is set to layoutSizingHorizonal/layoutSizingVertical 'HUG'
    **/
-  type: 'FLEX' | 'FIXED'
+  type: 'FLEX' | 'FIXED' | 'HUG'
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -6910,6 +6912,7 @@ interface GridLayoutMixin {
    *
    * // Change the first row to be a fixed size of 100px
    * parentFrame.gridRowSizes[0].type // 'FLEX'
+   * parentFrame.gridRowSizes[0].type = 'FIXED'
    * parentFrame.gridRowSizes[0].value = 100
    * parentFrame.gridRowSizes[0].type // 'FIXED'
    * // Grid with one fixed row and one flexible rows
@@ -9514,8 +9517,13 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
   }[]
   /**
    * Resets all direct overrides on this instance.
+   * @deprecated Use `removeOverrides` instead.
    */
   resetOverrides(): void
+  /**
+   * Removes all direct overrides on this instance.
+   */
+  removeOverrides(): void
 }
 interface BooleanOperationNode
   extends DefaultShapeMixin,
