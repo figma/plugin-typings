@@ -5531,6 +5531,8 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
   readonly attachedConnectors: ConnectorNode[]
   /**
    * All component properties that are attached on this node. A node can only have `componentPropertyReferences` if it is a component sublayer or an instance sublayer. It will be `null` otherwise. The value in the key-value pair refers to the component property name as returned by `componentPropertyDefinitions` on the containing component, component set or main component (for instances).
+   *
+   * When setting, may throw the following errors:cannotApplySlotPropertyToNonFrameNode or cannotApplySlotPropertyToFrameWithGrid.
    */
   componentPropertyReferences:
     | {
@@ -6376,6 +6378,8 @@ interface AutoLayoutMixin {
    * As a consequence, note that if a frame has `layoutMode === "NONE"`, calling `layoutMode = "VERTICAL"; layoutMode = "NONE"` does not leave the document unchanged. Removing auto-layout from a frame does not restore the children to their original positions.
    *
    * This property must be set to `"HORIZONTAL"` or `"VERTICAL"` in order for the {@link AutoLayoutMixin.primaryAxisSizingMode}, {@link AutoLayoutMixin.counterAxisSizingMode}, {@link AutoLayoutMixin.layoutWrap}, {@link AutoLayoutMixin.primaryAxisAlignItems}, {@link AutoLayoutMixin.counterAxisAlignItems}, {@link AutoLayoutMixin.counterAxisAlignContent}, {@link AutoLayoutMixin.paddingTop}, {@link AutoLayoutMixin.paddingBottom}, {@link AutoLayoutMixin.paddingLeft}, {@link AutoLayoutMixin.paddingRight}, {@link AutoLayoutMixin.itemSpacing}, {@link AutoLayoutMixin.counterAxisSpacing}, {@link AutoLayoutMixin.itemReverseZIndex}, and {@link AutoLayoutMixin.strokesIncludedInLayout} properties to be applicable.
+   *
+   * Note: `GRID` is not supported for Slot frames, and setting `GRID` will throw a cannotApplyGridToSlot error.
    *
    * ```ts title="Auto-layout frame with horizontal layout"
    * const parentFrame = figma.createFrame()
@@ -8155,7 +8159,7 @@ interface ComponentPropertiesMixin {
    */
   readonly componentPropertyDefinitions: ComponentPropertyDefinitions
   /**
-   * Adds a new component property to this node and returns the property name with its unique identifier suffixed. This function supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'` or `'VARIANT'`.
+   * Adds a new component property to this node and returns the property name with its unique identifier suffixed. This function supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'`, `'VARIANT'`, or `'SLOT'`.
    */
   addComponentProperty(
     propertyName: string,
@@ -8169,8 +8173,9 @@ interface ComponentPropertiesMixin {
    * This function supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'`, or `'VARIANT'` with the following restrictions:
    *
    * - `name` is supported for all properties
-   * - `defaultValue` is supported for `'BOOLEAN'`, `'TEXT'`, and `'INSTANCE_SWAP'` properties, but not for `'VARIANT'` properties
-   * - `preferredValues` is only supported for `'INSTANCE_SWAP'` properties
+   * - `defaultValue` is supported for `'BOOLEAN'`, `'TEXT'`, and `'INSTANCE_SWAP'` properties, but not for `'VARIANT'` or `'SLOT'` properties
+   * - `preferredValues` is only supported for `'INSTANCE_SWAP'` and `'SLOT'` properties
+   * - `description` is only supported for `'SLOT'` properties
    */
   editComponentProperty(
     propertyName: string,
@@ -8178,10 +8183,11 @@ interface ComponentPropertiesMixin {
       name?: string
       defaultValue?: string | boolean | VariableAlias
       preferredValues?: InstanceSwapPreferredValue[]
+      description?: string
     },
   ): string
   /**
-   * Deletes an existing component property on this node. This function only supports properties with type `'BOOLEAN'`, `'TEXT'`, or `'INSTANCE_SWAP'`.
+   * Deletes an existing component property on this node. This function only supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'` or `'SLOT'`.
    */
   deleteComponentProperty(propertyName: string): void
 }
@@ -9388,6 +9394,7 @@ type InstanceSwapPreferredValue = {
  */
 type ComponentPropertyOptions = {
   preferredValues?: InstanceSwapPreferredValue[]
+  description?: string
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComponentPropertyDefinitions
@@ -9398,6 +9405,7 @@ type ComponentPropertyDefinitions = {
     defaultValue: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
     variantOptions?: string[]
+    description?: string
     readonly boundVariables?: {
       [field in VariableBindableComponentPropertyField]?: VariableAlias
     }
@@ -9445,6 +9453,10 @@ interface ComponentNode
    * Creates an instance of this component. By default, the instance will be parented under `figma.currentPage`.
    */
   createInstance(): InstanceNode
+  /**
+   * Creates a new slot node within this component.
+   */
+  createSlot(): SlotNode
   /**
    * Returns an array of all of the instances of this component in the document.
    */
@@ -9497,7 +9509,7 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
    */
   swapComponent(componentNode: ComponentNode): void
   /**
-   * Sets the component properties and values for this instance. `propertyName` corresponds to the names returned by `componentPropertyDefinitions` and should be suffixed with `'#'` and a unique ID for `'TEXT'`, `'BOOLEAN'`, and `'INSTANCE_SWAP'` properties. In the case of name collision, this function prioritizes updating the `'VARIANT'` type properties. Existing properties that are non-specified in the function will maintain their current value.
+   * Sets the component properties and values for this instance. `propertyName` corresponds to the names returned by `componentPropertyDefinitions` and should be suffixed with `'#'` and a unique ID for `'TEXT'`, `'BOOLEAN'`, and `'INSTANCE_SWAP'` properties. Does not support `'SLOT'` properties and will throw `cannotSetSlotProperty`. In the case of name collision, this function prioritizes updating the `'VARIANT'` type properties. Existing properties that are non-specified in the function will maintain their current value.
    */
   setProperties(properties: { [propertyName: string]: string | boolean | VariableAlias }): void
   /**
@@ -9541,6 +9553,14 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
    * Removes all direct overrides on this instance.
    */
   removeOverrides(): void
+}
+interface SlotNode extends DefaultFrameMixin {
+  readonly type: 'SLOT'
+  /**
+   * Resets a given slot node to the original component slot content.
+   */
+  resetSlot(): void
+  readonly isAssignedSlot: boolean
 }
 interface BooleanOperationNode
   extends DefaultShapeMixin,
@@ -10999,4 +11019,4 @@ interface FindAllCriteria<T extends NodeType[]> {
 }
 
 // prettier-ignore
-export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, FontStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, GlassEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
+export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, FontStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, GlassEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, GeometryMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, SlotNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria }
