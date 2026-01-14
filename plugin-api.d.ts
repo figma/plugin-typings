@@ -10240,6 +10240,13 @@ interface ExtendedVariableCollection extends Omit<VariableCollection, 'addMode'>
    */
   readonly parentVariableCollectionId: string
   /**
+   * The ID of the root variable collection in the extension chain.
+   * This is the collection ID at the top of the parent chain.
+   * For example, if Collection C extends B which extends A (root),
+   * then `rootVariableCollectionId` is A's ID.
+   */
+  readonly rootVariableCollectionId: string
+  /**
    * The list of variables contained in this extended variable collection including variables that are inherited from its parent collection.
    */
   readonly variableIds: string[]
