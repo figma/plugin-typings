@@ -1307,6 +1307,30 @@ interface PluginAPI {
    */
   createTable(numRows?: number, numColumns?: number): TableNode
   /**
+   * Creates a new text on a path node from an existing vector node.
+   *
+   * @remarks
+   * Once you create a TextPathNode, you can then modify properties such as `characters`, `fontSize`, `fill`, etc just like a regular TextNode.
+   *
+   * Example:
+   * ```ts
+   * const circle = figma.createEllipse()
+   * circle.resize(200, 200)
+   * await figma.loadFontAsync({ family: "Inter", style: "Regular" })
+   * const textPath = figma.createTextPath(circle, 2, 0.5)
+   * textPath.characters = "This is text on a path!"
+   * ```
+   * The base vector network cannot currently be modified after creating the TextPathNode.
+   *
+   * Note: Creating a `TextPathNode` modifies the `type` of the underlying node. Make sure that you use the node object returned from this function rather than the original node object.
+   *
+   *
+   * @param node - The vector-like node to convert to a text on a path node. These can be VectorNodes, shape nodes (Rectangle, Ellipse, Polygon, Star), or Line nodes.
+   * @param startSegment - The index of the segment in the vector network to start the text path from.
+   * @param startPosition - A number between 0 and 1 representing the position along the start segment to start the text path from.
+   */
+  createTextPath(node: VectorNode, startSegment: number, startPosition: number): TextPathNode
+  /**
    * This API creates a new node using the JSX API used by widgets.
    *
    * @remarks
@@ -1718,6 +1742,20 @@ interface PluginAPI {
    */
   group(nodes: ReadonlyArray<BaseNode>, parent: BaseNode & ChildrenMixin, index?: number): GroupNode
   /**
+   * Creates a new {@link TransformGroupNode} containing all the nodes in `nodes`, applying the transformations specified in `modifiers` to each child node.
+   *
+   * @param nodes - The list of nodes in the new group. This list must be non-empty as Figma does not support empty groups. This list cannot include any node that cannot be reparented, such as children of instances.
+   * @param parent - The node under which the new group will be created. This is similar to `parent.appendChild(group)`, but must be specified at the time that the group is created rather than later.
+   * @param index - An index argument that specifies where inside `parent` the new group will be created.
+   * @param modifiers - The list of transform modifiers to apply to each corresponding node in `nodes`.
+   */
+  transformGroup(
+    nodes: ReadonlyArray<SceneNode>,
+    parent: BaseNode & ChildrenMixin,
+    index: number,
+    modifiers: TransformModifier[],
+  ): TransformGroupNode
+  /**
    * Flattens every node in nodes into a new vector network.
    *
    * @param nodes - The list of nodes in the new group. This list must be non-empty and cannot include any node that cannot be reparented, such as children of instances. Make a copy of those nodes first if necessary.
@@ -1946,6 +1984,19 @@ interface PluginAPI {
    * Calling this function without rowIndex and columnIndex will move the node to the end of the grid
    */
   moveNodesToCoord(nodeIds: string[], rowIndex?: number, columnIndex?: number): void
+  /**
+   * Makes all built-in brushes of the specified type available for use in the plugin. This function must be called before
+   * setting the stroke of a node to a brush of the specified type.
+   *
+   * There are two types of brushes: 'STRETCH' brushes, which stretch along the length of the stroke, and 'SCATTER' brushes, which scatter instances of the brush shape along the stroke.
+   *
+   * @param brushType - The type of brush to load. Can be either 'STRETCH' or 'SCATTER'.
+   *
+   * @remarks
+   *
+   * This function only needs to be called once per plugin run for each brush type that will be used. Once loaded, brushes of the specified type can be used freely.
+   */
+  loadBrushesAsync(brushType: 'STRETCH' | 'SCATTER'): Promise<void>
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/properties/figma-saveversionhistoryasync
@@ -4940,6 +4991,21 @@ interface StyledTextSegment {
    */
   textStyleOverrides: TextStyleOverrideType[]
 }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/TextPathStartData
+ *
+ * Interface representing the starting point of a text path.
+ */
+interface TextPathStartData {
+  /**
+   * The segment index where the text path starts.
+   */
+  segment: number
+  /**
+   * The position (0 to 1) along the segment where the text path starts.
+   */
+  position: number
+}
 type Reaction = {
   /**
    * @deprecated Use the `actions` field instead of the `action` field.
@@ -7174,6 +7240,10 @@ type DetachedInfo =
 interface MinimalStrokesMixin {
   /**
    * The paints used to fill the area of the shape's strokes. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
+   *
+   * @remarks
+   *
+   * In order to set pattern strokes, you must use the {@link MinimalStrokesMixin.setStrokesAsync} method to ensure that the source node of the pattern is loaded first.
    */
   strokes: ReadonlyArray<Paint>
   /**
@@ -7228,6 +7298,10 @@ interface MinimalStrokesMixin {
    * StrokeGeometry is always from the center regardless of the nodes `strokeAlign`.
    */
   readonly strokeGeometry: VectorPaths
+  /**
+   * Sets the strokes of the node asynchronously. This is the only way to set pattern strokes on a node, since we need to ensure that the source node of the pattern is loaded first. See [Adding Pattern Fills and Strokes](https://developers.figma.com/docs/plugins/adding-pattern-fills-and-strokes) for more information.
+   */
+  setStrokesAsync(strokes: ReadonlyArray<Paint>): Promise<void>
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -7256,6 +7330,8 @@ interface MinimalFillsMixin {
    * Use {@link UtilAPI.solidPaint} to create solid paint fills with CSS color strings.
    *
    * Page nodes have a [`backgrounds`](https://developers.figma.com/docs/plugins/api/PageNode#backgrounds) property instead of a `fills` property.
+   *
+   * In order to set pattern fills, you must use the {@link MinimalFillsMixin.setFillsAsync} method to ensure that the source node of the pattern is loaded first.
    */
   fills: ReadonlyArray<Paint> | PluginAPI['mixed']
   /**
@@ -7272,6 +7348,130 @@ interface MinimalFillsMixin {
    * Sets the {@link PaintStyle} that the {@link MinimalFillsMixin.fills} property of this node is linked to.
    */
   setFillStyleIdAsync(styleId: string): Promise<void>
+  /**
+   * Sets the fills of the node asynchronously. This is the only way to set pattern fills on a node, since we need to ensure that the source node of the pattern is loaded first. See [Adding Pattern Fills and Strokes](https://developers.figma.com/docs/plugins/adding-pattern-fills-and-strokes) for more information.
+   */
+  setFillsAsync(paints: ReadonlyArray<Paint>): Promise<void>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
+ */
+interface VariableWidthPoint {
+  /** The position of the variable width point along the stroke, from 0 (the start of the stroke) to 1 (the end of the stroke). */
+  position: number
+  /** The width of the stroke at this variable width point as a fraction of the stroke weight. */
+  width: number
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
+ */
+interface PresetVariableWidthStrokeProperties {
+  /** The width profile of the stroke. */
+  widthProfile: 'UNIFORM' | 'WEDGE' | 'TAPER' | 'QUARTER_TAPER' | 'EYE' | 'MIRRORED_TAPER'
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
+ */
+interface CustomVariableWidthStrokeProperties {
+  /** The width profile of the stroke. Fixed to 'CUSTOM'. */
+  widthProfile: 'CUSTOM'
+  /** An array of variable width points defining the custom width profile. */
+  variableWidthPoints: ReadonlyArray<VariableWidthPoint>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
+ */
+declare type VariableWidthStrokeProperties =
+  | PresetVariableWidthStrokeProperties
+  | CustomVariableWidthStrokeProperties
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
+ */
+declare type ComplexStrokeProperties =
+  | {
+      type: 'BASIC'
+    }
+  | DynamicStrokeProperties
+  | BrushStrokeProperties
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
+ */
+interface ScatterBrushProperties {
+  type: 'BRUSH'
+  brushType: 'SCATTER'
+  /**
+   * Name of the scatter brush. See the [available brushes](https://developers.figma.com/api/complex-stroke-properties.md#available-brushes) for previews of these brushes.
+   * Nodes using custom brushes will have this set to 'CUSTOM'. However, setting this property to 'CUSTOM' is not yet supported.
+   */
+  brushName:
+    | 'BUBBLEGUM'
+    | 'WITCH_HOUSE'
+    | 'SHOEGAZE'
+    | 'HONKY_TONK'
+    | 'SCREAMO'
+    | 'DRONE'
+    | 'DOO_WOP'
+    | 'SPOKEN_WORD'
+    | 'VAPORWAVE'
+    | 'OI'
+    | 'CUSTOM'
+  /** Gap between brush instances along the stroke path. Minimum value is 0.25 */
+  gap: number
+  /** The amount of random movement applied to brush instances along the stroke path. The minimum value is 0. */
+  wiggle: number
+  /** The amount of random size variation applied to brush instances. Ranges from 0 to 3.*/
+  sizeJitter: number
+  /** The amount of random angular variation in degrees applied to brush instances. Ranges from -180 to 180. */
+  angularJitter: number
+  /** The rotation in degrees applied to brush instances. Ranges from -180 to 180. */
+  rotation: number
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
+ */
+interface StretchBrushProperties {
+  type: 'BRUSH'
+  brushType: 'STRETCH'
+  /**
+   * Name of the stretch brush. See the [available brushes](https://developers.figma.com/api/complex-stroke-properties.md#available-brushes) for previews of these brushes.
+   * Nodes using custom brushes will have this set to 'CUSTOM'. However, setting this property to 'CUSTOM' is not yet supported.
+   * */
+  brushName:
+    | 'HEIST'
+    | 'BLOCKBUSTER'
+    | 'GRINDHOUSE'
+    | 'BIOPIC'
+    | 'SPAGHETTI_WESTERN'
+    | 'SLASHER'
+    | 'HARDBOILED'
+    | 'VERITE'
+    | 'EPIC'
+    | 'SCREWBALL'
+    | 'ROM_COM'
+    | 'NOIR'
+    | 'PROPAGANDA'
+    | 'MELODRAMA'
+    | 'NEW_WAVE'
+    | 'CUSTOM'
+  /** The direction of the brush */
+  direction: 'FORWARD' | 'BACKWARD'
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
+ */
+type BrushStrokeProperties = StretchBrushProperties | ScatterBrushProperties
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
+ */
+interface DynamicStrokeProperties {
+  /** The type of complex stroke. Fixed to 'DYNAMIC'. */
+  type: 'DYNAMIC'
+  /** The frequency of the dynamic stroke. Ranges from 0.01 to 20.*/
+  frequency: number
+  /** The amplitude of the wiggles in the dynamic stroke. Minimum value is 0.*/
+  wiggle: number
+  /** The amount of smoothing applied to the dynamic stroke. Ranges from 0 to 1.*/
+  smoothen: number
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -7299,6 +7499,31 @@ interface GeometryMixin extends MinimalStrokesMixin, MinimalFillsMixin {
    * An array of paths representing the object fills relative to the node.
    */
   readonly fillGeometry: VectorPaths
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
+ */
+interface ComplexStrokesMixin {
+  /**
+   * The variable width stroke properties for the node.
+   *
+   * @remarks
+   * Variable width strokes cannot be applied to complex vector networks (i.e. vector networks with branching paths).
+   *
+   * Variable width strokes are also not supported in combination with dynamic strokes.
+   */
+  variableWidthStrokeProperties: VariableWidthStrokeProperties | null
+  /**
+   * The complex stroke properties for nodes using brush or dynamic strokes.
+   *
+   * @remarks
+   * We do not yet support setting custom brushes via the plugin API, but the API will return the brush properties for nodes that use custom brushes.
+   *
+   * Setting a dynamic stroke on a stroke with variable width points will remove the variable width points.
+   *
+   * When setting a brush on a stroke, you must first ensure that the desired brushes are loaded with {@link PluginAPI.loadBrushesAsync}.
+   */
+  complexStrokeProperties: ComplexStrokeProperties
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -7712,6 +7937,7 @@ interface BaseFrameMixin
     ContainerMixin,
     DeprecatedBackgroundMixin,
     GeometryMixin,
+    ComplexStrokesMixin,
     CornerMixin,
     RectangleCornerMixin,
     BlendMixin,
@@ -9128,6 +9354,10 @@ interface TransformGroupNode
    * Duplicates the transform group node. By default, the duplicate will be parented under `figma.currentPage`. Nested components will be cloned as instances who master is the original component.
    */
   clone(): TransformGroupNode
+  /**
+   * An array of transform modifiers applied to the child nodes within the group.
+   */
+  transformModifiers: TransformModifier[]
 }
 interface SliceNode extends BaseNodeMixin, SceneNodeMixin, LayoutMixin, ExportMixin {
   /**
@@ -9143,6 +9373,7 @@ interface RectangleNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
+    ComplexStrokesMixin,
     RectangleCornerMixin,
     IndividualStrokesMixin,
     AnnotationsMixin,
@@ -9156,7 +9387,11 @@ interface RectangleNode
    */
   clone(): RectangleNode
 }
-interface LineNode extends DefaultShapeMixin, ConstraintMixin, AnnotationsMixin {
+interface LineNode
+  extends DefaultShapeMixin,
+    ConstraintMixin,
+    AnnotationsMixin,
+    ComplexStrokesMixin {
   /**
    * The type of this node, represented by the string literal "LINE"
    */
@@ -9170,6 +9405,7 @@ interface EllipseNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
+    ComplexStrokesMixin,
     AnnotationsMixin,
     AspectRatioLockMixin {
   /**
@@ -9189,6 +9425,7 @@ interface PolygonNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
+    ComplexStrokesMixin,
     AnnotationsMixin,
     AspectRatioLockMixin {
   /**
@@ -9208,6 +9445,7 @@ interface StarNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
+    ComplexStrokesMixin,
     AnnotationsMixin,
     AspectRatioLockMixin {
   /**
@@ -9233,6 +9471,7 @@ interface VectorNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
+    ComplexStrokesMixin,
     VectorLikeMixin,
     AnnotationsMixin,
     AspectRatioLockMixin {
@@ -9249,6 +9488,7 @@ interface TextNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     NonResizableTextMixin,
+    ComplexStrokesMixin,
     AnnotationsMixin,
     AspectRatioLockMixin {
   /**
@@ -9319,6 +9559,7 @@ interface TextPathNode
   extends DefaultShapeMixin,
     ConstraintMixin,
     NonResizableTextPathMixin,
+    ComplexStrokesMixin,
     AnnotationsMixin,
     AspectRatioLockMixin {
   /**
@@ -9367,6 +9608,10 @@ interface TextPathNode
    * Whether the vector handles are mirrored or independent.
    */
   readonly handleMirroring: HandleMirroring | PluginAPI['mixed']
+  /**
+   * A data structure defining where the text starts along the path.
+   */
+  textPathStartData: TextPathStartData
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComponentPropertyType
@@ -9542,6 +9787,7 @@ interface BooleanOperationNode
   extends DefaultShapeMixin,
     ChildrenMixin,
     CornerMixin,
+    ComplexStrokesMixin,
     ContainerMixin,
     AspectRatioLockMixin {
   /**
@@ -10999,4 +11245,40 @@ interface FindAllCriteria<T extends NodeType[]> {
     namespace: string
     keys?: string[]
   }
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/TransformModifier
+ */
+interface TransformModifier {}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/TransformModifier
+ * Base interface for repeat transform modifiers.
+ */
+interface RepeatModifier extends TransformModifier {
+  /** Type of transform modifier. Currently, only 'REPEAT' is supported. */
+  type: 'REPEAT'
+  /** Number of times to repeat the children. */
+  count: number
+  /** Unit for the offset between each repetition. `RELATIVE` refers to the size of the child node, while `PIXELS` refers to an absolute pixel value. */
+  unitType: 'RELATIVE' | 'PIXELS'
+  /** Offset between each repetition. For `LINEAR` repeats, this is the distance between each repetition along the specified axis. For `RADIAL` repeats, this is the distance from the center of the group to the repeated nodes. */
+  offset: number
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/TransformModifier
+ * Interface for linear repeat transform modifiers.
+ */
+interface LinearRepeatModifier extends RepeatModifier {
+  /** Type of repeat modifier. */
+  repeatType: 'LINEAR'
+  /** Axis along which to repeat the children. */
+  axis: 'HORIZONTAL' | 'VERTICAL'
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/TransformModifier
+ * Interface for radial repeat transform modifiers.
+ */
+interface RadialRepeatModifier extends RepeatModifier {
+  /** Type of repeat modifier. */
+  repeatType: 'RADIAL'
 }
