@@ -439,7 +439,6 @@ interface PluginAPI {
   readonly teamLibrary: TeamLibraryAPI
   /**
    * This property contains methods to work with annotations.
-   *
    */
   readonly annotations: AnnotationsAPI
   /**
@@ -447,7 +446,6 @@ interface PluginAPI {
    * This API is only available in Buzz.
    *
    * This property contains methods to work in Buzz.
-   *
    */
   readonly buzz: BuzzAPI
   /**
@@ -807,29 +805,43 @@ interface PluginAPI {
    * Triggered when the total time on the timer changes. From the UI, it is only possible to add time to the timer. However, plugin code can both add and remove time from a running timer.
    */
   on(type: ArgFreeEventType, callback: () => void): void
+
   on(type: 'run', callback: (event: RunEvent) => void): void
+
   on(type: 'drop', callback: (event: DropEvent) => boolean): void
+
   on(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+
   on(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
+
   on(type: 'canvasviewchange', callback: (event: CanvasViewChangeEvent) => void): void
+
   on(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+
   on(type: 'stylechange', callback: (event: StyleChangeEvent) => void): void
   /**
    * Same as `figma.on`, but the callback will only be called once, the first time the specified event happens.
    */
   once(type: ArgFreeEventType, callback: () => void): void
+
   once(type: 'run', callback: (event: RunEvent) => void): void
+
   once(type: 'drop', callback: (event: DropEvent) => boolean): void
+
   once(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+
   once(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
+
   once(type: 'canvasviewchange', callback: (event: CanvasViewChangeEvent) => void): void
+
   once(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+
   once(type: 'stylechange', callback: (event: StyleChangeEvent) => void): void
   /**
    * Removes a callback added with `figma.on` or `figma.once`.
@@ -852,15 +864,22 @@ interface PluginAPI {
    * ```
    */
   off(type: ArgFreeEventType, callback: () => void): void
+
   off(type: 'run', callback: (event: RunEvent) => void): void
+
   off(type: 'drop', callback: (event: DropEvent) => boolean): void
+
   off(type: 'documentchange', callback: (event: DocumentChangeEvent) => void): void
+
   off(type: 'slidesviewchange', callback: (event: SlidesViewChangeEvent) => void): void
+
   off(type: 'canvasviewchange', callback: (event: CanvasViewChangeEvent) => void): void
+
   off(
     type: 'textreview',
     callback: (event: TextReviewEvent) => Promise<TextReviewRange[]> | TextReviewRange[],
   ): void
+
   off(type: 'stylechange', callback: (event: StyleChangeEvent) => void): void
   /**
    * This a constant value that some node properties return when they are a mix of multiple values. An example might be font size: a single text node can use multiple different font sizes for different character ranges. For those properties, you should always compare against `figma.mixed`.
@@ -1927,7 +1946,6 @@ interface PluginAPI {
    * ```ts
    * const grid = figma.getCanvasGrid()
    * ```
-   *
    */
   getCanvasGrid(): Array<Array<SceneNode>>
   /**
@@ -1964,7 +1982,6 @@ interface PluginAPI {
    * @remarks
    *
    * If no row index is provided, the row will be added at the end of the grid.
-   *
    */
   createCanvasRow(rowIndex?: number): SceneNode
   /**
@@ -2810,7 +2827,6 @@ interface ConstantsAPI {
    * ```
    *
    * @remarks
-   *
    */
   colors: ColorPalettes
 }
@@ -2910,6 +2926,7 @@ interface CodegenAPI {
     type: 'generate',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+
   on(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
   /**
    *  Same as {@link CodegenAPI.on | `figma.codegen.on`}, but the callback only gets called the first time.
@@ -2918,6 +2935,7 @@ interface CodegenAPI {
     type: 'generate',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+
   once(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
   /**
    * Removes a callback added by {@link CodegenAPI.on | `figma.codegen.on`} or {@link CodegenAPI.once | `figma.codegen.once`}.
@@ -2926,6 +2944,7 @@ interface CodegenAPI {
     type: 'generate',
     callback: (event: CodegenEvent) => Promise<CodegenResult[]> | CodegenResult[],
   ): void
+
   off(type: 'preferenceschange', callback: (event: CodegenPreferencesEvent) => Promise<void>): void
   /**
    * Read the current preferences as specified by the user.
@@ -3304,6 +3323,7 @@ interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
   command: string
   parameters: ParametersType
 }
+
 interface OpenDevResourcesEvent {
   command: 'open-dev-resource'
   parameters?: undefined
@@ -3312,7 +3332,9 @@ interface OpenDevResourcesEvent {
     name: string
   }
 }
+
 type RunEvent = RunParametersEvent | OpenDevResourcesEvent
+
 interface SlidesViewChangeEvent {
   view: 'GRID' | 'SINGLE_SLIDE'
 }
@@ -3330,6 +3352,7 @@ interface CanvasViewChangeEvent {
    */
   view: 'SINGLE_ASSET' | 'GRID'
 }
+
 interface DropEvent {
   node: BaseNode | SceneNode
   x: number
@@ -3340,22 +3363,26 @@ interface DropEvent {
   files: DropFile[]
   dropMetadata?: any
 }
+
 interface DropItem {
   type: string
   data: string
 }
+
 interface DropFile {
   name: string
   type: string
   getBytesAsync(): Promise<Uint8Array>
   getTextAsync(): Promise<string>
 }
+
 interface DocumentChangeEvent {
   /**
    * An array of {@link DocumentChange} that has happened since the last time the event was fired.
    */
   documentChanges: DocumentChange[]
 }
+
 interface StyleChangeEvent {
   /**
    * An array of {@link StyleChange} that has happened since the last time the event was fired.
@@ -3617,6 +3644,7 @@ type NodeChangeProperty =
   | 'authorName'
   | 'code'
   | 'textBackground'
+
 interface NodeChangeEvent {
   nodeChanges: NodeChange[]
 }
@@ -3648,9 +3676,11 @@ type StyleChangeProperty =
   | 'paint'
   | 'effects'
   | 'layoutGrids'
+
 type TextReviewEvent = {
   text: string
 }
+
 type TextReviewRange = {
   start: number
   end: number
@@ -5272,6 +5302,12 @@ type ConnectorStrokeCap =
   | 'TRIANGLE_FILLED'
   | 'DIAMOND_FILLED'
   | 'CIRCLE_FILLED'
+  | 'ERD_ZERO_OR_ONE'
+  | 'ERD_EXACTLY_ONE'
+  | 'ERD_ZERO_OR_MORE'
+  | 'ERD_ONE_OR_MORE'
+  | 'ERD_ONE'
+  | 'ERD_MANY'
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
@@ -5505,7 +5541,6 @@ interface DevResourcesMixin {
    *
    * @param url - The url of the dev resource.
    * @param name - The name of the dev resource. If not provided, Figma will get the name from the url.
-   *
    */
   addDevResourceAsync(url: string, name?: string): Promise<void>
   /**
@@ -5514,7 +5549,6 @@ interface DevResourcesMixin {
    *
    * @param currentUrl - The current url of the dev resource.
    * @param newValue - The new name and/or url of the dev resource.
-   *
    */
   editDevResourceAsync(
     currentUrl: string,
@@ -5593,6 +5627,8 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
   readonly attachedConnectors: ConnectorNode[]
   /**
    * All component properties that are attached on this node. A node can only have `componentPropertyReferences` if it is a component sublayer or an instance sublayer. It will be `null` otherwise. The value in the key-value pair refers to the component property name as returned by `componentPropertyDefinitions` on the containing component, component set or main component (for instances).
+   *
+   * When setting, may throw the following errors: cannotApplySlotPropertyToNonFrameNode, cannotApplySlotPropertyToFrameWithGrid, or cannotApplySlotPropertyToFrame.
    */
   componentPropertyReferences:
     | {
@@ -6438,6 +6474,8 @@ interface AutoLayoutMixin {
    * As a consequence, note that if a frame has `layoutMode === "NONE"`, calling `layoutMode = "VERTICAL"; layoutMode = "NONE"` does not leave the document unchanged. Removing auto-layout from a frame does not restore the children to their original positions.
    *
    * This property must be set to `"HORIZONTAL"` or `"VERTICAL"` in order for the {@link AutoLayoutMixin.primaryAxisSizingMode}, {@link AutoLayoutMixin.counterAxisSizingMode}, {@link AutoLayoutMixin.layoutWrap}, {@link AutoLayoutMixin.primaryAxisAlignItems}, {@link AutoLayoutMixin.counterAxisAlignItems}, {@link AutoLayoutMixin.counterAxisAlignContent}, {@link AutoLayoutMixin.paddingTop}, {@link AutoLayoutMixin.paddingBottom}, {@link AutoLayoutMixin.paddingLeft}, {@link AutoLayoutMixin.paddingRight}, {@link AutoLayoutMixin.itemSpacing}, {@link AutoLayoutMixin.counterAxisSpacing}, {@link AutoLayoutMixin.itemReverseZIndex}, and {@link AutoLayoutMixin.strokesIncludedInLayout} properties to be applicable.
+   *
+   * Note: `GRID` is not supported for Slot frames, and setting `GRID` will throw a cannotApplyGridToSlot error.
    *
    * ```ts title="Auto-layout frame with horizontal layout"
    * const parentFrame = figma.createFrame()
@@ -8054,7 +8092,6 @@ interface AnnotationsMixin {
    * Annotations on the node.
    *
    * Learn more about annotations in the [Help Center](https://help.figma.com/hc/en-us/articles/20774752502935) or see the [Annotation type](https://developers.figma.com/docs/plugins/api/Annotation) for usage examples.
-   *
    */
   annotations: ReadonlyArray<Annotation>
 }
@@ -8377,7 +8414,7 @@ interface ComponentPropertiesMixin {
    */
   readonly componentPropertyDefinitions: ComponentPropertyDefinitions
   /**
-   * Adds a new component property to this node and returns the property name with its unique identifier suffixed. This function supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'` or `'VARIANT'`.
+   * Adds a new component property to this node and returns the property name with its unique identifier suffixed. This function supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'`, `'VARIANT'`, or `'SLOT'`.
    */
   addComponentProperty(
     propertyName: string,
@@ -8388,11 +8425,12 @@ interface ComponentPropertiesMixin {
   /**
    * Modifies the name, default value, or preferred values of an existing component property on this node and returns the property name with its unique identifier suffixed.
    *
-   * This function supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'`, or `'VARIANT'` with the following restrictions:
+   * This function supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'`, `'VARIANT'`, or `'SLOT'` with the following restrictions:
    *
    * - `name` is supported for all properties
-   * - `defaultValue` is supported for `'BOOLEAN'`, `'TEXT'`, and `'INSTANCE_SWAP'` properties, but not for `'VARIANT'` properties
-   * - `preferredValues` is only supported for `'INSTANCE_SWAP'` properties
+   * - `defaultValue` is supported for `'BOOLEAN'`, `'TEXT'`, and `'INSTANCE_SWAP'` properties, but not for `'VARIANT'` or `'SLOT'` properties
+   * - `preferredValues` is only supported for `'INSTANCE_SWAP'` and `'SLOT'` properties
+   * - `description` is only supported for `'SLOT'` properties
    */
   editComponentProperty(
     propertyName: string,
@@ -8400,10 +8438,11 @@ interface ComponentPropertiesMixin {
       name?: string
       defaultValue?: string | boolean | VariableAlias
       preferredValues?: InstanceSwapPreferredValue[]
+      description?: string
     },
   ): string
   /**
-   * Deletes an existing component property on this node. This function only supports properties with type `'BOOLEAN'`, `'TEXT'`, or `'INSTANCE_SWAP'`.
+   * Deletes an existing component property on this node. This function only supports properties with type `'BOOLEAN'`, `'TEXT'`, `'INSTANCE_SWAP'` or `'SLOT'`.
    */
   deleteComponentProperty(propertyName: string): void
 }
@@ -9288,13 +9327,17 @@ interface PageNode
   focusedSlide?: SlideNode | null
   /**
    *
-   * Note: This API is only available in Figma Slides and Figma Buzz
+   * Note: This API is only available in Figma Slides, Figma Buzz, and Dev Mode.
    *
-   * When in Asset View, the Slide/Asset that is currently focused is accessible via this property.
+   * For Figma Slides and Figma Buzz:
+   * When in Asset View, this is the focused slide or asset.
+   *
+   * For Dev Mode:
+   * This is the node currently focused in Dev Mode focus view. This property is read-only in Dev Mode.
    *
    * @remarks
    *
-   * You can also set this via:
+   * In Figma Slides and Figma Buzz, you can also set this via:
    *
    * ```ts
    * figma.currentPage.focusedNode = node
@@ -9616,7 +9659,7 @@ interface TextPathNode
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComponentPropertyType
  */
-type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT'
+type ComponentPropertyType = 'BOOLEAN' | 'TEXT' | 'INSTANCE_SWAP' | 'VARIANT' | 'SLOT'
 /**
  * @see https://developers.figma.com/docs/plugins/api/InstanceSwapPreferredValue
  */
@@ -9629,6 +9672,7 @@ type InstanceSwapPreferredValue = {
  */
 type ComponentPropertyOptions = {
   preferredValues?: InstanceSwapPreferredValue[]
+  description?: string
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComponentPropertyDefinitions
@@ -9639,6 +9683,7 @@ type ComponentPropertyDefinitions = {
     defaultValue: string | boolean
     preferredValues?: InstanceSwapPreferredValue[]
     variantOptions?: string[]
+    description?: string
     readonly boundVariables?: {
       [field in VariableBindableComponentPropertyField]?: VariableAlias
     }
@@ -9686,6 +9731,10 @@ interface ComponentNode
    * Creates an instance of this component. By default, the instance will be parented under `figma.currentPage`.
    */
   createInstance(): InstanceNode
+  /**
+   * Creates a new slot node within this component.
+   */
+  createSlot(): SlotNode
   /**
    * Returns an array of all of the instances of this component in the document.
    */
@@ -9738,7 +9787,7 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
    */
   swapComponent(componentNode: ComponentNode): void
   /**
-   * Sets the component properties and values for this instance. `propertyName` corresponds to the names returned by `componentPropertyDefinitions` and should be suffixed with `'#'` and a unique ID for `'TEXT'`, `'BOOLEAN'`, and `'INSTANCE_SWAP'` properties. In the case of name collision, this function prioritizes updating the `'VARIANT'` type properties. Existing properties that are non-specified in the function will maintain their current value.
+   * Sets the component properties and values for this instance. `propertyName` corresponds to the names returned by `componentPropertyDefinitions` and should be suffixed with `'#'` and a unique ID for `'TEXT'`, `'BOOLEAN'`, and `'INSTANCE_SWAP'` properties. Does not support `'SLOT'` properties and will throw `cannotSetSlotProperty`. In the case of name collision, this function prioritizes updating the `'VARIANT'` type properties. Existing properties that are non-specified in the function will maintain their current value.
    */
   setProperties(properties: { [propertyName: string]: string | boolean | VariableAlias }): void
   /**
@@ -9782,6 +9831,16 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
    * Removes all direct overrides on this instance.
    */
   removeOverrides(): void
+}
+interface SlotNode extends DefaultFrameMixin {
+  /**
+   * The type of this node, represented by the string literal "SLOT"
+   */
+  readonly type: 'SLOT'
+  /**
+   * Resets a given slot node to the original component slot content.
+   */
+  resetSlot(): void
 }
 interface BooleanOperationNode
   extends DefaultShapeMixin,
@@ -10941,6 +11000,7 @@ type SceneNode =
   | SlideNode
   | SlideRowNode
   | SlideGridNode
+  | SlotNode
   | InteractiveSlideElementNode
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-types
