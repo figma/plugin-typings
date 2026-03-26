@@ -147,7 +147,7 @@ function testParameters() {
 
 EOF
 
-npm install typescript
+npm install typescript@5
 npm install ../../
 npx tsc --noEmit
 
@@ -198,7 +198,7 @@ const gradient: GradientPaint = {
 type VectorAlias = Vector
 EOF
 
-npm install typescript
+npm install typescript@5
 npm install ../../
 npx tsc --noEmit
 
