@@ -3648,6 +3648,7 @@ type NodeChangeProperty =
   | 'authorName'
   | 'code'
   | 'textBackground'
+  | 'variant'
 
 interface NodeChangeEvent {
   nodeChanges: NodeChange[]
