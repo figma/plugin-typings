@@ -8854,15 +8854,15 @@ interface NonResizableTextMixin extends BaseNonResizableTextMixin {
   /**
    * The indentation of paragraphs (offset of the first line from the left). Setting this property requires the font the be loaded.
    */
-  paragraphIndent: number
+  paragraphIndent: number | PluginAPI['mixed']
   /**
    * The vertical distance between paragraphs. Setting this property requires the font to be loaded.
    */
-  paragraphSpacing: number
+  paragraphSpacing: number | PluginAPI['mixed']
   /**
    * The vertical distance between lines of a list.
    */
-  listSpacing: number
+  listSpacing: number | PluginAPI['mixed']
   /**
    * Whether punctuation, like quotation marks, hangs outside the text box.
    */
@@ -9868,6 +9868,12 @@ interface SlotNode extends DefaultFrameMixin {
    */
   readonly type: 'SLOT'
   /**
+   * Create a copy of this node. By default, the duplicate will be parented under `figma.currentPage`.
+   * The clone is returned as a plain `FrameNode` rather than a `SlotNode`, because slots are
+   * defined by a component property reference that only makes sense inside their parent component.
+   */
+  clone(): FrameNode
+  /**
    * Resets a given slot node to the original component slot content.
    */
   resetSlot(): void
@@ -10860,6 +10866,16 @@ interface SectionNode
    *
    */
   resizeWithoutConstraints(width: number, height: number): void
+  /**
+   * Resizes the section node. Sections do not propagate constraints to their
+   * children, so this behaves equivalently to {@link SectionNode.resizeWithoutConstraints}
+   * and is provided to match the resize ergonomics of other resizable nodes.
+   *
+   * @param width - New width of the node. Must be >= 0.01
+   * @param height - New height of the node. Must be >= 0.01
+   *
+   */
+  resize(width: number, height: number): void
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/SlideNode
