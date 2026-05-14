@@ -10845,7 +10845,10 @@ interface SectionNode
     MinimalFillsMixin,
     OpaqueNodeMixin,
     DevStatusMixin,
-    AspectRatioLockMixin {
+    AspectRatioLockMixin,
+    MinimalStrokesMixin,
+    CornerMixin,
+    RectangleCornerMixin {
   /**
    * The type of this node, represented by the string literal "SECTION"
    */
