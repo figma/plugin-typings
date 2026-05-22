@@ -1,4 +1,3 @@
-/* plugin-typings are auto-generated. Do not update them directly. See developer-docs/ for instructions. */
 /**
  * @see https://developers.figma.com/docs/plugins/api/properties/figma-on
  */
@@ -3670,6 +3669,8 @@ type NodeChangeProperty =
   | 'authorName'
   | 'code'
   | 'textBackground'
+  | 'gridAutoTracks'
+  | 'gridItemsPositioning'
 
 interface NodeChangeEvent {
   nodeChanges: NodeChange[]
@@ -4170,9 +4171,15 @@ interface NoiseEffectBase {
    */
   readonly blendMode: BlendMode
   /**
-   * The size of the noise effect.
+   * The size of the noise effect. Applies to both axes. When `noiseSizeVector` is set, this value
+   * is always equal to `noiseSizeVector.x`.
    */
   readonly noiseSize: number
+  /**
+   * The size of the noise effect along the x and y axes. When omitted, `noiseSize` applies to both
+   * axes. When provided, its `x` component must equal `noiseSize` or an error is thrown on write.
+   */
+  readonly noiseSizeVector?: Vector
   /**
    * The density of the noise effect.
    */
@@ -4237,9 +4244,16 @@ interface TextureEffect {
    */
   readonly visible: boolean
   /**
-   * The size of the texture effect.
+   * The size of the texture effect. Applies to both axes. When `noiseSizeVector` is set, this value
+   * is always equal to `noiseSizeVector.x`.
    */
   readonly noiseSize: number
+  /**
+   * The size of the texture effect along the x and y axes. When omitted, `noiseSize` applies to
+   * both axes. When provided, its `x` component must equal `noiseSize` or an error is thrown on
+   * write.
+   */
+  readonly noiseSizeVector?: Vector
   /**
    * The radius of the texture effect.
    */
@@ -5467,7 +5481,7 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
    */
   setRelaunchData(data: { [command: string]: string }): void
   /**
-   * Retreives the reluanch data stored on this node using {@link BaseNodeMixin.setRelaunchData}
+   * Retrieves the relaunch data stored on this node using {@link BaseNodeMixin.setRelaunchData}
    */
   getRelaunchData(): {
     [command: string]: string
@@ -6992,6 +7006,48 @@ interface GridTrackSize {
   type: 'FLEX' | 'FIXED' | 'HUG'
 }
 /**
+ * Options for {@link GridLayoutMixin.reorderRows} and {@link GridLayoutMixin.reorderColumns}.
+ * @see https://developers.figma.com/docs/plugins/api/GridTrackReorderOptions
+ */
+interface GridTrackReorderOptions {
+  /**
+   * The indices of the rows or columns (tracks) to move. Does not need to be sorted, contiguous, or deduplicated.
+   * All indices must be within bounds for the current number of rows or columns.
+   */
+  fromIndices: ReadonlyArray<number>
+  /**
+   * The index to insert the selected rows or columns (tracks) at. This is evaluated against the original
+   * row/column order (before the move).
+   *
+   * As an example, take a grid with 4 columns and 2 rows.
+   * fromIndices could be 0 to 3 (inclusive), and insertionIndex could be 0 to 4 (inclusive).
+   *
+   * ```
+   *   0         1         2         3         4 ← possible insertion indices
+   * ---- 0 --- --- 1 --- --- 2 --- --- 3 ----   ← track indices
+   * +-------------------+---------+---------+
+   * |                   |         |         |
+   * |                   |         |         |
+   * +---------+---------+---------+---------+
+   * |         |         |         |         |
+   * |         |         |         |         |
+   * +---------+---------+---------+---------+
+   * ```
+   */
+  insertionIndex: number
+}
+/**
+ * Describes a single row or column (track)'s movement for a call to {@link GridLayoutMixin.reorderRows}
+ *
+ * @see https://developers.figma.com/docs/plugins/api/GridTrackReorderEntry
+ */
+interface GridTrackReorderEntry {
+  /** The original index of the track before the reorder. */
+  from: number
+  /** The new index of the track after the reorder. */
+  to: number
+}
+/**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface GridLayoutMixin {
@@ -7003,6 +7059,9 @@ interface GridLayoutMixin {
    * If the setter for this value is called on a grid with a value less than 1, it will throw an error.
    * Users cannot remove rows from a grid if they are occupied by children, so if you try to reduce the count of rows in a grid and some of those rows have children, it will throw an error.
    * By default, when the row count is increased, the new rows will be added as {@link GridTrackSize} objects with type `"FLEX"`. If you want to change the type of the new rows, you can use the setters on GridTrackSize objects returned by {@link GridLayoutMixin.gridRowSizes} or {@link GridLayoutMixin.gridColumnSizes}.
+   *
+   * Caution: ⚠️ Setting `gridRowCount` will throw an error if {@link GridLayoutMixin.gridAutoTracks} is set to `"ROWS"`, since the row count is managed automatically.
+   * Add or remove children to change the number of rows instead, or set `gridAutoTracks` to `NONE` before setting `gridRowCount`.
    *
    * ```ts title="Grid layout with 2 rows and 3 columns"
    * const parentFrame = figma.createFrame()
@@ -7115,6 +7174,136 @@ interface GridLayoutMixin {
    * ```
    */
   appendChildAt(node: SceneNode, rowIndex: number, columnIndex: number): void
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`.
+   * Controls how the grid handles automatic row creation.
+   *
+   * @remarks
+   * - `"NONE"` (default): the row count is controlled by {@link GridLayoutMixin.gridRowCount},
+   *   but will never go below the number of rows necessary to hold all children in the grid.
+   * - `"ROWS"`: new rows are added automatically as children are appended, and removed when
+   *   a row becomes empty. Setting {@link GridLayoutMixin.gridRowCount} directly will throw
+   *   an error while this is set to `"ROWS"`.
+   *
+   * ```ts title="Grid with automatic rows"
+   * const grid = figma.createFrame()
+   * grid.layoutMode = 'GRID'
+   * grid.gridColumnCount = 3
+   * grid.gridAutoTracks = 'ROWS'
+   *
+   * // The grid starts with 1 row and 3 columns.
+   * // Appending more children than the grid can fit
+   * // automatically adds new rows.
+   * for (let i = 0; i < 7; i++) {
+   *   grid.appendChild(figma.createFrame())
+   * }
+   * // + --- + --- + --- +
+   * // |  1  |  2  |  3  |
+   * // + --- + --- + --- +
+   * // |  4  |  5  |  6  |
+   * // + --- + --- + --- +
+   * // |  7  |     |     |
+   * // + --- + --- + --- +
+   * grid.gridRowCount // 3 (auto-managed)
+   * ```
+   */
+  gridAutoTracks: 'NONE' | 'ROWS'
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`.
+   * Controls how children are positioned within the grid.
+   *
+   * @remarks
+   * - `"MANUAL"` (default): children stay at the grid cell they are placed in. Use
+   *   {@link GridChildrenMixin.setGridChildPosition} or {@link GridLayoutMixin.appendChildAt}
+   *   to position children explicitly.
+   * - `"ROW_AUTO_FLOW"`: children are placed by layer order into the next available cell in
+   *   row-major order (left to right, top to bottom), similar to CSS
+   *   [`grid-auto-flow: row`](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-flow).
+   *   Calling {@link GridChildrenMixin.setGridChildPosition} will throw an error in this mode —
+   *   reorder children using {@link ChildrenMixin.insertChild} instead.
+   *
+   * ```ts title="Grid with automatic item positioning"
+   * const grid = figma.createFrame()
+   * grid.layoutMode = 'GRID'
+   * grid.gridColumnCount = 2
+   * grid.gridAutoTracks = 'ROWS'
+   * grid.gridItemsPositioning = 'ROW_AUTO_FLOW'
+   *
+   * const a = figma.createFrame()
+   * const b = figma.createFrame()
+   * const c = figma.createFrame()
+   * grid.appendChild(a)
+   * grid.appendChild(b)
+   * grid.appendChild(c)
+   *
+   * // Children flow automatically:
+   * // + --- + --- +
+   * // |  a  |  b  |
+   * // + --- + --- +
+   * // |  c  |     |
+   * // + --- + --- +
+   * ```
+   */
+  gridItemsPositioning: 'MANUAL' | 'ROW_AUTO_FLOW'
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`.
+   * Moves one or more rows to a new position in the grid, shifting other rows as needed.
+   *
+   * @remarks
+   * If a child in one of the selected rows spans multiple rows, all of those spanned rows
+   * are automatically included in the move. The returned array describes both the input tracks and any
+   * tracks that were added implicitly due to spanning.
+   *
+   * All values in `fromIndices` must be in the range `[0, gridRowCount)` and `insertionIndex`
+   * must be in the range `[0, gridRowCount]`, otherwise an error will be thrown. If an error
+   * is thrown, the grid is left unchanged.
+   *
+   * ```ts title="Moving the first row to the end of the grid"
+   * const grid = figma.createFrame()
+   * grid.layoutMode = 'GRID'
+   * grid.gridRowCount = 3
+   * grid.gridColumnCount = 2
+   *
+   * // Populate the grid
+   * for (let i = 0; i < 6; i++) {
+   *   grid.appendChild(figma.createFrame())
+   * }
+   * // Before:
+   * // + --- + --- +
+   * // |  1  |  2  |  <- row 0
+   * // + --- + --- +
+   * // |  3  |  4  |  <- row 1
+   * // + --- + --- +
+   * // |  5  |  6  |  <- row 2
+   * // + --- + --- +
+   *
+   * const moves = grid.reorderRows({ fromIndices: [0], insertionIndex: 3 })
+   * // After:
+   * // + --- + --- +
+   * // |  3  |  4  |
+   * // + --- + --- +
+   * // |  5  |  6  |
+   * // + --- + --- +
+   * // |  1  |  2  |
+   * // + --- + --- +
+   * // moves => [{ from: 0, to: 2 }, { from: 1, to: 0 }, { from: 2, to: 1 }]
+   * ```
+   */
+  reorderRows(options: GridTrackReorderOptions): ReadonlyArray<GridTrackReorderEntry>
+  /**
+   * Applicable only on auto-layout frames with `layoutMode` set to `"GRID"`.
+   * Moves one or more columns to a new position in the grid, shifting other columns as needed.
+   *
+   * @remarks
+   * If a child in one of the selected columns spans multiple columns, all of those spanned columns
+   * are automatically included in the move.  The returned array describes both the input tracks and
+   * any tracks that were added implicitly due to spanning.
+   *
+   * All values in `fromIndices` must be in the range `[0, gridColumnCount)` and `insertionIndex`
+   * must be in the range `[0, gridColumnCount]`, otherwise an error will be thrown. If an error
+   * is thrown, the grid is left unchanged.
+   */
+  reorderColumns(options: GridTrackReorderOptions): ReadonlyArray<GridTrackReorderEntry>
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -7191,6 +7380,8 @@ interface GridChildrenMixin {
    * The row and column indices are 0-based, where 0 is the top row in the grid, and 0 is the left-most column in the grid.
    * If the specified row or column index is out of bounds, it will throw an error.
    * If the specified row or column index is occupied by another node, it will throw an error.
+   *
+   * Caution: ⚠️ This method will throw an error if the parent grid has {@link GridLayoutMixin.gridItemsPositioning} set to `"ROW_AUTO_FLOW"`, since child positions are managed automatically. Use {@link ChildrenMixin.insertChild} to change the order of children instead.
    * ```ts title="Setting the position of a node in a grid"
    * const grid = figma.createFrame()
    * grid.layoutMode = 'GRID'
@@ -9271,9 +9462,9 @@ interface PageNode
    */
   readonly prototypeStartNode: FrameNode | GroupNode | ComponentNode | InstanceNode | null
   /**
-   * Returns true if the node is a page divider, which is only possible when the page node is empty and has a page divider name. A page divider name consists of all asterisks, all en dashes, all em dashes, or all spaces.
+   * Returns true if the node is a page divider, which is only possible when the page node is empty and has a page divider name. A page divider name consists of all asterisks, all en dashes, all em dashes, or all spaces. To create a page divider, use {@link PluginAPI.createPageDivider} or rename an empty page to a page divider name.
    */
-  isPageDivider: boolean
+  readonly isPageDivider: boolean
   /**
    * Loads the contents of the page node.
    */
@@ -10841,7 +11032,10 @@ interface SectionNode
     MinimalFillsMixin,
     OpaqueNodeMixin,
     DevStatusMixin,
-    AspectRatioLockMixin {
+    AspectRatioLockMixin,
+    MinimalStrokesMixin,
+    CornerMixin,
+    RectangleCornerMixin {
   /**
    * The type of this node, represented by the string literal "SECTION"
    */
