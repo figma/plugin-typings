@@ -445,6 +445,7 @@ interface PluginAPI {
    * This API is only available in Buzz.
    *
    * This property contains methods to work in Buzz.
+   *
    */
   readonly buzz: BuzzAPI
   /**
@@ -1451,6 +1452,7 @@ interface PluginAPI {
    * ### Change file extension
    *
    * For plugins our default template puts your code in a `code.ts` file. You should rename this to `code.tsx` so that you can use jsx in your plugin.
+   *
    */
   createNodeFromJSXAsync(jsx: any): Promise<SceneNode>
   /**
@@ -1548,6 +1550,7 @@ interface PluginAPI {
    *
    * Note: `getSelectionColors()` returns `null` if there is no selection, or
    * if there are too many colors in the selection (>1000).
+   *
    */
   getSelectionColors(): null | {
     paints: Paint[]
@@ -1698,6 +1701,7 @@ interface PluginAPI {
    * The `data` passed in must be encoded as a .MP4, .MOV, or .WebM. Videos have a maximum size of 100MB. Invalid videos will throw an error.
    *
    * Video can only be added to files in a paid Education, Professional, and Organization team. Plugins running on files in free Starter teams can edit existing video in a file but not upload video to it.
+   *
    */
   createVideoAsync(data: Uint8Array): Promise<Video>
   /**
@@ -1723,6 +1727,7 @@ interface PluginAPI {
    * ```
    *
    * @param url
+   *
    */
   createLinkPreviewAsync(url: string): Promise<EmbedNode | LinkUnfurlNode>
   /**
@@ -1735,6 +1740,7 @@ interface PluginAPI {
    * This API is only available in FigJam
    *
    * @param hash
+   *
    */
   createGif(hash: string): MediaNode
   /**
@@ -1875,6 +1881,7 @@ interface PluginAPI {
   base64Decode(data: string): Uint8Array
   /**
    * Gets the node that is currently being used for file thumbnail, or null if the default thumbnail is used.
+   *
    */
   getFileThumbnailNodeAsync(): Promise<
     FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
@@ -1883,10 +1890,12 @@ interface PluginAPI {
    * @deprecated Use {@link PluginAPI.getFileThumbnailNodeAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
    *
    * Gets the node that is currently being used for file thumbnail, or null if the default thumbnail is used.
+   *
    */
   getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
   /**
    * Set `node` to be the thumbnail for the file. If `node` is null, then use the default thumbnail.
+   *
    */
   setFileThumbnailNodeAsync(
     node: FrameNode | ComponentNode | ComponentSetNode | SectionNode | null,
@@ -2024,6 +2033,7 @@ interface PluginAPI {
    * @remarks
    *
    * Calling this function without rowIndex and columnIndex will move the node to the end of the grid
+   *
    */
   moveNodesToCoord(nodeIds: string[], rowIndex?: number, columnIndex?: number): void
   /**
@@ -2587,8 +2597,11 @@ interface ClientStorageAPI {
  */
 interface NotificationOptions {
   timeout?: number
+
   error?: boolean
+
   onDequeue?: (reason: NotifyDequeueReason) => void
+
   button?: {
     text: string
     action: () => boolean | void
@@ -2609,13 +2622,18 @@ interface NotificationHandler {
  */
 interface ShowUIOptions {
   visible?: boolean
+
   title?: string
+
   width?: number
+
   height?: number
+
   position?: {
     x: number
     y: number
   }
+
   themeColors?: boolean
 }
 /**
@@ -2837,6 +2855,7 @@ interface ColorPalette {
 }
 interface ColorPalettes {
   figJamBase: ColorPalette
+
   figJamBaseLight: ColorPalette
 }
 /**
@@ -2852,6 +2871,7 @@ interface ConstantsAPI {
    * ```
    *
    * @remarks
+   *
    */
   colors: ColorPalettes
 }
@@ -2984,12 +3004,14 @@ interface CodegenAPI {
    *   readonly customSettings: Record<string, string>
    * }
    * ```
+   *
    */
   readonly preferences: CodegenPreferences
   /**
    * Triggers the `figma.codegen.on("generate")` callback again.
    *
    * This is is useful for plugins that need to refresh the codegen output. For example, if you’re using an iframe to provide more customization options.
+   *
    */
   refresh: () => void
 }
@@ -3064,7 +3086,9 @@ interface DevResourcesAPI {
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
+
   on(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+
   on(type: 'open', callback: (event: DevResourceOpenEvent) => void): void
   /**
    * Create a handler for when the linkpreview, auth, and open events are first triggered. This only gets called once.
@@ -3073,7 +3097,9 @@ interface DevResourcesAPI {
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
+
   once(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+
   once(type: 'open', callback: (event: DevResourceOpenEvent) => void): void
   /**
    * Remove a handler for the linkpreview, auth, and open events.
@@ -3082,7 +3108,9 @@ interface DevResourcesAPI {
     type: 'linkpreview',
     callback: (event: LinkPreviewEvent) => Promise<LinkPreviewResult> | LinkPreviewResult,
   ): void
+
   off(type: 'auth', callback: (event: AuthEvent) => Promise<AuthResult> | AuthResult): void
+
   off(type: 'open', callback: (event: DevResourceOpenEvent) => void): void
 }
 /**
@@ -3133,14 +3161,17 @@ interface ViewportAPI {
    * - zoom &lt; 1: design is zoomed out
    * - zoom = 1: design is shown at exact size
    * - zoom &gt; 1: design is zoomed in
+   *
    */
   zoom: number
   /**
    * Automatically sets the viewport coordinates such that the nodes are visible on screen. It is the equivalent of pressing Shift-1.
+   *
    */
   scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void
   /**
    * The bounds of the viewport of the page that is currently visible on screen. The (x, y) corresponds to the top-left of the screen. User actions such as resizing the window or showing/hiding the rulers/UI will change the bounds of the viewport.
+   *
    */
   readonly bounds: Rect
   /**
@@ -3168,6 +3199,7 @@ interface ViewportAPI {
    * We have updated all of the create methods (`figma.createRectangle()`, `figma.createLine()`, etc) so that when the Figma Slides file is in Single Slide View,
    * they append that node to the focused slide instead of to the canvas. This is to ensure that the node you are creating is viewable by the current user and
    * not hidden off to the side of the larger grid view.
+   *
    */
   slidesView: 'grid' | 'single-slide'
   /**
@@ -3195,6 +3227,7 @@ interface ViewportAPI {
    * We have updated all of the create methods (`figma.createRectangle()`, `figma.createLine()`, etc) so that when the Figma Slides/Buzz file is in Asset View,
    * they append that node to the focused asset/slide instead of to the canvas. This is to ensure that the node you are creating is viewable by the current user and
    * not hidden off to the side of the larger grid view.
+   *
    */
   canvasView: 'grid' | 'single-asset'
 }
@@ -3330,14 +3363,17 @@ declare type ParameterInputEvent<ParametersType = ParameterValues> = {
 interface ParametersAPI {
   /**
    * Register a handler for user input events in the quick action UI.
+   *
    */
   on(type: 'input', callback: (event: ParameterInputEvent) => void): void
   /**
    * Register a handler for user input events in the quick action UI. Same as `figma.parameters.on("input")`, but only gets called the first time.
+   *
    */
   once(type: 'input', callback: (event: ParameterInputEvent) => void): void
   /**
    * Removes a handler added via `figma.parameters.on`.
+   *
    */
   off(type: 'input', callback: (event: ParameterInputEvent) => void): void
 }
@@ -3346,12 +3382,15 @@ interface ParametersAPI {
  */
 interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
   command: string
+
   parameters: ParametersType
 }
 
 interface OpenDevResourcesEvent {
   command: 'open-dev-resource'
+
   parameters?: undefined
+
   link: {
     url: string
     name: string
@@ -3368,6 +3407,7 @@ interface SlidesViewChangeEvent {
  *
  * This event is triggered when users switch between Asset View and Grid View
  * in the Slides or Buzz interface, allowing plugins to respond to view changes.
+ *
  */
 interface CanvasViewChangeEvent {
   /**
@@ -3380,24 +3420,35 @@ interface CanvasViewChangeEvent {
 
 interface DropEvent {
   node: BaseNode | SceneNode
+
   x: number
+
   y: number
+
   absoluteX: number
+
   absoluteY: number
+
   items: DropItem[]
+
   files: DropFile[]
+
   dropMetadata?: any
 }
 
 interface DropItem {
   type: string
+
   data: string
 }
 
 interface DropFile {
   name: string
+
   type: string
+
   getBytesAsync(): Promise<Uint8Array>
+
   getTextAsync(): Promise<string>
 }
 
@@ -3514,6 +3565,7 @@ interface StyleDeleteChange extends BaseStyleChange {
    * The string literal "STYLE_DELETE" representing the type of document change this is. Always check the type before reading other properties. In this case, the returned style is null.
    */
   type: 'STYLE_DELETE'
+
   style: null
 }
 /**
@@ -3717,12 +3769,16 @@ type TextReviewRange = {
 type Transform = [[number, number, number], [number, number, number]]
 interface Vector {
   readonly x: number
+
   readonly y: number
 }
 interface Rect {
   readonly x: number
+
   readonly y: number
+
   readonly width: number
+
   readonly height: number
 }
 /**
@@ -3730,7 +3786,9 @@ interface Rect {
  */
 interface RGB {
   readonly r: number
+
   readonly g: number
+
   readonly b: number
 }
 /**
@@ -3738,8 +3796,11 @@ interface RGB {
  */
 interface RGBA {
   readonly r: number
+
   readonly g: number
+
   readonly b: number
+
   readonly a: number
 }
 /**
@@ -3747,6 +3808,7 @@ interface RGBA {
  */
 interface FontName {
   readonly family: string
+
   readonly style: string
 }
 type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
@@ -4008,7 +4070,9 @@ type OpenTypeFeature =
   | 'CV99'
 interface ArcData {
   readonly startingAngle: number
+
   readonly endingAngle: number
+
   readonly innerRadius: number
 }
 /**
@@ -4327,6 +4391,7 @@ type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
  */
 interface Constraints {
   readonly horizontal: ConstraintType
+
   readonly vertical: ConstraintType
 }
 /**
@@ -4353,11 +4418,17 @@ interface ColorStop {
  */
 interface ImageFilters {
   readonly exposure?: number
+
   readonly contrast?: number
+
   readonly saturation?: number
+
   readonly temperature?: number
+
   readonly tint?: number
+
   readonly highlights?: number
+
   readonly shadows?: number
 }
 /**
@@ -4431,8 +4502,11 @@ interface GradientPaint {
    * Array of colors and their position within the gradient.
    */
   readonly gradientStops: ReadonlyArray<ColorStop>
+
   readonly visible?: boolean
+
   readonly opacity?: number
+
   readonly blendMode?: BlendMode
 }
 /**
@@ -4467,8 +4541,11 @@ interface ImagePaint {
    * The values for the image filter slides, equivalent to those in the paint picker. All values default to 0.0 and have range -1.0 to +1.0.
    */
   readonly filters?: ImageFilters
+
   readonly visible?: boolean
+
   readonly opacity?: number
+
   readonly blendMode?: BlendMode
 }
 /**
@@ -4503,8 +4580,11 @@ interface VideoPaint {
    * The values for the video filter slides, equivalent to those in the paint picker. All values default to 0.0 and have range -1.0 to +1.0.
    */
   readonly filters?: ImageFilters
+
   readonly visible?: boolean
+
   readonly opacity?: number
+
   readonly blendMode?: BlendMode
 }
 /**
@@ -4535,8 +4615,11 @@ interface PatternPaint {
    * The horizontal alignment of the pattern
    */
   readonly horizontalAlignment: 'START' | 'CENTER' | 'END'
+
   readonly visible?: boolean
+
   readonly opacity?: number
+
   readonly blendMode?: BlendMode
 }
 /**
@@ -4545,6 +4628,7 @@ interface PatternPaint {
 type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
 interface Guide {
   readonly axis: 'X' | 'Y'
+
   readonly offset: number
 }
 /**
@@ -4602,8 +4686,11 @@ interface GridLayoutGrid {
    * The size of individual grid cells.
    */
   readonly sectionSize: number
+
   readonly visible?: boolean
+
   readonly color?: RGBA
+
   readonly boundVariables?: {
     ['sectionSize']?: VariableAlias
   }
@@ -4617,6 +4704,7 @@ type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
  */
 interface ExportSettingsConstraints {
   readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT'
+
   readonly value: number
 }
 /**
@@ -4672,7 +4760,9 @@ interface ExportSettingsImage {
 }
 interface ExportSettingsSVGBase {
   readonly contentsOnly?: boolean
+
   readonly useAbsoluteBounds?: boolean
+
   readonly suffix?: string
   /**
    * Whether text elements are rendered as outlines (vector paths) or as `<text>` elements in SVGs. Defaults to `true`.
@@ -4690,6 +4780,7 @@ interface ExportSettingsSVGBase {
    * Whether to export inside and outside strokes as an approximation of the original to simplify the output. Otherwise, it uses a more precise but more bloated masking technique. This is needed because SVGs only support center strokes. Defaults to `true`.
    */
   readonly svgSimplifyStroke?: boolean
+
   readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 /**
@@ -4720,9 +4811,13 @@ interface ExportSettingsPDF {
    *  When reading {@link ExportMixin.exportSettings }, always check the `format` before reading other properties.
    */
   readonly format: 'PDF'
+
   readonly contentsOnly?: boolean
+
   readonly useAbsoluteBounds?: boolean
+
   readonly suffix?: string
+
   readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 /**
@@ -4889,6 +4984,7 @@ interface VectorPath {
 type VectorPaths = ReadonlyArray<VectorPath>
 interface LetterSpacing {
   readonly value: number
+
   readonly unit: 'PIXELS' | 'PERCENT'
 }
 type LineHeight =
@@ -5103,12 +5199,15 @@ type ExpressionFunction =
   | 'NOT'
 interface Expression {
   expressionFunction: ExpressionFunction
+
   expressionArguments: VariableData[]
 }
 type VariableValueWithExpression = VariableValue | Expression
 interface VariableData {
   type?: VariableDataType
+
   resolvedType?: VariableResolvedDataType
+
   value?: VariableValueWithExpression
 }
 type ConditionalBlock = {
@@ -5190,7 +5289,9 @@ type Action =
  */
 interface SimpleTransition {
   readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
+
   readonly easing: Easing
+
   readonly duration: number
 }
 /**
@@ -5198,9 +5299,13 @@ interface SimpleTransition {
  */
 interface DirectionalTransition {
   readonly type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT'
+
   readonly direction: 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
+
   readonly matchLayers: boolean
+
   readonly easing: Easing
+
   readonly duration: number
 }
 /**
@@ -5258,7 +5363,9 @@ interface Easing {
     | 'BOUNCY'
     | 'SLOW'
     | 'CUSTOM_SPRING'
+
   readonly easingFunctionCubicBezier?: EasingFunctionBezier
+
   readonly easingFunctionSpring?: EasingFunctionSpring
 }
 /**
@@ -5266,14 +5373,20 @@ interface Easing {
  */
 interface EasingFunctionBezier {
   x1: number
+
   y1: number
+
   x2: number
+
   y2: number
 }
 interface EasingFunctionSpring {
   mass: number
+
   stiffness: number
+
   damping: number
+
   initialVelocity: number
 }
 type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
@@ -5319,10 +5432,12 @@ interface ConnectorEndpointPositionAndEndpointNodeId {
     x: number
     y: number
   }
+
   endpointNodeId: string
 }
 interface ConnectorEndpointEndpointNodeIdAndMagnet {
   endpointNodeId: string
+
   magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' | 'CENTER'
 }
 /**
@@ -5496,6 +5611,7 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
   readonly isAsset: boolean
   /**
    * Resolves to a JSON object of CSS properties of the node. This is the same CSS that Figma shows in the inspect panel and is helpful if you are building a [plugin for code generation](https://developers.figma.com/docs/plugins/codegen-plugins).
+   *
    */
   getCSSAsync(): Promise<{
     [key: string]: string
@@ -5581,6 +5697,7 @@ interface DevResourcesMixin {
    *
    * @param url - The url of the dev resource.
    * @param name - The name of the dev resource. If not provided, Figma will get the name from the url.
+   *
    */
   addDevResourceAsync(url: string, name?: string): Promise<void>
   /**
@@ -5589,6 +5706,7 @@ interface DevResourcesMixin {
    *
    * @param currentUrl - The current url of the dev resource.
    * @param newValue - The new name and/or url of the dev resource.
+   *
    */
   editDevResourceAsync(
     currentUrl: string,
@@ -7674,7 +7792,7 @@ interface ScatterBrushProperties {
   gap: number
   /** The amount of random movement applied to brush instances along the stroke path. The minimum value is 0. */
   wiggle: number
-  /** The amount of random size variation applied to brush instances. Ranges from 0 to 3.*/
+  /** The amount of random size variation applied to brush instances. Ranges from 0 to 3. */
   sizeJitter: number
   /** The amount of random angular variation in degrees applied to brush instances. Ranges from -180 to 180. */
   angularJitter: number
@@ -7721,11 +7839,11 @@ type BrushStrokeProperties = StretchBrushProperties | ScatterBrushProperties
 interface DynamicStrokeProperties {
   /** The type of complex stroke. Fixed to 'DYNAMIC'. */
   type: 'DYNAMIC'
-  /** The frequency of the dynamic stroke. Ranges from 0.01 to 20.*/
+  /** The frequency of the dynamic stroke. Ranges from 0.01 to 20. */
   frequency: number
-  /** The amplitude of the wiggles in the dynamic stroke. Minimum value is 0.*/
+  /** The amplitude of the wiggles in the dynamic stroke. Minimum value is 0. */
   wiggle: number
-  /** The amount of smoothing applied to the dynamic stroke. Ranges from 0 to 1.*/
+  /** The amount of smoothing applied to the dynamic stroke. Ranges from 0 to 1. */
   smoothen: number
 }
 /**
@@ -7807,17 +7925,12 @@ interface CornerMixin {
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface RectangleCornerMixin {
-  /**
-   */
   topLeftRadius: number
-  /**
-   */
+
   topRightRadius: number
-  /**
-   */
+
   bottomLeftRadius: number
-  /**
-   */
+
   bottomRightRadius: number
 }
 /**
@@ -7891,7 +8004,9 @@ interface ExportMixin {
    * ```
    */
   exportAsync(settings?: ExportSettings): Promise<Uint8Array>
+
   exportAsync(settings: ExportSettingsSVGString): Promise<string>
+
   exportAsync(settings: ExportSettingsREST): Promise<Object>
 }
 /**
@@ -8168,6 +8283,7 @@ interface PublishableMixin {
   readonly key: string
   /**
    * Gets the status of this style/component in the team library.
+   *
    */
   getPublishStatusAsync(): Promise<PublishStatus>
 }
@@ -8263,8 +8379,11 @@ interface MinimalBlendMixin {
 }
 interface Annotation {
   readonly label?: string
+
   readonly labelMarkdown?: string
+
   readonly properties?: ReadonlyArray<AnnotationProperty>
+
   readonly categoryId?: string
 }
 interface AnnotationProperty {
@@ -8317,15 +8436,19 @@ interface AnnotationsMixin {
  */
 interface Measurement {
   id: string
+
   start: {
     node: SceneNode
     side: MeasurementSide
   }
+
   end: {
     node: SceneNode
     side: MeasurementSide
   }
+
   offset: MeasurementOffset
+
   freeText: string
 }
 /**
@@ -9500,10 +9623,12 @@ interface PageNode
    * | [`CreateChange`](https://developers.figma.com/docs/plugins/api/NodeChange#createchange) | `'CREATE'` | A node has been created in the page. If a node with nested children is being added to the page a `CreateChange` will only be made for the highest level parent that was added to the page. |
    * | [`DeleteChange`](https://developers.figma.com/docs/plugins/api/NodeChange#deletechange) | `'DELETE'` | A node has been removed from the page. If a node with nested children is being removed from the page a  `DeleteChange`  will only be made for the highest level parent that was removed from the page. |
    * | [`PropertyChange`](https://developers.figma.com/docs/plugins/api/NodeChange#propertychange) | `'PROPERTY_CHANGE'` | A property of a node has changed. |
+   *
    */
   on(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   /**
    * Same as {@link PageNode.on}, but the callback will only be called once, the first time the specified event happens.
+   *
    */
   once(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   /**
@@ -9525,6 +9650,7 @@ interface PageNode
    * page.on("nodechange", () => { console.log("nodechange") })
    * page.off("nodechange", () => { console.log("nodechange") })
    * ```
+   *
    */
   off(type: 'nodechange', callback: (event: NodeChangeEvent) => void): void
   /**
@@ -10129,6 +10255,7 @@ interface StampNode
    * if the stamp was created before July 2022 or if the user is currently not connected to the internet.
    *
    * `fileusers` must be specified in the permissions array in `manifest.json` to access this function.
+   *
    */
   getAuthorAsync(): Promise<BaseUser | null>
 }
@@ -10241,9 +10368,13 @@ interface TableCellNode extends MinimalFillsMixin {
    * The column index of this cell relative to its parent table.
    */
   readonly columnIndex: number
+
   readonly toString: string
+
   readonly parent: TableNode
+
   readonly height: number
+
   readonly width: number
 }
 interface HighlightNode
@@ -10447,6 +10578,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
 type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
 interface VariableAlias {
   type: 'VARIABLE_ALIAS'
+
   id: string
 }
 type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
@@ -10871,6 +11003,7 @@ interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
    * Caution: NOTE: every key in `syncedMapOverrides` will override the entire corresponding synced map, deleting all existing keys in the map. If you wish to preserve some of the keys in the map, you'll need to explicitly specify them in the override.
    *
    * For more information, check out [this page in our widget documentation](https://figma.com/widget-docs/managing-multiple-widgets#widgetnodeclonewidget).
+   *
    */
   cloneWidget(
     syncedStateOverrides: {
@@ -10894,6 +11027,7 @@ interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
    * If you try to set the synced state for a widget with a different version of the same widget, that widget will automatically update to match the running widget's version. This ensures that the synced state values you set will always be compatible with the widget. A side effect of this is that a widget may get downgraded to a lower version.
    *
    * To get a list of other widgets with the same `widgetId`, check out [findWidgetNodesByWidgetId](https://developers.figma.com/docs/plugins/api/properties/nodes-findwidgetnodesbywidgetid).
+   *
    */
   setWidgetSyncedState(
     syncedState: {
@@ -11269,6 +11403,7 @@ interface BaseStyleMixin extends PublishableMixin, PluginDataMixin {
    * The unique identifier of the style in the document the plugin is executing from. You can assign this value via `setFillStyleIdAsync`, `setStrokeStyleIdAsync`, `setTextStyleIdAsync`, etc. to make the node properties reflect that of the style node.
    */
   readonly id: string
+
   readonly type: StyleType
   /**
    * The consumers of this style. The `fields` in `StyleConsumers` refers to the field where the style is applied (e.g. a PaintStyle can be applied in `setFillStyleIdAsync` or `setStrokeStyleIdAsync`).
