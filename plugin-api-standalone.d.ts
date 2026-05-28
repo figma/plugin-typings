@@ -414,21 +414,9 @@ interface PluginAPI {
    */
   getNodeByIdAsync(id: string): Promise<BaseNode | null>
   /**
-   * @deprecated Use {@link PluginAPI.getNodeByIdAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   *
-   * Finds a node by its id in the current document. Every node has an `id` property, which is unique within the document. If the id is invalid, or the node cannot be found (e.g. removed), returns null.
-   */
-  getNodeById(id: string): BaseNode | null
-  /**
    * Finds a style by its id in the current document. If not found, returns a promise containing null.
    */
   getStyleByIdAsync(id: string): Promise<BaseStyle | null>
-  /**
-   * @deprecated Use {@link PluginAPI.getStyleByIdAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   *
-   * Finds a style by its id in the current document. If not found, returns null.
-   */
-  getStyleById(id: string): BaseStyle | null
   /**
    * This property contains methods to work with Variables and Variable Collections within Figma.
    *
@@ -1079,32 +1067,6 @@ interface PluginAPI {
    */
   createFrame(): FrameNode
   /**
-   * Note: This API is only available via `use_figma` in the MCP server
-   *
-   * Creates a new frame with auto layout already enabled. Both axes default to hug content
-   * (`primaryAxisSizingMode = "AUTO"`, `counterAxisSizingMode = "AUTO"`), so children can
-   * immediately use `layoutSizingHorizontal/Vertical = "FILL"` after being appended.
-   *
-   * @remarks
-   *
-   * Prefer this over `createFrame()` whenever you need an auto-layout parent. Since `layoutMode` is
-   * already set, children can use `FILL` sizing immediately after being appended.
-   *
-   * The default direction is `"HORIZONTAL"`. Pass `"VERTICAL"` for a column layout.
-   *
-   * ```ts title="Create an auto-layout frame"
-   * const row = figma.createAutoLayout()
-   * const column = figma.createAutoLayout("VERTICAL")
-   *
-   * row.itemSpacing = 16
-   * row.paddingTop = 24
-   * row.paddingBottom = 24
-   * row.paddingLeft = 24
-   * row.paddingRight = 24
-   * ```
-   */
-  createAutoLayout(direction?: 'HORIZONTAL' | 'VERTICAL'): FrameNode
-  /**
    * Note: This API is only available in Figma Design
    *
    * Creates a new, empty component.
@@ -1456,24 +1418,6 @@ interface PluginAPI {
    */
   createNodeFromJSXAsync(jsx: any): Promise<SceneNode>
   /**
-   * @remarks
-   *
-   * Using this function is not recommended because empty boolean operation nodes can have surprising, unpredictable behavior. It will eventually be remove. Use one of the functions listed above instead.
-   *
-   * Creates a new, empty boolean operation node. The particular kind of operation is set via `.booleanOperation`. By default, the value is `"UNION"`.
-   *
-   * This snippet, for example, creates a boolean operation node that is a union of a rectangle and an ellipse.
-   *
-   * ```ts title="Create a boolean operation node"
-   * const node = figma.createBooleanOperation()
-   * node.appendChild(figma.createRectangle())
-   * node.appendChild(figma.createEllipse())
-   * ```
-   *
-   * @deprecated Use {@link PluginAPI.union}, {@link PluginAPI.subtract}, {@link PluginAPI.intersect}, {@link PluginAPI.exclude} instead.
-   */
-  createBooleanOperation(): BooleanOperationNode
-  /**
    * Note: This API is only available in Figma Design
    *
    * Creates a new Paint style. This might be referred to as a Color style, or Fill style more colloquially. However, since this type of style may contain images, and may be used for backgrounds, strokes, and fills, it is called a Paint.
@@ -1502,41 +1446,17 @@ interface PluginAPI {
    */
   getLocalPaintStylesAsync(): Promise<PaintStyle[]>
   /**
-   * @deprecated Use {@link PluginAPI.getLocalPaintStylesAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   *
-   * Returns the list of local paint styles.
-   */
-  getLocalPaintStyles(): PaintStyle[]
-  /**
    * Returns the list of local text styles.
    */
   getLocalTextStylesAsync(): Promise<TextStyle[]>
-  /**
-   * @deprecated Use {@link PluginAPI.getLocalTextStylesAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   *
-   * Returns the list of local text styles.
-   */
-  getLocalTextStyles(): TextStyle[]
   /**
    * Returns the list of local effect styles.
    */
   getLocalEffectStylesAsync(): Promise<EffectStyle[]>
   /**
-   * @deprecated Use {@link PluginAPI.getLocalEffectStylesAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   *
-   * Returns the list of local effect styles.
-   */
-  getLocalEffectStyles(): EffectStyle[]
-  /**
    * Returns the list of local grid styles.
    */
   getLocalGridStylesAsync(): Promise<GridStyle[]>
-  /**
-   * Returns the list of local grid styles.
-   *
-   * @deprecated Use {@link PluginAPI.getLocalGridStylesAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  getLocalGridStyles(): GridStyle[]
   /**
    * Returns all of the colors in a user’s current selection. This
    * returns the same values that are shown in Figma's native selection
@@ -1887,13 +1807,6 @@ interface PluginAPI {
     FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
   >
   /**
-   * @deprecated Use {@link PluginAPI.getFileThumbnailNodeAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   *
-   * Gets the node that is currently being used for file thumbnail, or null if the default thumbnail is used.
-   *
-   */
-  getFileThumbnailNode(): FrameNode | ComponentNode | ComponentSetNode | SectionNode | null
-  /**
    * Set `node` to be the thumbnail for the file. If `node` is null, then use the default thumbnail.
    *
    */
@@ -1914,57 +1827,6 @@ interface PluginAPI {
    * This method is only necessary if the plugin manifest contains `"documentAccess": "dynamic-page"`. Without this manifest setting, the full document is loaded automatically when the plugin or widget runs.
    */
   loadAllPagesAsync(): Promise<void>
-  /**
-   * Note: This API is only available in Figma Slides
-   *
-   * @remarks
-   *
-   * The slide grid provides structure to both single slide view and grid view.
-   * The order of Slides within a presentation is a key part of updating and editing a deck.
-   * To visualize the slide nodes in a 2D array, you can call this function.
-   *
-   * ```ts
-   * const grid = figma.getSlideGrid()
-   * ```
-   *
-   * The returned grid is a 2D array of SlideNodes. For example:
-   *
-   * ```ts
-   * [
-   *   [SlideNode, SlideNode],
-   *   [SlideNode, SlideNode, SlideNode, SlideNode, SlideNode],
-   *   [SlideNode, SlideNode, SlideNode, SlideNode, SlideNode],
-   *   [SlideNode, SlideNode, SlideNode],
-   * ]
-   * ```
-   *
-   * @deprecated Use {@link PluginAPI.getCanvasGrid} instead.
-   */
-  getSlideGrid(): Array<Array<SlideNode>>
-  /**
-   * Note: This API is only available in Figma Slides
-   *
-   * @remarks
-   *
-   * The order of Slides within a presentation is a key part of updating and editing a deck.
-   * Using this method you can manipulate and reorder the grid.
-   *
-   * For example:
-   *
-   * ```ts
-   * const grid = figma.getSlideGrid()
-   * const [firstRow, ...rest] = grid
-   *
-   * // move the first row to the end
-   * figma.setSlideGrid([...rest, firstRow])
-   * ```
-   *
-   * So long as all the Slides in the current grid are passed back to `setSlideGrid` the update will succeed.
-   * Meaning, you can change the amount of rows as you please - flatten all to one row, explode to many rows, etc, and the method will handle all updates for you.
-   *
-   * @deprecated Use {@link PluginAPI.setCanvasGrid} instead.
-   */
-  setSlideGrid(slideGrid: Array<Array<SlideNode>>): void
   /**
    * Gets the current canvas grid layout as a 2D array of nodes.
    *
@@ -2067,25 +1929,11 @@ interface VariablesAPI {
    */
   getVariableByIdAsync(id: string): Promise<Variable | null>
   /**
-   * Finds a variable by ID. If not found or the provided ID is invalid, returns `null`.
-   *
-   * @deprecated Use {@link VariablesAPI.getVariableByIdAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   * @param id - The variable ID to search for, which represents a unique identifier for the variable.
-   */
-  getVariableById(id: string): Variable | null
-  /**
    * Finds a variable collection by ID. If not found or the provided ID is invalid, returns a promise containing `null`.
    *
    * @param id - The variable collection ID to search for, which represents a unique identifier for the variable collection.
    */
   getVariableCollectionByIdAsync(id: string): Promise<VariableCollection | null>
-  /**
-   * Finds a variable collection by ID. If not found or the provided ID is invalid, returns `null`.
-   *
-   * @deprecated Use {@link VariablesAPI.getVariableCollectionByIdAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   * @param id - The variable collection ID to search for, which represents a unique identifier for the variable collection.
-   */
-  getVariableCollectionById(id: string): VariableCollection | null
   /**
    * Returns all local variables in the current file, optionally filtering by resolved type.
    *
@@ -2093,36 +1941,9 @@ interface VariablesAPI {
    */
   getLocalVariablesAsync(type?: VariableResolvedDataType): Promise<Variable[]>
   /**
-   * Returns all local variables in the current file, optionally filtering by resolved type.
-   *
-   * @deprecated Use {@link VariablesAPI.getLocalVariablesAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   * @param type - Filters the returned variables to only be of the given resolved type.
-   */
-  getLocalVariables(type?: VariableResolvedDataType): Variable[]
-  /**
    * Returns all local variable collections in the current file.
    */
   getLocalVariableCollectionsAsync(): Promise<VariableCollection[]>
-  /**
-   * Returns all local variable collections in the current file.
-   *
-   * @deprecated Use {@link VariablesAPI.getLocalVariableCollectionsAsync} instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  getLocalVariableCollections(): VariableCollection[]
-  /**
-   * Creates a variable with a given name and resolved type inside a collection.
-   *
-   * @deprecated Use `createVariable(string, VariableCollection, VariableResolvedDataType)` instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   *
-   * @param name - The name of the newly created variable
-   * @param collectionId - The ID of a collection object
-   * @param resolvedType - The resolved type of this variable
-   */
-  createVariable(
-    name: string,
-    collectionId: string,
-    resolvedType: VariableResolvedDataType,
-  ): Variable
   /**
    * Creates a variable with a given name and resolved type inside a collection.
    *
@@ -2210,24 +2031,6 @@ interface VariablesAPI {
    * @param key the key of the variable to import.
    */
   importVariableByKeyAsync(key: string): Promise<Variable>
-}
-
-interface LibraryVariableCollection {
-  /** The name of the variable collection. */
-  name: string
-  /** The key of the variable collection. */
-  key: string
-  /** The name of the library that contains this variable collection. */
-  libraryName: string
-}
-
-interface LibraryVariable {
-  /** The name of the variable. */
-  name: string
-  /** The key of the variable. */
-  key: string
-  /** The resolved type of this variable. */
-  resolvedType: VariableResolvedDataType
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/figma-annotations
@@ -2855,11 +2658,6 @@ interface UtilAPI {
 interface ColorPalette {
   [key: string]: string
 }
-
-interface ColorPalettes {
-  figJamBase: ColorPalette
-  figJamBaseLight: ColorPalette
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/figma-constants
  */
@@ -3017,38 +2815,6 @@ interface CodegenAPI {
    */
   refresh: () => void
 }
-/**
- * @see https://developers.figma.com/docs/plugins/api/DevResource
- */
-interface DevResource {
-  /**
-   * The name of the resource.
-   */
-  readonly name: string
-  /**
-   * The URL of the resource. This is considered the unique identifier of the resource.
-   */
-  readonly url: string
-  /**
-   * `inheritedNodeId` is a field only relevant to links on `INSTANCE` nodes. If `inheritedNodeId` is defined, the link is inherited from a main component or a component set. If you want to edit or delete the inherited link, you will need to go to the main node to do so. For example:
-   *
-   * ```ts
-   * const devResource = { ..., inheritedNodeId: '1:2' }
-   * const node = await figma.getNodeByIdAsync(devResource.inheritedNodeId)
-   * await node.editDevResourceAsync(...)
-   * ```
-   */
-  readonly inheritedNodeId?: string
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/DevResource
- */
-interface DevResourceWithNodeId extends DevResource {
-  /**
-   * The ID of the node that this link is attached to.
-   */
-  nodeId: string
-}
 
 type LinkPreviewEvent = {
   link: DevResource
@@ -3077,8 +2843,6 @@ type DevResourceOpenEvent = {
 type AuthResult = {
   type: 'AUTH_SUCCESS'
 } | null
-
-interface VSCodeAPI {}
 
 interface DevResourcesAPI {
   /**
@@ -3769,46 +3533,9 @@ type TextReviewRange = {
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
 type Transform = [[number, number, number], [number, number, number]]
-
-interface Vector {
-  readonly x: number
-  readonly y: number
-}
-
-interface Rect {
-  readonly x: number
-  readonly y: number
-  readonly width: number
-  readonly height: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/RGB
- */
-interface RGB {
-  readonly r: number
-  readonly g: number
-  readonly b: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/RGB
- */
-interface RGBA {
-  readonly r: number
-  readonly g: number
-  readonly b: number
-  readonly a: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/FontName
- */
-interface FontName {
-  readonly family: string
-  readonly style: string
-}
 type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
 type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
 type TextDecorationStyle = 'SOLID' | 'WAVY' | 'DOTTED'
-type FontStyle = 'REGULAR' | 'ITALIC'
 type TextDecorationOffset =
   | {
       readonly value: number
@@ -4062,147 +3789,6 @@ type OpenTypeFeature =
   | 'CV97'
   | 'CV98'
   | 'CV99'
-
-interface ArcData {
-  readonly startingAngle: number
-  readonly endingAngle: number
-  readonly innerRadius: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface DropShadowEffect {
-  /**
-   * The string literal representing the type of effect this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'DROP_SHADOW'
-  /**
-   * The color of the shadow, including its opacity.
-   */
-  readonly color: RGBA
-  /**
-   * The offset of the shadow relative to its object. Use this property to simulate the direction of the light.
-   */
-  readonly offset: Vector
-  /**
-   * The blur radius of the shadow. Must be >= 0. A lower radius creates a sharper shadow.
-   */
-  readonly radius: number
-  /**
-   * The distance by which to expand (or contract) the shadow. For drop shadows, a positive spread value creates a shadow larger than the node, whereas a negative value creates a shadow smaller than the node. For inner shadows, a positive `spread` value contracts the shadow. `spread` values are only accepted on rectangles and ellipses, or on frames, components, and instances with visible fill paints and `clipsContent` enabled. When left unspecified, the default value is 0.
-   */
-  readonly spread?: number
-  /**
-   * Whether this shadow is visible.
-   */
-  readonly visible: boolean
-  /**
-   * Determines how the color of this shadow blends with the colors underneath it. The typical default value is "NORMAL".
-   */
-  readonly blendMode: BlendMode
-  /**
-   * Whether the drop shadow should show behind translucent or transparent pixels within the node's geometry. Defaults to `false`.
-   */
-  readonly showShadowBehindNode?: boolean
-  /**
-   * The variables bound to a particular field on this shadow effect
-   */
-  readonly boundVariables?: {
-    [field in VariableBindableEffectField]?: VariableAlias
-  }
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface InnerShadowEffect {
-  /**
-   * The string literal representing the type of effect this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'INNER_SHADOW'
-  /**
-   * The color of the shadow, including its opacity.
-   */
-  readonly color: RGBA
-  /**
-   * The offset of the shadow relative to its object. Use this property to simulate the direction of the light.
-   */
-  readonly offset: Vector
-  /**
-   * The blur radius of the shadow. Must be >= 0. A lower radius creates a sharper shadow.
-   */
-  readonly radius: number
-  /**
-   * The distance by which to expand (or contract) the shadow. For drop shadows, a positive spread value creates a shadow larger than the node, whereas a negative value creates a shadow smaller than the node. For inner shadows, a positive `spread` value contracts the shadow. `spread` values are only accepted on rectangles and ellipses, or on frames, components, and instances with visible fill paints and `clipsContent` enabled. When left unspecified, the default value is 0.
-   */
-  readonly spread?: number
-  /**
-   * Whether this shadow is visible.
-   */
-  readonly visible: boolean
-  /**
-   * Determines how the color of this shadow blends with the colors underneath it. The typical default value is "NORMAL".
-   */
-  readonly blendMode: BlendMode
-  /**
-   * The variables bound to a particular field on this shadow effect
-   */
-  readonly boundVariables?: {
-    [field in VariableBindableEffectField]?: VariableAlias
-  }
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface BlurEffectBase {
-  /**
-   * The string literal representing the type of effect this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
-  /**
-   * The radius of the blur. Must be >= 0. A lower radius creates a sharper blur. For progressive blurs, this is the end radius of the blur.
-   */
-  readonly radius: number
-  /**
-   * Whether this blur is visible.
-   */
-  readonly visible: boolean
-  /**
-   * The variable bound to the radius field on this blur effect
-   * */
-  readonly boundVariables?: {
-    ['radius']?: VariableAlias
-  }
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface BlurEffectNormal extends BlurEffectBase {
-  /**
-   * The string literal representing the blur type. Always check the `blurType` before reading other properties.
-   */
-  readonly blurType: 'NORMAL'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface BlurEffectProgressive extends BlurEffectBase {
-  /**
-   * The string literal representing the blur type. Always check the `blurType` before reading other properties.
-   */
-  readonly blurType: 'PROGRESSIVE'
-  /**
-   * Radius of the starting point of the progressive blur.
-   */
-  readonly startRadius: number
-  /**
-   * Position of the starting point of the progressive blur. The position is in normalized object space (top left corner of the bounding box of the object is (0, 0) and the bottom right is (1,1)).
-   */
-  readonly startOffset: Vector
-  /**
-   * Position of the ending point of the progressive blur. The position is in normalized object space (top left corner of the bounding box of the object is (0, 0) and the bottom right is (1,1)).
-   */
-  readonly endOffset: Vector
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/Effect
  */
@@ -4210,161 +3796,7 @@ type BlurEffect = BlurEffectNormal | BlurEffectProgressive
 /**
  * @see https://developers.figma.com/docs/plugins/api/Effect
  */
-interface NoiseEffectBase {
-  /**
-   * The string literal representing the type of effect this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'NOISE'
-  /**
-   * The color of the noise effect.
-   */
-  readonly color: RGBA
-  /**
-   * Whether the noise effect is visible.
-   */
-  readonly visible: boolean
-  /**
-   * The blend mode of the noise.
-   */
-  readonly blendMode: BlendMode
-  /**
-   * The size of the noise effect. Applies to both axes. When `noiseSizeVector` is set, this value
-   * is always equal to `noiseSizeVector.x`.
-   */
-  readonly noiseSize: number
-  /**
-   * The size of the noise effect along the x and y axes. When omitted, `noiseSize` applies to both
-   * axes. When provided, its `x` component must equal `noiseSize` or an error is thrown on write.
-   */
-  readonly noiseSizeVector?: Vector
-  /**
-   * The density of the noise effect.
-   */
-  readonly density: number
-  /**
-   * Noise effects currently do not support binding variables.
-   */
-  readonly boundVariables?: {}
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface NoiseEffectMonotone extends NoiseEffectBase {
-  /**
-   * The string literal representing the type of noise this is. Always check the `noiseType` before reading
-   * other properties.
-   */
-  readonly noiseType: 'MONOTONE'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface NoiseEffectDuotone extends NoiseEffectBase {
-  /**
-   * The string literal representing the type of noise this is. Always check the `noiseType` before reading
-   * other properties.
-   */
-  readonly noiseType: 'DUOTONE'
-  /**
-   * The secondary color of the noise effect.
-   */
-  readonly secondaryColor: RGBA
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface NoiseEffectMultitone extends NoiseEffectBase {
-  /**
-   * The string literal representing the type of noise this is. Always check the `noiseType` before reading
-   * other properties.
-   */
-  readonly noiseType: 'MULTITONE'
-  /**
-   * The opacity of the noise effect.
-   */
-  readonly opacity: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
 type NoiseEffect = NoiseEffectMonotone | NoiseEffectDuotone | NoiseEffectMultitone
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface TextureEffect {
-  /**
-   * The string literal representing the type of effect this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'TEXTURE'
-  /**
-   * Whether the texture effect is visible.
-   */
-  readonly visible: boolean
-  /**
-   * The size of the texture effect. Applies to both axes. When `noiseSizeVector` is set, this value
-   * is always equal to `noiseSizeVector.x`.
-   */
-  readonly noiseSize: number
-  /**
-   * The size of the texture effect along the x and y axes. When omitted, `noiseSize` applies to
-   * both axes. When provided, its `x` component must equal `noiseSize` or an error is thrown on
-   * write.
-   */
-  readonly noiseSizeVector?: Vector
-  /**
-   * The radius of the texture effect.
-   */
-  readonly radius: number
-  /**
-   * Whether the texture is clipped to the shape.
-   */
-  readonly clipToShape: boolean
-  /**
-   * Texture effects currently do not support binding variables.
-   */
-  readonly boundVariables?: {}
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Effect
- */
-interface GlassEffect {
-  /**
-   * The string literal representing the type of effect this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'GLASS'
-  /**
-   * Whether this glass effect is visible.
-   */
-  readonly visible: boolean
-  /**
-   * The intensity of specular highlights. Must be between 0 and 1. Higher values create brighter highlights.
-   */
-  readonly lightIntensity: number
-  /**
-   * The angle of the specular light in degrees. Controls the direction of highlights on the glass surface.
-   */
-  readonly lightAngle: number
-  /**
-   * The intensity of the refraction distortion. Must be between 0 and 1. Higher values create more distortion.
-   */
-  readonly refraction: number
-  /**
-   * The depth of the refraction effect. Must be >= 1. Higher values create deeper glass appearance.
-   */
-  readonly depth: number
-  /**
-   * The amount of chromatic aberration (color separation). Must be between 0 and 1. Higher values create more rainbow-like distortion at edges.
-   */
-  readonly dispersion: number
-  /**
-   * The radius of frost on the glass effect.
-   */
-  readonly radius: number
-  /**
-   * Glass effects currently do not support binding variables.
-   */
-  readonly boundVariables?: {}
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/Effect
  */
@@ -4376,296 +3808,9 @@ type Effect =
   | TextureEffect
   | GlassEffect
 /**
- * @see https://developers.figma.com/docs/plugins/api/Constraints
- */
-type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
-/**
- * @see https://developers.figma.com/docs/plugins/api/Constraints
- */
-interface Constraints {
-  readonly horizontal: ConstraintType
-  readonly vertical: ConstraintType
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Paint
- */
-interface ColorStop {
-  /**
-   * The position of the stop along the gradient between 0 and 1
-   */
-  readonly position: number
-  /**
-   * The color value of the gradient stop
-   */
-  readonly color: RGBA
-  /**
-   * The variable bound to a gradient stop
-   */
-  readonly boundVariables?: {
-    [field in VariableBindableColorStopField]?: VariableAlias
-  }
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Paint
- */
-interface ImageFilters {
-  readonly exposure?: number
-  readonly contrast?: number
-  readonly saturation?: number
-  readonly temperature?: number
-  readonly tint?: number
-  readonly highlights?: number
-  readonly shadows?: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Paint
- */
-interface SolidPaint {
-  /**
-   * The string literal "SOLID" representing the type of paint this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'SOLID'
-  /**
-   * The color of the paint. This does not have a alpha property, use `opacity` instead.
-   *
-   * You can use the {@link UtilAPI.solidPaint} utility function to set both `color` and `opacity` using CSS color strings:
-   *
-   * ```
-   * // Create a new SolidPaint
-   * const paint = figma.util.solidPaint('#FF00FF88')
-   *
-   * // Modify an existing SolidPaint
-   * if (node.fills[0].type === 'SOLID') {
-   *   const updated = figma.util.solidPaint('#FF00FF88', node.fills[0])
-   * }
-   * ```
-   */
-  readonly color: RGB
-  /**
-   * Whether the paint is visible. Defaults to true.
-   */
-  readonly visible?: boolean
-  /**
-   * The opacity of the paint. Must be a value between 0 and 1. Defaults to 1.
-   *
-   * You can use the {@link UtilAPI.solidPaint} utility function to set both `color` and `opacity` using CSS color strings:
-   *
-   * ```
-   * // Create a new SolidPaint
-   * const paint = figma.util.solidPaint('#FF00FF88')
-   *
-   * // Modify an existing SolidPaint
-   * if (node.fills[0].type === 'SOLID') {
-   *   const updated = figma.util.solidPaint('#FF00FF88', node.fills[0])
-   * }
-   * ```
-   */
-  readonly opacity?: number
-  /**
-   * Determines how the color of this paint blends with the colors underneath it. Defaults to "NORMAL".
-   */
-  readonly blendMode?: BlendMode
-  /**
-   * The variables bound to a particular field on this paint
-   */
-  readonly boundVariables?: {
-    [field in VariableBindablePaintField]?: VariableAlias
-  }
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Paint
- */
-interface GradientPaint {
-  /**
-   * The string literal representing the type of paint this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND'
-  /**
-   * The positioning of the gradient within the layer.
-   */
-  readonly gradientTransform: Transform
-  /**
-   * Array of colors and their position within the gradient.
-   */
-  readonly gradientStops: ReadonlyArray<ColorStop>
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Paint
- */
-interface ImagePaint {
-  /**
-   * The string literal "IMAGE" representing the type of paint this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'IMAGE'
-  /**
-   * How the image is positioned and scaled within the layer. Same as in the properties panel.
-   */
-  readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
-  /**
-   * The hash (id) of the image used for this paint, if any. Use {@link PluginAPI.getImageByHash} to get the corresponding image object.
-   */
-  readonly imageHash: string | null
-  /**
-   * Applicable only for `scaleMode == "CROP"`. Determines how the image is positioned (thus, cropped) within the layer.
-   */
-  readonly imageTransform?: Transform
-  /**
-   * Applicable only for `scaleMode == "TILE"` (automatic for other modes). Determines the scaling (thus, repetition) of the image within the layer.
-   */
-  readonly scalingFactor?: number
-  /**
-   * Applicable only for `scaleMode == "TILE" | "FILL" | "FIT"` (automatic for `scaleMode == "CROP"`). Determines the rotation of the image within the layer. Must be in increments of +90.
-   */
-  readonly rotation?: number
-  /**
-   * The values for the image filter slides, equivalent to those in the paint picker. All values default to 0.0 and have range -1.0 to +1.0.
-   */
-  readonly filters?: ImageFilters
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Paint
- */
-interface VideoPaint {
-  /**
-   * The string literal "VIDEO" representing the type of paint this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'VIDEO'
-  /**
-   * How the image is positioned and scaled within the layer. Same as in the properties panel.
-   */
-  readonly scaleMode: 'FILL' | 'FIT' | 'CROP' | 'TILE'
-  /**
-   * The hash (id) of the video used for this paint, if any.
-   */
-  readonly videoHash: string | null
-  /**
-   * Applicable only for `scaleMode == "CROP"`. Determines how the video is positioned (thus, cropped) within the layer.
-   */
-  readonly videoTransform?: Transform
-  /**
-   * Applicable only for `scaleMode == "TILE"` (automatic for other modes). Determines the scaling (thus, repetition) of the video within the layer.
-   */
-  readonly scalingFactor?: number
-  /**
-   * Applicable only for `scaleMode == "TILE" | "FILL" | "FIT"` (automatic for `scaleMode == "CROP"`). Determines the rotation of the video within the layer. Must be in increments of +90.
-   */
-  readonly rotation?: number
-  /**
-   * The values for the video filter slides, equivalent to those in the paint picker. All values default to 0.0 and have range -1.0 to +1.0.
-   */
-  readonly filters?: ImageFilters
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Paint
- */
-interface PatternPaint {
-  /**
-   * The string literal representing the type of paint this is. Always check the `type` before reading other properties.
-   */
-  readonly type: 'PATTERN'
-  /**
-   * The node id of the source node for the pattern
-   */
-  readonly sourceNodeId: string
-  /**
-   * The way the pattern is tiled
-   */
-  readonly tileType: 'RECTANGULAR' | 'HORIZONTAL_HEXAGONAL' | 'VERTICAL_HEXAGONAL'
-  /**
-   * The scaling factor of the pattern
-   */
-  readonly scalingFactor: number
-  /**
-   * The spacing of the pattern
-   */
-  readonly spacing: Vector
-  /**
-   * The horizontal alignment of the pattern
-   */
-  readonly horizontalAlignment: 'START' | 'CENTER' | 'END'
-  readonly visible?: boolean
-  readonly opacity?: number
-  readonly blendMode?: BlendMode
-}
-/**
  * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
-
-interface Guide {
-  readonly axis: 'X' | 'Y'
-  readonly offset: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/LayoutGrid
- */
-interface RowsColsLayoutGrid {
-  /**
-   * The string literal representing the layout grid this is. Always check the `pattern` before reading other properties.
-   */
-  readonly pattern: 'ROWS' | 'COLUMNS'
-  /**
-   * How the layout grid is aligned. "MIN" corresponds to "Left" or "Top" in the UI depending on the orientation of the layout grid. "MAX" corresponds to "Right" or "Bottom".
-   */
-  readonly alignment: 'MIN' | 'MAX' | 'STRETCH' | 'CENTER'
-  /**
-   * The distance between the sections of the grid.
-   */
-  readonly gutterSize: number
-  /**
-   * The number of sections. This can be set to the value `Infinity`, which corresponds to "Auto" in the UI.
-   */
-  readonly count: number
-  /**
-   * The size of a section. This is ignored when `alignment == "STRETCH"` since the size is set automatically.
-   */
-  readonly sectionSize?: number
-  /**
-   * The distance between the layout grid sections and the edges of the frame. This is ignored when `alignment == "CENTER"` since the size is set automatically.
-   */
-  readonly offset?: number
-  /**
-   * Whether the layout grid is visible. Defaults to true.
-   */
-  readonly visible?: boolean
-  /**
-   * The color of the layout grid.
-   */
-  readonly color?: RGBA
-  /**
-   * The variables bound to a particular field on this shadow effect
-   */
-  readonly boundVariables?: {
-    [field in VariableBindableLayoutGridField]?: VariableAlias
-  }
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/LayoutGrid
- */
-interface GridLayoutGrid {
-  /**
-   * The string literal "GRID" representing the layout grid this is. Always check the `pattern` before reading other properties.
-   */
-  readonly pattern: 'GRID'
-  /**
-   * The size of individual grid cells.
-   */
-  readonly sectionSize: number
-  readonly visible?: boolean
-  readonly color?: RGBA
-  readonly boundVariables?: {
-    ['sectionSize']?: VariableAlias
-  }
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/LayoutGrid
  */
@@ -4673,284 +3818,11 @@ type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
 /**
  * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
-interface ExportSettingsConstraints {
-  readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT'
-  readonly value: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ExportSettings
- */
-interface ExportSettingsImage {
-  /**
-   * The string literal representing the export format.
-   * When reading {@link ExportMixin.exportSettings }, always check the `format` before reading other properties.
-   */
-  readonly format: 'JPG' | 'PNG'
-  /**
-   * Whether only the contents of the node are exported, or any overlapping layer in the same area. Defaults to `true`.
-   */
-  readonly contentsOnly?: boolean
-  /**
-   * Use the full dimensions of the node regardless of whether or not it is cropped or the space around it is empty. Use this to export text nodes without cropping. Defaults to `false`.
-   */
-  readonly useAbsoluteBounds?: boolean
-  /**
-   * Suffix appended to the file name when exporting. Defaults to empty string.
-   */
-  readonly suffix?: string
-  /**
-   * Constraint on the image size when exporting.
-   *
-   * ```ts
-   * interface ExportSettingsConstraints {
-   *   type: "SCALE" | "WIDTH" | "HEIGHT"
-   *   value: number
-   * }
-   * ```
-   *
-   * Defaults to 100% of image size `{ type: "SCALE", value: 1 }`.
-   *
-   *
-   * - `"SCALE"`: The size of the exported image is proportional to the size of the exported layer in Figma. A `value` of 1 means the export is 100% of the layer size.
-   * - `"WIDTH"`: The exported image is scaled to have a fixed width of `value`.
-   * - `"HEIGHT"`: The exported image is scaled to have a fixed height of `value`.
-   */
-  readonly constraint?: ExportSettingsConstraints
-  /**
-   * Color profile of the export.
-   *
-   * Defaults to `'DOCUMENT'`
-   *
-   *
-   * - `"DOCUMENT"`: Use the color profile of {@link DocumentNode.documentColorProfile}.
-   * - `"SRGB"`: Use sRGB colors. This was the previous behavior of Figma before [color management](https://help.figma.com/hc/en-us/articles/360039825114).
-   * - `"DISPLAY_P3_V4"`: Use Display P3 colors.
-   */
-  readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
-}
-
-interface ExportSettingsSVGBase {
-  readonly contentsOnly?: boolean
-  readonly useAbsoluteBounds?: boolean
-  readonly suffix?: string
-  /**
-   * Whether text elements are rendered as outlines (vector paths) or as `<text>` elements in SVGs. Defaults to `true`.
-   *
-   * Rendering text elements as outlines guarantees that the text looks exactly the same in the SVG as it does in the browser/inside Figma.
-   *
-   * Exporting as `<text>` allows text to be selectable inside SVGs and generally makes the SVG easier to read. However, this relies on the browser’s rendering engine which can vary between browsers and/or operating systems. As such, visual accuracy is not guaranteed as the result could look different than in Figma.
-   */
-  readonly svgOutlineText?: boolean
-  /**
-   * Whether to include layer names as ID attributes in the SVG. This can be useful as a way to reference particular elements, but increases the size of the SVG. SVG features that require IDs to function, such as masks and gradients, will always have IDs. Defaults to `false`.
-   */
-  readonly svgIdAttribute?: boolean
-  /**
-   * Whether to export inside and outside strokes as an approximation of the original to simplify the output. Otherwise, it uses a more precise but more bloated masking technique. This is needed because SVGs only support center strokes. Defaults to `true`.
-   */
-  readonly svgSimplifyStroke?: boolean
-  readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ExportSettings
- */
-interface ExportSettingsSVG extends ExportSettingsSVGBase {
-  /**
-   * The string literal "SVG" representing the export format.
-   * When reading {@link ExportMixin.exportSettings }, always check the `format` before reading other properties.
-   */
-  readonly format: 'SVG'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ExportSettings
- */
-interface ExportSettingsSVGString extends ExportSettingsSVGBase {
-  /**
-   * The string literal "SVG_STRING" representing the export format.
-   */
-  readonly format: 'SVG_STRING'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ExportSettings
- */
-interface ExportSettingsPDF {
-  /**
-   * The string literal "PDF" representing the export format.
-   *  When reading {@link ExportMixin.exportSettings }, always check the `format` before reading other properties.
-   */
-  readonly format: 'PDF'
-  readonly contentsOnly?: boolean
-  readonly useAbsoluteBounds?: boolean
-  readonly suffix?: string
-  readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ExportSettings
- */
-interface ExportSettingsREST {
-  /**
-   * Returns the equivalent REST API response of hitting the endpoint `https://api.figma.com/v1/files/:file_key/nodes?ids=:id`.
-   *
-   * This is useful if you have existing code that uses the REST API that you would like to have work inside a plugin as well. It can also be significantly more perfomant if you need to serialize large groups of nodes and their children.
-   * Here is an example that logs the name of every child in a node using the REST API response:
-   *
-   * ```ts title="Using the JSON_REST_V1 format"
-   * function visitChildren(child: Object) {
-   *   console.log(child.name);
-   *   if (child.children) {
-   *     child.children.forEach(visitChildren);
-   *   }
-   * }
-   *
-   * const response = await figma.currentPage.selection[0].exportAsync({
-   *   format: "JSON_REST_V1",
-   * });
-   *
-   * visitChildren(response.document);
-   * ```
-   *
-   * For more information on the shape of the output of the 'JSON_REST_V1' format, see the [files](https://developers.figma.com/docs/rest-api/files) documentation.
-   */
-  readonly format: 'JSON_REST_V1'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ExportSettings
- */
 type ExportSettings = ExportSettingsImage | ExportSettingsSVG | ExportSettingsPDF
-/**
- * @see https://developers.figma.com/docs/plugins/api/properties/VectorPath-windingrule
- */
-type WindingRule = 'NONZERO' | 'EVENODD'
-/**
- * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
- */
-interface VectorVertex {
-  /**
-   * x position of the vertex relative to the position of the node.
-   */
-  readonly x: number
-  /**
-   * y position of the vertex relative to the position of the node.
-   */
-  readonly y: number
-  /**
-   * Appearance of the end of a stroke. Defaults to the node's property if left unspecified.
-   */
-  readonly strokeCap?: StrokeCap
-  /**
-   * Appearance of the join between two segments. Defaults to the node's property if left unspecified.
-   */
-  readonly strokeJoin?: StrokeJoin
-  /**
-   * Corner radius at this vertex. Defaults to the node's property if left unspecified.
-   */
-  readonly cornerRadius?: number
-  /**
-   * How two curve handles behave relative to one another. Defaults to the node's property if left unspecified.
-   */
-  readonly handleMirroring?: HandleMirroring
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
- */
-interface VectorSegment {
-  /**
-   * The index of the vertex that starts this segment.
-   */
-  readonly start: number
-  /**
-   * The index of the vertex that ends this segment.
-   */
-  readonly end: number
-  /**
-   * The tangent on the start side of this segment. Defaults to `{ x: 0, y: 0 }`
-   */
-  readonly tangentStart?: Vector
-  /**
-   * The tangent on the end side of this segment. Defaults to `{ x: 0, y: 0 }`
-   */
-  readonly tangentEnd?: Vector
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
- */
-interface VectorRegion {
-  /**
-   * Winding rule for this region.
-   */
-  readonly windingRule: WindingRule
-  /**
-   * List of loops, each of which is a list of indices of `VectorSegment`(s)
-   */
-  readonly loops: ReadonlyArray<ReadonlyArray<number>>
-  /**
-   * Array of fill paints used on this region.
-   */
-  readonly fills?: ReadonlyArray<Paint>
-  /**
-   * Style key of fill style applied to this region, if any.
-   */
-  readonly fillStyleId?: string
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/VectorNetwork
- */
-interface VectorNetwork {
-  /**
-   * Vertices are points in the graph.
-   */
-  readonly vertices: ReadonlyArray<VectorVertex>
-  /**
-   * Segments connect vertices.
-   */
-  readonly segments: ReadonlyArray<VectorSegment>
-  /**
-   * Regions are defined by segments and specify that an area is to be filled. Defaults to [].
-   */
-  readonly regions?: ReadonlyArray<VectorRegion>
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/VectorPath
- */
-interface VectorPath {
-  /**
-   * The winding rule for the path (same as in SVGs). This determines whether a given point in space is inside or outside the path.
-   *
-   * @remarks
-   *
-   * ```ts
-   * type WindingRule = "NONZERO" | "EVENODD"
-   * ```
-   *
-   * Winding rules work off a concept called the winding number, which tells you for a given point how many times the path winds around that point. This is described in much more detail [here](https://oreillymedia.github.io/Using_SVG/extras/ch06-fill-rule.html). This field can have three possible values:
-   * - `"NONZERO"`: The point is considered inside the path if the winding number is NONZERO.
-   * - `"EVENODD"`: The point is considered inside the path if the winding number is odd.
-   * - `"NONE"`: An open path won’t have a fill.
-   */
-  readonly windingRule: WindingRule | 'NONE'
-  /**
-   * A series of path commands that encodes how to draw the path.
-   *
-   * @remarks
-   *
-   * Figma supports a subset of the SVG path format. Path commands must be joined into a single string in order separated by a single space. Here are the path commands we support:
-   * - `M x y`: The absolute "move to" command.
-   * - `L x y`: The absolute "line to" command.
-   * - `Q x0 y0 x y`: The absolute "quadratic spline to" command. _Note_ that while Figma supports this as input, we will never generate this ourselves. All quadratic splines are converted to cubic splines internally.
-   * - `C x0 y0 x1 y1 x y`: The absolute "cubic spline to" command.
-   * - `Z`: The "close path" command.
-   */
-  readonly data: string
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/VectorPath
  */
 type VectorPaths = ReadonlyArray<VectorPath>
-
-interface LetterSpacing {
-  readonly value: number
-  readonly unit: 'PIXELS' | 'PERCENT'
-}
 type LineHeight =
   | {
       readonly value: number
@@ -4991,152 +3863,6 @@ type BlendMode =
   | 'COLOR'
   | 'LUMINOSITY'
 type MaskType = 'ALPHA' | 'VECTOR' | 'LUMINANCE'
-/**
- * @see https://developers.figma.com/docs/plugins/api/FontName
- */
-interface Font {
-  fontName: FontName
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/TextStyleOverrides
- */
-type TextStyleOverrideType = {
-  type: 'SEMANTIC_ITALIC' | 'SEMANTIC_WEIGHT' | 'HYPERLINK' | 'TEXT_DECORATION'
-}
-
-interface StyledTextSegment {
-  /**
-   * The characters in the range of text with the same styles.
-   */
-  characters: string
-  /**
-   * Start index (inclusive) of the range of characters.
-   */
-  start: number
-  /**
-   * End index (exclusive) of the range of characters.
-   */
-  end: number
-  /**
-   * The size of the font. Has minimum value of 1.
-   */
-  fontSize: number
-  /**
-   * The font family (e.g. "Inter"), and font style (e.g. "Regular").
-   */
-  fontName: FontName
-  /**
-   * The weight of the font (e.g. 400 for "Regular", 700 for "Bold").
-   */
-  fontWeight: number
-  /**
-   * The style of the font (i.e. "REGULAR", "ITALIC").
-   */
-  fontStyle: FontStyle
-  /**
-   * Whether the text is underlined or has a strikethrough.
-   */
-  textDecoration: TextDecoration
-  /**
-   * The text decoration style (e.g. "SOLID"). If the text is not underlined, this value will be null.
-   */
-  textDecorationStyle: TextDecorationStyle | null
-  /**
-   * The text decoration offset. If the text is not underlined, this value will be null.
-   */
-  textDecorationOffset: TextDecorationOffset | null
-  /**
-   * The text decoration thickness. If the text is not underlined, this value will be null.
-   */
-  textDecorationThickness: TextDecorationThickness | null
-  /**
-   * The text decoration color. If the text is not underlined, this value will be null.
-   */
-  textDecorationColor: TextDecorationColor | null
-  /**
-   * Whether the text decoration skips descenders. If the text is not underlined, this value will be null.
-   */
-  textDecorationSkipInk: boolean | null
-  /**
-   * Overrides the case of the raw characters in the text node.
-   */
-  textCase: TextCase
-  /**
-   * The spacing between the lines in a paragraph of text.
-   */
-  lineHeight: LineHeight
-  /**
-   * The spacing between the individual characters.
-   */
-  letterSpacing: LetterSpacing
-  /**
-   * The paints used to fill the area of the shape.
-   */
-  fills: Paint[]
-  /**
-   * The id of the TextStyle object that the text properties of this node are linked to
-   */
-  textStyleId: string
-  /**
-   * The id of the PaintStyle object that the fills property of this node is linked to.
-   */
-  fillStyleId: string
-  /**
-   * The list settings.
-   */
-  listOptions: TextListOptions
-  /**
-   * The spacing between list items.
-   */
-  listSpacing: number
-  /**
-   * The indentation.
-   */
-  indentation: number
-  /**
-   * The paragraph indent.
-   */
-  paragraphIndent: number
-  /**
-   * The paragraph spacing.
-   */
-  paragraphSpacing: number
-  /**
-   * A HyperlinkTarget if the text node has exactly one hyperlink, or null if the node has none.
-   */
-  hyperlink: HyperlinkTarget | null
-  /**
-   * OpenType features that have been explicitly enabled or disabled.
-   */
-  openTypeFeatures: {
-    readonly [feature in OpenTypeFeature]: boolean
-  }
-  /**
-   * The variables bound to a particular field.
-   */
-  boundVariables?: {
-    [field in VariableBindableTextField]?: VariableAlias
-  }
-  /**
-   * Overrides applied over a text style.
-   */
-  textStyleOverrides: TextStyleOverrideType[]
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/TextPathStartData
- *
- * Interface representing the starting point of a text path.
- */
-interface TextPathStartData {
-  /**
-   * The segment index where the text path starts.
-   */
-  segment: number
-  /**
-   * The position (0 to 1) along the segment where the text path starts.
-   */
-  position: number
-}
 type Reaction = {
   /**
    * @deprecated Use the `actions` field instead of the `action` field.
@@ -5144,35 +3870,6 @@ type Reaction = {
   action?: Action
   actions?: Action[]
   trigger: Trigger | null
-}
-type VariableDataType = 'BOOLEAN' | 'FLOAT' | 'STRING' | 'VARIABLE_ALIAS' | 'COLOR' | 'EXPRESSION'
-type ExpressionFunction =
-  | 'ADDITION'
-  | 'SUBTRACTION'
-  | 'MULTIPLICATION'
-  | 'DIVISION'
-  | 'EQUALS'
-  | 'NOT_EQUAL'
-  | 'LESS_THAN'
-  | 'LESS_THAN_OR_EQUAL'
-  | 'GREATER_THAN'
-  | 'GREATER_THAN_OR_EQUAL'
-  | 'AND'
-  | 'OR'
-  | 'VAR_MODE_LOOKUP'
-  | 'NEGATE'
-  | 'NOT'
-
-interface Expression {
-  expressionFunction: ExpressionFunction
-  expressionArguments: VariableData[]
-}
-type VariableValueWithExpression = VariableValue | Expression
-
-interface VariableData {
-  type?: VariableDataType
-  resolvedType?: VariableResolvedDataType
-  value?: VariableValueWithExpression
 }
 type ConditionalBlock = {
   condition?: VariableData
@@ -5251,24 +3948,6 @@ type Action =
 /**
  * @see https://developers.figma.com/docs/plugins/api/Transition
  */
-interface SimpleTransition {
-  readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
-  readonly easing: Easing
-  readonly duration: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Transition
- */
-interface DirectionalTransition {
-  readonly type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT'
-  readonly direction: 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
-  readonly matchLayers: boolean
-  readonly easing: Easing
-  readonly duration: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Transition
- */
 type Transition = SimpleTransition | DirectionalTransition
 type Trigger =
   | {
@@ -5303,43 +3982,6 @@ type Trigger =
  * @see https://developers.figma.com/docs/plugins/api/Action
  */
 type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
-/**
- * @see https://developers.figma.com/docs/plugins/api/Transition
- */
-interface Easing {
-  readonly type:
-    | 'EASE_IN'
-    | 'EASE_OUT'
-    | 'EASE_IN_AND_OUT'
-    | 'LINEAR'
-    | 'EASE_IN_BACK'
-    | 'EASE_OUT_BACK'
-    | 'EASE_IN_AND_OUT_BACK'
-    | 'CUSTOM_CUBIC_BEZIER'
-    | 'GENTLE'
-    | 'QUICK'
-    | 'BOUNCY'
-    | 'SLOW'
-    | 'CUSTOM_SPRING'
-  readonly easingFunctionCubicBezier?: EasingFunctionBezier
-  readonly easingFunctionSpring?: EasingFunctionSpring
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Transition
- */
-interface EasingFunctionBezier {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
-}
-
-interface EasingFunctionSpring {
-  mass: number
-  stiffness: number
-  damping: number
-  initialVelocity: number
-}
 type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
 /**
  * @see https://developers.figma.com/docs/plugins/api/Overlay
@@ -5372,26 +4014,6 @@ type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
  * @see https://developers.figma.com/docs/plugins/api/PublishStatus
  */
 type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
-
-interface ConnectorEndpointPosition {
-  position: {
-    x: number
-    y: number
-  }
-}
-
-interface ConnectorEndpointPositionAndEndpointNodeId {
-  position: {
-    x: number
-    y: number
-  }
-  endpointNodeId: string
-}
-
-interface ConnectorEndpointEndpointNodeIdAndMagnet {
-  endpointNodeId: string
-  magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' | 'CENTER'
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/ConnectorEndpoint
  */
@@ -5765,15 +4387,6 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
   /**
    * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://developers.figma.com/docs/plugins/working-with-variables) guide for how to get and set variable bindings.
    *
-   * @deprecated Use `setBoundVariable(VariableBindableNodeField, Variable)` instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  setBoundVariable(
-    field: VariableBindableNodeField | VariableBindableTextField,
-    variableId: string | null,
-  ): void
-  /**
-   * Binds the provided `field` on this node to the given variable. Please see the [Working with Variables](https://developers.figma.com/docs/plugins/working-with-variables) guide for how to get and set variable bindings.
-   *
    * If `null` is provided as the variable, the given `field` will be unbound from any variables.
    *
    * @param field - The field to bind the variable to.
@@ -5887,13 +4500,11 @@ type VariableBindableTextField =
   | 'paragraphIndent'
 type VariableBindablePaintField = 'color'
 type VariableBindablePaintStyleField = 'paints'
-type VariableBindableColorStopField = 'color'
 type VariableBindableEffectField = 'color' | 'radius' | 'spread' | 'offsetX' | 'offsetY'
 type VariableBindableEffectStyleField = 'effects'
 type VariableBindableLayoutGridField = 'sectionSize' | 'count' | 'offset' | 'gutterSize'
 type VariableBindableGridStyleField = 'layoutGrids'
 type VariableBindableComponentPropertyField = 'value'
-type VariableBindableComponentPropertyDefinitionField = 'defaultValue'
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
@@ -6281,12 +4892,6 @@ interface LayoutMixin
    */
   readonly absoluteRenderBounds: Rect | null
   /**
-   * When toggled, causes the layer to keep its proportions when the user resizes it via the properties panel.
-   *
-   * @deprecated Use `targetAspectRatio`, `lockAspectRatio`, and `unlockAspectRatio` instead.
-   */
-  constrainProportions: boolean
-  /**
    * The rotation of the node in degrees. Returns values from -180 to 180. Identical to `Math.atan2(-m10, m00)` in the {@link DimensionAndPositionMixin.relativeTransform} matrix. When setting `rotation`, it will also set `m00`, `m01`, `m10`, `m11`.
    *
    * @remarks
@@ -6546,19 +5151,6 @@ interface ContainerMixin {
    */
   expanded: boolean
 }
-/**
- * @see https://developers.figma.com/docs/plugins/api/node-properties
- */
-interface DeprecatedBackgroundMixin {
-  /**
-   * @deprecated Use `fills` instead.
-   */
-  backgrounds: ReadonlyArray<Paint>
-  /**
-   * @deprecated Use `fillStyleId` instead. This property is read-only if the manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  backgroundStyleId: string
-}
 declare type StrokeCap =
   | 'NONE'
   | 'ROUND'
@@ -6640,14 +5232,6 @@ interface AutoLayoutMixin {
    * Applicable only on auto-layout frames. Determines the bottom padding between the border of the frame and its children.
    */
   paddingBottom: number
-  /**
-   * @deprecated Use `paddingLeft` and `paddingRight` instead.
-   */
-  horizontalPadding: number
-  /**
-   * @deprecated Use `paddingTop` and `paddingBottom` instead.
-   */
-  verticalPadding: number
   /**
    * Applicable only on auto-layout frames. Determines whether the primary axis has a fixed length (determined by the user) or an automatic length (determined by the layout engine).
    *
@@ -7057,65 +5641,6 @@ interface AutoLayoutMixin {
    * ```
    */
   itemReverseZIndex: boolean
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/GridTrackSize
- */
-interface GridTrackSize {
-  /**
-   * Applicable only on FIXED or FLEX grid tracks. In FIXED tracks, the size of the track in pixels. In FLEX tracks, the fractional unit value (equivalent to the [`fr` unit](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout#the_fr_unit) in CSS)
-   * Optional for `FLEX` tracks.
-   */
-  value?: number
-  /**
-   * The type of the grid track. `FLEX` indicates that the track behaves like the CSS grid [`fr` unit](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout#the_fr_unit).
-   * `FIXED` indicates that the track will have a fixed pixel size.
-   * `HUG` indicates that the track will size to fit its content, equivalent to a CSS setting of `fit-content(100%)`.
-   * It is not a valid state for 'FLEX' tracks to be set on a grid when the container is set to layoutSizingHorizonal/layoutSizingVertical 'HUG'
-   **/
-  type: 'FLEX' | 'FIXED' | 'HUG'
-}
-/**
- * Options for {@link GridLayoutMixin.reorderRows} and {@link GridLayoutMixin.reorderColumns}.
- * @see https://developers.figma.com/docs/plugins/api/GridTrackReorderOptions
- */
-interface GridTrackReorderOptions {
-  /**
-   * The indices of the rows or columns (tracks) to move. Does not need to be sorted, contiguous, or deduplicated.
-   * All indices must be within bounds for the current number of rows or columns.
-   */
-  fromIndices: ReadonlyArray<number>
-  /**
-   * The index to insert the selected rows or columns (tracks) at. This is evaluated against the original
-   * row/column order (before the move).
-   *
-   * As an example, take a grid with 4 columns and 2 rows.
-   * fromIndices could be 0 to 3 (inclusive), and insertionIndex could be 0 to 4 (inclusive).
-   *
-   * ```
-   *   0         1         2         3         4 ← possible insertion indices
-   * ---- 0 --- --- 1 --- --- 2 --- --- 3 ----   ← track indices
-   * +-------------------+---------+---------+
-   * |                   |         |         |
-   * |                   |         |         |
-   * +---------+---------+---------+---------+
-   * |         |         |         |         |
-   * |         |         |         |         |
-   * +---------+---------+---------+---------+
-   * ```
-   */
-  insertionIndex: number
-}
-/**
- * Describes a single row or column (track)'s movement for a call to {@link GridLayoutMixin.reorderRows}
- *
- * @see https://developers.figma.com/docs/plugins/api/GridTrackReorderEntry
- */
-interface GridTrackReorderEntry {
-  /** The original index of the track before the reorder. */
-  from: number
-  /** The new index of the track after the reorder. */
-  to: number
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -7544,10 +6069,6 @@ interface GridChildrenMixin {
   gridChildVerticalAlign: 'MIN' | 'CENTER' | 'MAX' | 'AUTO'
 }
 /**
- * @see https://developers.figma.com/docs/plugins/api/InferredAutoLayoutResult
- */
-interface InferredAutoLayoutResult extends AutoLayoutChildrenMixin, AutoLayoutMixin {}
-/**
  * @see https://developers.figma.com/docs/plugins/api/DetachedInfo
  */
 type DetachedInfo =
@@ -7681,31 +6202,6 @@ interface MinimalFillsMixin {
 /**
  * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
  */
-interface VariableWidthPoint {
-  /** The position of the variable width point along the stroke, from 0 (the start of the stroke) to 1 (the end of the stroke). */
-  position: number
-  /** The width of the stroke at this variable width point as a fraction of the stroke weight. */
-  width: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
- */
-interface PresetVariableWidthStrokeProperties {
-  /** The width profile of the stroke. */
-  widthProfile: 'UNIFORM' | 'WEDGE' | 'TAPER' | 'QUARTER_TAPER' | 'EYE' | 'MIRRORED_TAPER'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
- */
-interface CustomVariableWidthStrokeProperties {
-  /** The width profile of the stroke. Fixed to 'CUSTOM'. */
-  widthProfile: 'CUSTOM'
-  /** An array of variable width points defining the custom width profile. */
-  variableWidthPoints: ReadonlyArray<VariableWidthPoint>
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
- */
 declare type VariableWidthStrokeProperties =
   | PresetVariableWidthStrokeProperties
   | CustomVariableWidthStrokeProperties
@@ -7721,83 +6217,7 @@ declare type ComplexStrokeProperties =
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
  */
-interface ScatterBrushProperties {
-  type: 'BRUSH'
-  brushType: 'SCATTER'
-  /**
-   * Name of the scatter brush. See the [available brushes](https://developers.figma.com/api/complex-stroke-properties.md#available-brushes) for previews of these brushes.
-   * Nodes using custom brushes will have this set to 'CUSTOM'. However, setting this property to 'CUSTOM' is not yet supported.
-   */
-  brushName:
-    | 'BUBBLEGUM'
-    | 'WITCH_HOUSE'
-    | 'SHOEGAZE'
-    | 'HONKY_TONK'
-    | 'SCREAMO'
-    | 'DRONE'
-    | 'DOO_WOP'
-    | 'SPOKEN_WORD'
-    | 'VAPORWAVE'
-    | 'OI'
-    | 'CUSTOM'
-  /** Gap between brush instances along the stroke path. Minimum value is 0.25 */
-  gap: number
-  /** The amount of random movement applied to brush instances along the stroke path. The minimum value is 0. */
-  wiggle: number
-  /** The amount of random size variation applied to brush instances. Ranges from 0 to 3. */
-  sizeJitter: number
-  /** The amount of random angular variation in degrees applied to brush instances. Ranges from -180 to 180. */
-  angularJitter: number
-  /** The rotation in degrees applied to brush instances. Ranges from -180 to 180. */
-  rotation: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
- */
-interface StretchBrushProperties {
-  type: 'BRUSH'
-  brushType: 'STRETCH'
-  /**
-   * Name of the stretch brush. See the [available brushes](https://developers.figma.com/api/complex-stroke-properties.md#available-brushes) for previews of these brushes.
-   * Nodes using custom brushes will have this set to 'CUSTOM'. However, setting this property to 'CUSTOM' is not yet supported.
-   * */
-  brushName:
-    | 'HEIST'
-    | 'BLOCKBUSTER'
-    | 'GRINDHOUSE'
-    | 'BIOPIC'
-    | 'SPAGHETTI_WESTERN'
-    | 'SLASHER'
-    | 'HARDBOILED'
-    | 'VERITE'
-    | 'EPIC'
-    | 'SCREWBALL'
-    | 'ROM_COM'
-    | 'NOIR'
-    | 'PROPAGANDA'
-    | 'MELODRAMA'
-    | 'NEW_WAVE'
-    | 'CUSTOM'
-  /** The direction of the brush */
-  direction: 'FORWARD' | 'BACKWARD'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
- */
 type BrushStrokeProperties = StretchBrushProperties | ScatterBrushProperties
-/**
- * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
- */
-interface DynamicStrokeProperties {
-  /** The type of complex stroke. Fixed to 'DYNAMIC'. */
-  type: 'DYNAMIC'
-  /** The frequency of the dynamic stroke. Ranges from 0.01 to 20. */
-  frequency: number
-  /** The amplitude of the wiggles in the dynamic stroke. Minimum value is 0. */
-  wiggle: number
-  /** The amount of smoothing applied to the dynamic stroke. Ranges from 0 to 1. */
-  smoothen: number
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
@@ -8189,12 +6609,6 @@ interface ReactionMixin {
   setReactionsAsync(reactions: Array<Reaction>): Promise<void>
 }
 /**
- * @see https://developers.figma.com/docs/plugins/api/DocumentationLink
- */
-interface DocumentationLink {
-  readonly uri: string
-}
-/**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface PublishableMixin {
@@ -8248,17 +6662,6 @@ interface PublishableMixin {
    */
   getPublishStatusAsync(): Promise<PublishStatus>
 }
-/**
- * @see https://developers.figma.com/docs/plugins/api/node-properties
- */
-interface DefaultShapeMixin
-  extends BaseNodeMixin,
-    SceneNodeMixin,
-    ReactionMixin,
-    BlendMixin,
-    GeometryMixin,
-    LayoutMixin,
-    ExportMixin {}
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
@@ -8317,16 +6720,6 @@ interface BaseFrameMixin
    */
   inferredAutoLayout: InferredAutoLayoutResult | null
 }
-/**
- * @see https://developers.figma.com/docs/plugins/api/node-properties
- */
-interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
-
-interface OpaqueNodeMixin
-  extends BaseNodeMixin,
-    SceneNodeMixin,
-    ExportMixin,
-    DimensionAndPositionMixin {}
 
 interface MinimalBlendMixin {
   /**
@@ -8338,51 +6731,6 @@ interface MinimalBlendMixin {
    */
   blendMode: BlendMode
 }
-
-interface Annotation {
-  readonly label?: string
-  readonly labelMarkdown?: string
-  readonly properties?: ReadonlyArray<AnnotationProperty>
-  readonly categoryId?: string
-}
-
-interface AnnotationProperty {
-  readonly type: AnnotationPropertyType
-}
-type AnnotationPropertyType =
-  | 'width'
-  | 'height'
-  | 'maxWidth'
-  | 'minWidth'
-  | 'maxHeight'
-  | 'minHeight'
-  | 'fills'
-  | 'strokes'
-  | 'effects'
-  | 'strokeWeight'
-  | 'cornerRadius'
-  | 'textStyleId'
-  | 'textAlignHorizontal'
-  | 'fontFamily'
-  | 'fontStyle'
-  | 'fontSize'
-  | 'fontWeight'
-  | 'lineHeight'
-  | 'letterSpacing'
-  | 'itemSpacing'
-  | 'padding'
-  | 'layoutMode'
-  | 'alignItems'
-  | 'opacity'
-  | 'mainComponent'
-  | 'gridRowGap'
-  | 'gridColumnGap'
-  | 'gridRowCount'
-  | 'gridColumnCount'
-  | 'gridRowAnchorIndex'
-  | 'gridColumnAnchorIndex'
-  | 'gridRowSpan'
-  | 'gridColumnSpan'
 interface AnnotationsMixin {
   /**
    * Annotations on the node.
@@ -8390,22 +6738,6 @@ interface AnnotationsMixin {
    * Learn more about annotations in the [Help Center](https://help.figma.com/hc/en-us/articles/20774752502935) or see the [Annotation type](https://developers.figma.com/docs/plugins/api/Annotation) for usage examples.
    */
   annotations: ReadonlyArray<Annotation>
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/Measurement
- */
-interface Measurement {
-  id: string
-  start: {
-    node: SceneNode
-    side: MeasurementSide
-  }
-  end: {
-    node: SceneNode
-    side: MeasurementSide
-  }
-  offset: MeasurementOffset
-  freeText: string
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/MeasurementSide
@@ -8502,56 +6834,6 @@ interface MeasurementsMixin {
    * ```
    */
   deleteMeasurement(id: string): void
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/node-properties
- */
-interface VariantMixin {
-  /**
-   * Variant properties and values for this node. Is `null` for nodes that are not variants.
-   *
-   * @remarks
-   *
-   * [Variant properties](https://help.figma.com/hc/en-us/articles/5579474826519#h_01G2Q5GF4407ZTN7K8FHM2JREZ) define attributes of variants in a component set. For example, a component set for a button might have variant properties such as `size` and `state`, with different possible values for each property (e.g. `default`, `hover`, `pressed`, and `disabled` for the `state` property).
-   *
-   * ```ts title="Variant-related properties and methods for component sets, components, and instances"
-   * componentSet.variantGroupProperties
-   *
-   * // Output
-   * {
-   *   Size: {
-   *     values: ['Small', 'Medium', 'Large']
-   *   },
-   *   State: {
-   *     values: ['Default', 'Hover', 'Pressed', 'Disabled']
-   *   }
-   * }
-   *
-   * // One of the variants / component nodes in the component set
-   * componentSet.children[1].variantProperties
-   *
-   * // Output
-   * { Size: 'Small', State: 'Hover' }
-   *
-   * // variantProperties also works on an instances of variants
-   * instance.variantProperties
-   *
-   * // Output
-   * { Size: 'Medium', State: 'Default' }
-   *
-   * // Use setProperties on an instance of a variant to configure it
-   * instance.setProperties({ Size: 'Large' })
-   * instance.variantProperties
-   *
-   * // Output
-   * { Size: 'Large', State: 'Default' }
-   * ```
-   *
-   * @deprecated Use {@link InstanceNode.componentProperties} instead.
-   */
-  readonly variantProperties: {
-    [property: string]: string
-  } | null
 }
 interface ComponentPropertiesMixin {
   /**
@@ -8914,12 +7196,6 @@ interface BaseNonResizableTextMixin {
    */
   setRangeTextStyleIdAsync(start: number, end: number, styleId: string): Promise<void>
   /**
-   * Set the `textStyleId` from characters in range `start` (inclusive) to `end` (exclusive). Requires the font to be loaded.
-   *
-   * @deprecated Use `setRangeTextStyleIdAsync` instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  setRangeTextStyleId(start: number, end: number, value: string): void
-  /**
    * Get the `fillStyleId` from characters in range `start` (inclusive) to `end` (exclusive).
    */
   getRangeFillStyleId(start: number, end: number): string | PluginAPI['mixed']
@@ -8927,12 +7203,6 @@ interface BaseNonResizableTextMixin {
    * Set the provided {@link PaintStyle} as a fill to characters in range `start` (inclusive) to `end` (exclusive).
    */
   setRangeFillStyleIdAsync(start: number, end: number, styleId: string): Promise<void>
-  /**
-   * Set the `fillStyleId` from characters in range `start` (inclusive) to `end` (exclusive). Requires the font to be loaded.
-   *
-   * @deprecated Use `setRangeFillStyleIdAsync` instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  setRangeFillStyleId(start: number, end: number, value: string): void
   /**
    * Get the `boundVariable` for a given field from characters in range `start` (inclusive) to `end` (exclusive).
    */
@@ -9278,14 +7548,6 @@ interface NonResizableTextMixin extends BaseNonResizableTextMixin {
    */
   setRangeParagraphSpacing(start: number, end: number, value: number): void
 }
-/**
- * @see https://developers.figma.com/docs/plugins/api/TextPathNode
- */
-interface NonResizableTextPathMixin extends BaseNonResizableTextMixin {}
-/**
- * @see https://developers.figma.com/docs/plugins/api/TextNode
- */
-interface TextSublayerNode extends NonResizableTextMixin, MinimalFillsMixin {}
 interface DocumentNode extends BaseNodeMixin {
   /**
    * The type of this node, represented by the string literal "DOCUMENT"
@@ -9422,21 +7684,9 @@ interface ExplicitVariableModesMixin {
   /**
    * Clears an explicit mode for the given collection on this node
    *
-   * @deprecated Use `clearExplicitVariableModeForCollection(VariableCollection)` instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   * */
-  clearExplicitVariableModeForCollection(collectionId: string): void
-  /**
-   * Clears an explicit mode for the given collection on this node
-   *
    * @param collection - A variable collection. Make sure to pass a collection object here; passing a variable collection ID is deprecated.
    */
   clearExplicitVariableModeForCollection(collection: VariableCollection): void
-  /**
-   * Sets an explicit mode for the given collection on this node
-   *
-   * @deprecated Use `setExplicitVariableModeForCollection(VariableCollection, Variable)` instead. This function will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  setExplicitVariableModeForCollection(collectionId: string, modeId: string): void
   /**
    * Sets an explicit mode for the given collection on this node
    *
@@ -10001,14 +8251,6 @@ interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPr
    * The default variant of this component set, which is the top-left-most variant, spatially. This corresponds to the variant that would be inserted when dragging in a component set from the team library in the Figma UI.
    */
   readonly defaultVariant: ComponentNode
-  /**
-   * @deprecated Use `componentPropertyDefinitions` instead.
-   */
-  readonly variantGroupProperties: {
-    [property: string]: {
-      values: string[]
-    }
-  }
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComponentNode
@@ -10038,12 +8280,6 @@ interface ComponentNode
    * Returns an array of all of the instances of this component in the document.
    */
   getInstancesAsync(): Promise<InstanceNode[]>
-  /**
-   * Returns an array of all of the instances of this component in the document.
-   *
-   * @deprecated Use {@link ComponentNode.getInstancesAsync} instead. Accessing this property will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  readonly instances: InstanceNode[]
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComponentProperties
@@ -10121,11 +8357,6 @@ interface InstanceNode extends DefaultFrameMixin, VariantMixin {
     id: string
     overriddenFields: NodeChangeProperty[]
   }[]
-  /**
-   * Resets all direct overrides on this instance.
-   * @deprecated Use `removeOverrides` instead.
-   */
-  resetOverrides(): void
   /**
    * Removes all direct overrides on this instance.
    */
@@ -10532,11 +8763,6 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   clone(): ConnectorNode
 }
 type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
-
-interface VariableAlias {
-  type: 'VARIABLE_ALIAS'
-  id: string
-}
 type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
 type VariableScope =
   | 'ALL_SCOPES'
@@ -10996,35 +9222,6 @@ interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
     },
   ): void
 }
-
-interface EmbedData {
-  /**
-   * The srcUrl of an embed is the URL that will be loaded in an iFrame when the embed is activated
-   *
-   * @example https://www.example.com/embed/items/abcdefg
-   */
-  srcUrl: string
-  /**
-   * The canonicalUrl of an embed is the URL that will be navigated to when the embed is opened in an external tab
-   *
-   * @example https://www.example.com/items/abcdefg
-   */
-  canonicalUrl: string | null
-  /**
-   * The title of the embed, as displayed on the canvas
-   */
-  title: string | null
-  /**
-   * The description of the embed, as displayed on the canvas
-   */
-  description: string | null
-  /**
-   * The name of the provider of an embed.
-   *
-   * ex. 'Spotify', 'YouTube'
-   */
-  provider: string | null
-}
 interface EmbedNode extends OpaqueNodeMixin {
   /**
    * The type of this node, represented by the string literal "EMBED"
@@ -11039,33 +9236,6 @@ interface EmbedNode extends OpaqueNodeMixin {
    */
   clone(): EmbedNode
 }
-
-interface LinkUnfurlData {
-  /**
-   * The URL of the link being unfurled
-   *
-   * Example: https://mynewssite.com/stories/abcdefg
-   */
-  url: string
-  /**
-   * The title of the link being unfurled
-   *
-   * Example: "Important News Headline"
-   */
-  title: string | null
-  /**
-   * The description of the link being unfurled
-   *
-   * Example: "An astonishing event happened today in a random part of the world...."
-   */
-  description: string | null
-  /**
-   * The provider name of the link being unfurled
-   *
-   * Example: "CNN" | "The Onion" | "TechCrunch"
-   */
-  provider: string | null
-}
 interface LinkUnfurlNode extends OpaqueNodeMixin {
   /**
    * The type of this node, represented by the string literal "LINK_UNFURL"
@@ -11079,13 +9249,6 @@ interface LinkUnfurlNode extends OpaqueNodeMixin {
    * Create a copy of this node
    */
   clone(): LinkUnfurlNode
-}
-
-interface MediaData {
-  /**
-   * A unique hash of the contents of the media node
-   */
-  hash: string
 }
 interface MediaNode extends OpaqueNodeMixin {
   /**
@@ -11229,67 +9392,6 @@ interface InteractiveSlideElementNode extends OpaqueNodeMixin {
   clone(): InteractiveSlideElementNode
 }
 /**
- * @see https://developers.figma.com/docs/plugins/api/SlideTransition
- */
-interface SlideTransition {
-  /**
-   * The type of slide transition.
-   */
-  readonly style:
-    | 'NONE'
-    | 'DISSOLVE'
-    | 'SLIDE_FROM_LEFT'
-    | 'SLIDE_FROM_RIGHT'
-    | 'SLIDE_FROM_BOTTOM'
-    | 'SLIDE_FROM_TOP'
-    | 'PUSH_FROM_LEFT'
-    | 'PUSH_FROM_RIGHT'
-    | 'PUSH_FROM_BOTTOM'
-    | 'PUSH_FROM_TOP'
-    | 'MOVE_FROM_LEFT'
-    | 'MOVE_FROM_RIGHT'
-    | 'MOVE_FROM_TOP'
-    | 'MOVE_FROM_BOTTOM'
-    | 'SLIDE_OUT_TO_LEFT'
-    | 'SLIDE_OUT_TO_RIGHT'
-    | 'SLIDE_OUT_TO_TOP'
-    | 'SLIDE_OUT_TO_BOTTOM'
-    | 'MOVE_OUT_TO_LEFT'
-    | 'MOVE_OUT_TO_RIGHT'
-    | 'MOVE_OUT_TO_TOP'
-    | 'MOVE_OUT_TO_BOTTOM'
-    | 'SMART_ANIMATE'
-  /**
-   * The duration of the slide transition, in seconds.
-   */
-  readonly duration: number
-  /**
-   * The easing of the slide transition.
-   */
-  readonly curve:
-    | 'EASE_IN'
-    | 'EASE_OUT'
-    | 'EASE_IN_AND_OUT'
-    | 'LINEAR'
-    | 'GENTLE'
-    | 'QUICK'
-    | 'BOUNCY'
-    | 'SLOW'
-  /**
-   * The timing of the slide transition.
-   */
-  readonly timing: {
-    /**
-     * The type of timing.
-     */
-    readonly type: 'ON_CLICK' | 'AFTER_DELAY'
-    /**
-     * The delay of the timing, in seconds.
-     */
-    readonly delay?: number
-  }
-}
-/**
  * @see https://developers.figma.com/docs/plugins/api/node-types
  */
 type BaseNode = DocumentNode | PageNode | SceneNode
@@ -11336,27 +9438,6 @@ type SceneNode =
  */
 type NodeType = BaseNode['type']
 type StyleType = 'PAINT' | 'TEXT' | 'EFFECT' | 'GRID'
-/**
- * @see https://developers.figma.com/docs/plugins/api/InheritedStyleField
- */
-type InheritedStyleField =
-  | 'fillStyleId'
-  | 'strokeStyleId'
-  | 'backgroundStyleId'
-  | 'textStyleId'
-  | 'effectStyleId'
-  | 'gridStyleId'
-  | 'strokeStyleId'
-/**
- * @see https://developers.figma.com/docs/plugins/api/StyleConsumers
- */
-interface StyleConsumers {
-  /**
-   * Node consuming style. */
-  node: SceneNode
-  /** Field in which style is applied. */
-  fields: InheritedStyleField[]
-}
 interface BaseStyleMixin extends PublishableMixin, PluginDataMixin {
   /**
    * The unique identifier of the style in the document the plugin is executing from. You can assign this value via `setFillStyleIdAsync`, `setStrokeStyleIdAsync`, `setTextStyleIdAsync`, etc. to make the node properties reflect that of the style node.
@@ -11368,12 +9449,6 @@ interface BaseStyleMixin extends PublishableMixin, PluginDataMixin {
    * The consumers of this style. The `fields` in `StyleConsumers` refers to the field where the style is applied (e.g. a PaintStyle can be applied in `setFillStyleIdAsync` or `setStrokeStyleIdAsync`).
    */
   getStyleConsumersAsync(): Promise<StyleConsumers[]>
-  /**
-   * The consumers of this style. The `fields` in `StyleConsumers` refers to the field where the style is applied (e.g. a PaintStyle can be applied in `setFillStyleIdAsync` or `setStrokeStyleIdAsync`).
-   *
-   * @deprecated Use `getStyleConsumersAsync` instead. Accessing this property will throw an exception if the plugin manifest contains `"documentAccess": "dynamic-page"`.
-   */
-  readonly consumers: StyleConsumers[]
   /**
    * The name of the style node. Note that setting this also sets "autoRename" to false on {@link TextNode}.
    */
@@ -11518,13 +9593,6 @@ interface Image {
     height: number
   }>
 }
-
-interface Video {
-  /**
-   * A unique hash of the contents of the video file.
-   */
-  readonly hash: string
-}
 /**
  * @see https://developers.figma.com/docs/plugins/api/BaseUser
  */
@@ -11578,101 +9646,6 @@ interface ActiveUser extends User {
    */
   readonly selection: string[]
 }
-/**
- * @see https://developers.figma.com/docs/plugins/api/FindAllCriteria
- */
-interface FindAllCriteria<T extends NodeType[]> {
-  /**
-   * If specified, the search will match nodes that have one of the given types.
-   *
-   * ```ts
-   * // Find children of type text or frame.
-   * node.findAllWithCriteria({ types: ["TEXT", "FRAME"] })
-   * ```
-   */
-  types?: T
-  /**
-   * If specified, the search will match nodes that have {@link PluginDataMixin.getPluginData | PluginData} stored for your plugin.
-   *
-   * ```ts
-   * // Find children that have plugin data stored.
-   * node.findAllWithCriteria({ pluginData: {} })
-   *
-   * // Find children that have plugin data stored with keys
-   * // "a" or "b"
-   * node.findAllWithCriteria({
-   *   pluginData: {
-   *     keys: ["a", "b"]
-   *   }
-   * })
-   * ```
-   */
-  pluginData?: {
-    keys?: string[]
-  }
-  /**
-   * If specified, the search will match nodes that have {@link PluginDataMixin.getSharedPluginData | SharedPluginData} stored on the given `namespace` and `keys`.
-   *
-   * ```ts
-   * // Find children that have shared plugin data
-   * // on the "foo" namespace.
-   * node.findAllWithCriteria({
-   *   sharedPluginData: {
-   *     namespace: "foo"
-   *   }
-   * })
-   *
-   * // Find children that have shared plugin data
-   * // on the "foo" namespace with keys "a" or "b"
-   * node.findAllWithCriteria({
-   *   sharedPluginData: {
-   *     namespace: "foo",
-   *     keys: ["a", "b"]
-   *   }
-   * })
-   * ```
-   */
-  sharedPluginData?: {
-    namespace: string
-    keys?: string[]
-  }
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/TransformModifier
- */
-interface TransformModifier {}
-/**
- * @see https://developers.figma.com/docs/plugins/api/TransformModifier
- * Base interface for repeat transform modifiers.
- */
-interface RepeatModifier extends TransformModifier {
-  /** Type of transform modifier. Currently, only 'REPEAT' is supported. */
-  type: 'REPEAT'
-  /** Number of times to repeat the children. */
-  count: number
-  /** Unit for the offset between each repetition. `RELATIVE` refers to the size of the child node, while `PIXELS` refers to an absolute pixel value. */
-  unitType: 'RELATIVE' | 'PIXELS'
-  /** Offset between each repetition. For `LINEAR` repeats, this is the distance between each repetition along the specified axis. For `RADIAL` repeats, this is the distance from the center of the group to the repeated nodes. */
-  offset: number
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/TransformModifier
- * Interface for linear repeat transform modifiers.
- */
-interface LinearRepeatModifier extends RepeatModifier {
-  /** Type of repeat modifier. */
-  repeatType: 'LINEAR'
-  /** Axis along which to repeat the children. */
-  axis: 'HORIZONTAL' | 'VERTICAL'
-}
-/**
- * @see https://developers.figma.com/docs/plugins/api/TransformModifier
- * Interface for radial repeat transform modifiers.
- */
-interface RadialRepeatModifier extends RepeatModifier {
-  /** Type of repeat modifier. */
-  repeatType: 'RADIAL'
-}
 
 // prettier-ignore
-export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, FontStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, GlassEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, Paint, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, TextPathStartData, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridTrackReorderOptions, GridTrackReorderEntry, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, VariableWidthPoint, PresetVariableWidthStrokeProperties, CustomVariableWidthStrokeProperties, VariableWidthStrokeProperties, ComplexStrokeProperties, ScatterBrushProperties, StretchBrushProperties, BrushStrokeProperties, DynamicStrokeProperties, GeometryMixin, ComplexStrokesMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, SlotNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria, TransformModifier, RepeatModifier, LinearRepeatModifier, RadialRepeatModifier }
+export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, TextCase, TextDecoration, TextDecorationStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, BlurEffect, NoiseEffect, Effect, Paint, LayoutGrid, ExportSettings, VectorPaths, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Reaction, ConditionalBlock, DevStatus, Action, Transition, Trigger, Navigation, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, VariableWidthStrokeProperties, ComplexStrokeProperties, BrushStrokeProperties, GeometryMixin, ComplexStrokesMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, PublishableMixin, BaseFrameMixin, MinimalBlendMixin, AnnotationsMixin, MeasurementSide, MeasurementOffset, MeasurementsMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, SlotNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedNode, LinkUnfurlNode, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, BaseNode, SceneNode, NodeType, StyleType, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, BaseUser, User, ActiveUser }
