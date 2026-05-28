@@ -2211,6 +2211,7 @@ interface VariablesAPI {
    */
   importVariableByKeyAsync(key: string): Promise<Variable>
 }
+
 interface LibraryVariableCollection {
   /** The name of the variable collection. */
   name: string
@@ -2219,6 +2220,7 @@ interface LibraryVariableCollection {
   /** The name of the library that contains this variable collection. */
   libraryName: string
 }
+
 interface LibraryVariable {
   /** The name of the variable. */
   name: string
@@ -2853,9 +2855,9 @@ interface UtilAPI {
 interface ColorPalette {
   [key: string]: string
 }
+
 interface ColorPalettes {
   figJamBase: ColorPalette
-
   figJamBaseLight: ColorPalette
 }
 /**
@@ -3767,18 +3769,16 @@ type TextReviewRange = {
   color?: 'RED' | 'GREEN' | 'BLUE'
 }
 type Transform = [[number, number, number], [number, number, number]]
+
 interface Vector {
   readonly x: number
-
   readonly y: number
 }
+
 interface Rect {
   readonly x: number
-
   readonly y: number
-
   readonly width: number
-
   readonly height: number
 }
 /**
@@ -3786,9 +3786,7 @@ interface Rect {
  */
 interface RGB {
   readonly r: number
-
   readonly g: number
-
   readonly b: number
 }
 /**
@@ -3796,11 +3794,8 @@ interface RGB {
  */
 interface RGBA {
   readonly r: number
-
   readonly g: number
-
   readonly b: number
-
   readonly a: number
 }
 /**
@@ -3808,7 +3803,6 @@ interface RGBA {
  */
 interface FontName {
   readonly family: string
-
   readonly style: string
 }
 type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
@@ -4068,11 +4062,10 @@ type OpenTypeFeature =
   | 'CV97'
   | 'CV98'
   | 'CV99'
+
 interface ArcData {
   readonly startingAngle: number
-
   readonly endingAngle: number
-
   readonly innerRadius: number
 }
 /**
@@ -4391,7 +4384,6 @@ type ConstraintType = 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE'
  */
 interface Constraints {
   readonly horizontal: ConstraintType
-
   readonly vertical: ConstraintType
 }
 /**
@@ -4418,17 +4410,11 @@ interface ColorStop {
  */
 interface ImageFilters {
   readonly exposure?: number
-
   readonly contrast?: number
-
   readonly saturation?: number
-
   readonly temperature?: number
-
   readonly tint?: number
-
   readonly highlights?: number
-
   readonly shadows?: number
 }
 /**
@@ -4502,11 +4488,8 @@ interface GradientPaint {
    * Array of colors and their position within the gradient.
    */
   readonly gradientStops: ReadonlyArray<ColorStop>
-
   readonly visible?: boolean
-
   readonly opacity?: number
-
   readonly blendMode?: BlendMode
 }
 /**
@@ -4541,11 +4524,8 @@ interface ImagePaint {
    * The values for the image filter slides, equivalent to those in the paint picker. All values default to 0.0 and have range -1.0 to +1.0.
    */
   readonly filters?: ImageFilters
-
   readonly visible?: boolean
-
   readonly opacity?: number
-
   readonly blendMode?: BlendMode
 }
 /**
@@ -4580,11 +4560,8 @@ interface VideoPaint {
    * The values for the video filter slides, equivalent to those in the paint picker. All values default to 0.0 and have range -1.0 to +1.0.
    */
   readonly filters?: ImageFilters
-
   readonly visible?: boolean
-
   readonly opacity?: number
-
   readonly blendMode?: BlendMode
 }
 /**
@@ -4615,20 +4592,17 @@ interface PatternPaint {
    * The horizontal alignment of the pattern
    */
   readonly horizontalAlignment: 'START' | 'CENTER' | 'END'
-
   readonly visible?: boolean
-
   readonly opacity?: number
-
   readonly blendMode?: BlendMode
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/Paint
  */
 type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
+
 interface Guide {
   readonly axis: 'X' | 'Y'
-
   readonly offset: number
 }
 /**
@@ -4686,11 +4660,8 @@ interface GridLayoutGrid {
    * The size of individual grid cells.
    */
   readonly sectionSize: number
-
   readonly visible?: boolean
-
   readonly color?: RGBA
-
   readonly boundVariables?: {
     ['sectionSize']?: VariableAlias
   }
@@ -4704,7 +4675,6 @@ type LayoutGrid = RowsColsLayoutGrid | GridLayoutGrid
  */
 interface ExportSettingsConstraints {
   readonly type: 'SCALE' | 'WIDTH' | 'HEIGHT'
-
   readonly value: number
 }
 /**
@@ -4758,11 +4728,10 @@ interface ExportSettingsImage {
    */
   readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
+
 interface ExportSettingsSVGBase {
   readonly contentsOnly?: boolean
-
   readonly useAbsoluteBounds?: boolean
-
   readonly suffix?: string
   /**
    * Whether text elements are rendered as outlines (vector paths) or as `<text>` elements in SVGs. Defaults to `true`.
@@ -4780,7 +4749,6 @@ interface ExportSettingsSVGBase {
    * Whether to export inside and outside strokes as an approximation of the original to simplify the output. Otherwise, it uses a more precise but more bloated masking technique. This is needed because SVGs only support center strokes. Defaults to `true`.
    */
   readonly svgSimplifyStroke?: boolean
-
   readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 /**
@@ -4811,13 +4779,9 @@ interface ExportSettingsPDF {
    *  When reading {@link ExportMixin.exportSettings }, always check the `format` before reading other properties.
    */
   readonly format: 'PDF'
-
   readonly contentsOnly?: boolean
-
   readonly useAbsoluteBounds?: boolean
-
   readonly suffix?: string
-
   readonly colorProfile?: 'DOCUMENT' | 'SRGB' | 'DISPLAY_P3_V4'
 }
 /**
@@ -4982,9 +4946,9 @@ interface VectorPath {
  * @see https://developers.figma.com/docs/plugins/api/VectorPath
  */
 type VectorPaths = ReadonlyArray<VectorPath>
+
 interface LetterSpacing {
   readonly value: number
-
   readonly unit: 'PIXELS' | 'PERCENT'
 }
 type LineHeight =
@@ -5039,6 +5003,7 @@ interface Font {
 type TextStyleOverrideType = {
   type: 'SEMANTIC_ITALIC' | 'SEMANTIC_WEIGHT' | 'HYPERLINK' | 'TEXT_DECORATION'
 }
+
 interface StyledTextSegment {
   /**
    * The characters in the range of text with the same styles.
@@ -5197,17 +5162,16 @@ type ExpressionFunction =
   | 'VAR_MODE_LOOKUP'
   | 'NEGATE'
   | 'NOT'
+
 interface Expression {
   expressionFunction: ExpressionFunction
-
   expressionArguments: VariableData[]
 }
 type VariableValueWithExpression = VariableValue | Expression
+
 interface VariableData {
   type?: VariableDataType
-
   resolvedType?: VariableResolvedDataType
-
   value?: VariableValueWithExpression
 }
 type ConditionalBlock = {
@@ -5289,9 +5253,7 @@ type Action =
  */
 interface SimpleTransition {
   readonly type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
-
   readonly easing: Easing
-
   readonly duration: number
 }
 /**
@@ -5299,13 +5261,9 @@ interface SimpleTransition {
  */
 interface DirectionalTransition {
   readonly type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT'
-
   readonly direction: 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
-
   readonly matchLayers: boolean
-
   readonly easing: Easing
-
   readonly duration: number
 }
 /**
@@ -5363,9 +5321,7 @@ interface Easing {
     | 'BOUNCY'
     | 'SLOW'
     | 'CUSTOM_SPRING'
-
   readonly easingFunctionCubicBezier?: EasingFunctionBezier
-
   readonly easingFunctionSpring?: EasingFunctionSpring
 }
 /**
@@ -5373,20 +5329,15 @@ interface Easing {
  */
 interface EasingFunctionBezier {
   x1: number
-
   y1: number
-
   x2: number
-
   y2: number
 }
+
 interface EasingFunctionSpring {
   mass: number
-
   stiffness: number
-
   damping: number
-
   initialVelocity: number
 }
 type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
@@ -5421,23 +5372,24 @@ type OverlayBackgroundInteraction = 'NONE' | 'CLOSE_ON_CLICK_OUTSIDE'
  * @see https://developers.figma.com/docs/plugins/api/PublishStatus
  */
 type PublishStatus = 'UNPUBLISHED' | 'CURRENT' | 'CHANGED'
+
 interface ConnectorEndpointPosition {
   position: {
     x: number
     y: number
   }
 }
+
 interface ConnectorEndpointPositionAndEndpointNodeId {
   position: {
     x: number
     y: number
   }
-
   endpointNodeId: string
 }
+
 interface ConnectorEndpointEndpointNodeIdAndMagnet {
   endpointNodeId: string
-
   magnet: 'NONE' | 'AUTO' | 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT' | 'CENTER'
 }
 /**
@@ -7925,12 +7877,21 @@ interface CornerMixin {
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface RectangleCornerMixin {
+  /**
+   * The radius of the top left corner, in pixels. This value must be non-negative and can be fractional.
+   */
   topLeftRadius: number
-
+  /**
+   * The radius of the top right corner, in pixels. This value must be non-negative and can be fractional.
+   */
   topRightRadius: number
-
+  /**
+   * The radius of the bottom left corner, in pixels. This value must be non-negative and can be fractional.
+   */
   bottomLeftRadius: number
-
+  /**
+   * The radius of the bottom right corner, in pixels. This value must be non-negative and can be fractional.
+   */
   bottomRightRadius: number
 }
 /**
@@ -8377,15 +8338,14 @@ interface MinimalBlendMixin {
    */
   blendMode: BlendMode
 }
+
 interface Annotation {
   readonly label?: string
-
   readonly labelMarkdown?: string
-
   readonly properties?: ReadonlyArray<AnnotationProperty>
-
   readonly categoryId?: string
 }
+
 interface AnnotationProperty {
   readonly type: AnnotationPropertyType
 }
@@ -8436,19 +8396,15 @@ interface AnnotationsMixin {
  */
 interface Measurement {
   id: string
-
   start: {
     node: SceneNode
     side: MeasurementSide
   }
-
   end: {
     node: SceneNode
     side: MeasurementSide
   }
-
   offset: MeasurementOffset
-
   freeText: string
 }
 /**
@@ -10576,9 +10532,9 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   clone(): ConnectorNode
 }
 type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
+
 interface VariableAlias {
   type: 'VARIABLE_ALIAS'
-
   id: string
 }
 type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
@@ -11040,6 +10996,7 @@ interface WidgetNode extends OpaqueNodeMixin, StickableMixin {
     },
   ): void
 }
+
 interface EmbedData {
   /**
    * The srcUrl of an embed is the URL that will be loaded in an iFrame when the embed is activated
@@ -11082,6 +11039,7 @@ interface EmbedNode extends OpaqueNodeMixin {
    */
   clone(): EmbedNode
 }
+
 interface LinkUnfurlData {
   /**
    * The URL of the link being unfurled
@@ -11122,6 +11080,7 @@ interface LinkUnfurlNode extends OpaqueNodeMixin {
    */
   clone(): LinkUnfurlNode
 }
+
 interface MediaData {
   /**
    * A unique hash of the contents of the media node
@@ -11559,6 +11518,7 @@ interface Image {
     height: number
   }>
 }
+
 interface Video {
   /**
    * A unique hash of the contents of the video file.
