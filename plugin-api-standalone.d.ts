@@ -1079,32 +1079,6 @@ interface PluginAPI {
    */
   createFrame(): FrameNode
   /**
-   * Note: This API is only available via `use_figma` in the MCP server
-   *
-   * Creates a new frame with auto layout already enabled. Both axes default to hug content
-   * (`primaryAxisSizingMode = "AUTO"`, `counterAxisSizingMode = "AUTO"`), so children can
-   * immediately use `layoutSizingHorizontal/Vertical = "FILL"` after being appended.
-   *
-   * @remarks
-   *
-   * Prefer this over `createFrame()` whenever you need an auto-layout parent. Since `layoutMode` is
-   * already set, children can use `FILL` sizing immediately after being appended.
-   *
-   * The default direction is `"HORIZONTAL"`. Pass `"VERTICAL"` for a column layout.
-   *
-   * ```ts title="Create an auto-layout frame"
-   * const row = figma.createAutoLayout()
-   * const column = figma.createAutoLayout("VERTICAL")
-   *
-   * row.itemSpacing = 16
-   * row.paddingTop = 24
-   * row.paddingBottom = 24
-   * row.paddingLeft = 24
-   * row.paddingRight = 24
-   * ```
-   */
-  createAutoLayout(direction?: 'HORIZONTAL' | 'VERTICAL'): FrameNode
-  /**
    * Note: This API is only available in Figma Design
    *
    * Creates a new, empty component.
@@ -1139,15 +1113,13 @@ interface PluginAPI {
    */
   createComponentFromNode(node: SceneNode): ComponentNode
   /**
-   * Note: This API is only available in Figma Design
-   *
    * Creates a new page, appended to the document's list of children.
    *
    * @remarks
    *
    * A page node can be the parent of all types of nodes except for the document node and other page nodes.
    *
-   * Files in a Starter team are limited to three pages. When a plugin tries to create more than three pages in a Starter team file, it triggers the following error:
+   * Files in a Starter team are limited to three pages in Figma Design files and one page in FigJam files. When a plugin tries to exceed this limit, it triggers the following error:
    *
    * ```text title="Page limit error"
    * The Starter plan only comes with 3 pages. Upgrade to
@@ -5731,6 +5703,11 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
     | null
   /**
    * The variables bound to a particular field on this node. Please see the [Working with Variables](https://developers.figma.com/docs/plugins/working-with-variables) guide for how to get and set variable bindings.
+   *
+   * @remarks
+   *
+   * On nodes with independent corner radii (e.g. rectangles, frames), a `cornerRadius` binding sets all four corners and appears in `boundVariables` as `topLeftRadius`/`topRightRadius`/`bottomLeftRadius`/`bottomRightRadius` rather than `cornerRadius`; elsewhere it appears as `cornerRadius`.
+   *
    */
   readonly boundVariables?: {
     readonly [field in VariableBindableNodeField]?: VariableAlias
@@ -5843,6 +5820,7 @@ type VariableBindableNodeField =
   | 'paddingTop'
   | 'paddingBottom'
   | 'visible'
+  | 'cornerRadius'
   | 'topLeftRadius'
   | 'topRightRadius'
   | 'bottomLeftRadius'
@@ -5905,6 +5883,9 @@ interface ChildrenMixin {
    * This array can be read like and iterated like a regular array. However, calling this property always returns a new array, and both the property and the new array are read-only.
    *
    * As such, this property cannot be assigned to, and the array cannot be modified directly (it wouldn't do anything). Instead, use {@link ChildrenMixin.appendChild}, {@link ChildrenMixin.insertChild} or {@link BaseNodeMixin.remove}.
+   *
+   * Do not recursively walk the entire document tree by repeatedly reading `children` (for example, a manual DFS/BFS over `node.children`). That pattern is often much slower in large files.
+   * Prefer {@link ChildrenMixin.findAllWithCriteria} when you know the target node types, and use {@link ChildrenMixin.findAll} when you need callback-based logic.
    *
    * Note: If you are curious, the reason why inserting children has to be done via API calls is because our internal representation for the layer tree uses [fractional indexing](https://www.figma.com/blog/multiplayer-editing-in-figma/) and {@link ChildrenMixin.insertChild} performs that conversion.
    */
@@ -10145,6 +10126,7 @@ interface SlotNode extends DefaultFrameMixin {
    * - `'BELOW_MIN'`: the slot has fewer children than its configured `minChildren`.
    * - `'ABOVE_MAX'`: the slot has more children than its configured `maxChildren`.
    * - `'HAS_NON_PREFERRED'`: the slot contains a child that is not in the property's preferred values, while `allowPreferredValuesOnly` is `true`.
+   *
    */
   readonly limitViolations: Array<'BELOW_MIN' | 'ABOVE_MAX' | 'HAS_NON_PREFERRED'>
 }
