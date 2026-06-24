@@ -410,6 +410,12 @@ interface PluginAPI {
    */
   readonly parameters: ParametersAPI
   /**
+   * This property contains methods for reading Motion animation styles available in the current document.
+   *
+   * Read more in the [Motion section](https://developers.figma.com/docs/plugins/api/figma-motion).
+   */
+  readonly motion: MotionAPI
+  /**
    * Finds a node by its id in the current document. Every node has an `id` property, which is unique within the document. If the id is invalid, or the node cannot be found (e.g. removed), returns a promise containing null.
    */
   getNodeByIdAsync(id: string): Promise<BaseNode | null>
@@ -1589,6 +1595,37 @@ interface PluginAPI {
    */
   importStyleByKeyAsync(key: string): Promise<BaseStyle>
   /**
+   * Lists every shader available to the current file: shaders already in the file, shaders from subscribed libraries, and the user's owned shaders.
+   *
+   * @remarks
+   *
+   * A shader applies either as an effect (`node.effects`) or as a fill (`node.fills` / `node.strokes`), depending on its `type`. Owned or subscribed shaders that aren't materialized in the file yet are returned with `imported: false` — call {@link PluginAPI.importShaderById} on the shader's `id` before applying it (this mirrors `loadFontAsync` for fonts).
+   *
+   * ```ts
+   * const shaders = await figma.listAvailableShaders()
+   * for (const shader of shaders) {
+   *   console.log(shader.name, shader.type, shader.imported)
+   * }
+   * ```
+   */
+  listAvailableShaders(): Promise<Shader[]>
+  /**
+   * Materializes a shader into the current file by `id` and returns it with `imported: true` and its `propertyDefinitions` populated. The `id` is one returned by {@link PluginAPI.listAvailableShaders}. This is idempotent for a shader that is already imported, and mirrors {@link PluginAPI.importComponentByKeyAsync}.
+   *
+   * @remarks
+   *
+   * A shader must be imported before it can be applied. Applying an unloaded shader id throws `Shader not imported. Call figma.importShaderById(id) first.`
+   *
+   * ```ts
+   * const [shader] = await figma.listAvailableShaders()
+   * if (shader && !shader.imported) {
+   *   const imported = await figma.importShaderById(shader.id)
+   *   console.log(imported.propertyDefinitions)
+   * }
+   * ```
+   */
+  importShaderById(id: string): Promise<Shader>
+  /**
    * Returns the lists of currently available fonts. This should be the same list as the one you'd see if you manually used the font picker.
    */
   listAvailableFontsAsync(): Promise<Font[]>
@@ -2588,6 +2625,46 @@ type NotifyDequeueReason = 'timeout' | 'dismiss' | 'action_button_click'
  */
 interface NotificationHandler {
   cancel: () => void
+}
+/**
+ * The Motion API is available in Beta. This API is subject to change.
+ *
+ * @see https://developers.figma.com/docs/plugins/api/figma-motion
+ */
+interface MotionAPI {
+  /**
+   * Returns the Motion animation styles available in the current document.
+   *
+   * @remarks
+   *
+   * The returned styles describe animation templates that can be applied to nodes with {@link MotionNodeMixin.applyAnimationStyle}.
+   * Their `props` values are type/default descriptions for each configurable property.
+   *
+   * ```ts
+   * const styles = figma.motion.figmaAnimationStyles()
+   * for (const style of styles) {
+   *   console.log(style.name, style.styleId, style.props)
+   * }
+   * ```
+   */
+  figmaAnimationStyles(): AvailableAnimationStyle[]
+  /**
+   * Converts physical spring parameters to Motion's normalized `bounce` value from 0 to 1.
+   *
+   * @param spring - Positive finite physical spring values.
+   *
+   * @remarks
+   * The returned value is the normalized `bounce` scalar used by {@link NormalizedSpring}.
+   *
+   * ```ts
+   * const bounce = figma.motion.physicalSpringToNormalized({
+   *   mass: 1,
+   *   stiffness: 100,
+   *   damping: 10,
+   * })
+   * ```
+   */
+  physicalSpringToNormalized(spring: PhysicalSpring): number
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/properties/figma-showui
@@ -3694,6 +3771,9 @@ type NodeChangeProperty =
   | 'textBackground'
   | 'gridAutoTracks'
   | 'gridItemsPositioning'
+  | 'animationStyles'
+  | 'animations'
+  | 'manualKeyframeTracks'
 
 interface NodeChangeEvent {
   nodeChanges: NodeChange[]
@@ -4332,6 +4412,31 @@ interface GlassEffect {
   readonly boundVariables?: {}
 }
 /**
+ * A shader applied to a node's `effects`.
+ *
+ * @see https://developers.figma.com/docs/plugins/api/Effect
+ */
+interface ShaderEffect {
+  /**
+   * The string literal "SHADER" representing the type of effect this is. Always check the `type` before reading other properties.
+   */
+  readonly type: 'SHADER'
+  /**
+   * Whether this shader effect is visible.
+   */
+  readonly visible: boolean
+  /**
+   * The id of the shader, as returned by {@link PluginAPI.listAvailableShaders} and {@link PluginAPI.importShaderById}. The shader must be imported with {@link PluginAPI.importShaderById} before it can be applied.
+   */
+  readonly id: string
+  /**
+   * The read/write map of property assignments, keyed by property-definition id (the keys of {@link Shader.propertyDefinitions}, not property names). On reads, this is populated with the effect's current assignments, including author-defined defaults, so a plugin can discover the available ids after the shader is applied.
+   */
+  readonly properties?: {
+    [defId: string]: ShaderPropertyValue
+  }
+}
+/**
  * @see https://developers.figma.com/docs/plugins/api/Effect
  */
 type Effect =
@@ -4341,6 +4446,7 @@ type Effect =
   | NoiseEffect
   | TextureEffect
   | GlassEffect
+  | ShaderEffect
 /**
  * @see https://developers.figma.com/docs/plugins/api/Constraints
  */
@@ -4563,9 +4669,142 @@ interface PatternPaint {
   readonly blendMode?: BlendMode
 }
 /**
+ * A shader applied to a node's `fills` or `strokes`.
+ *
  * @see https://developers.figma.com/docs/plugins/api/Paint
  */
-type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint
+interface ShaderPaint {
+  /**
+   * The string literal "SHADER" representing the type of paint this is. Always check the `type` before reading other properties.
+   */
+  readonly type: 'SHADER'
+  /**
+   * The id of the shader, as returned by {@link PluginAPI.listAvailableShaders} and {@link PluginAPI.importShaderById}. The shader must be imported with {@link PluginAPI.importShaderById} before it can be applied.
+   */
+  readonly id: string
+  /**
+   * The read/write map of property assignments, keyed by property-definition id (the keys of {@link Shader.propertyDefinitions}, not property names). On reads, this is populated with the paint's current assignments, including author-defined defaults, so a plugin can discover the available ids after the shader is applied.
+   */
+  readonly properties?: {
+    [defId: string]: ShaderPropertyValue
+  }
+  readonly visible?: boolean
+  readonly opacity?: number
+  readonly blendMode?: BlendMode
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Paint
+ */
+type Paint = SolidPaint | GradientPaint | ImagePaint | VideoPaint | PatternPaint | ShaderPaint
+/**
+ * A single value assignable to a shader property, read from or written to the `properties` map of a {@link ShaderEffect} or {@link ShaderPaint}. The shape that's valid for a given property depends on that property's declared `type` in its {@link ShaderPropertyDefinition}. A value can always be a variable binding via the standard `VariableAlias` form.
+ *
+ * @see https://developers.figma.com/docs/plugins/api/Shader
+ */
+type ShaderPropertyValue =
+  | boolean
+  | string
+  | number
+  | RGB
+  | RGBA
+  | {
+      x: number
+      y: number
+    }
+  | {
+      x: number
+      y: number
+      x2: number
+      y2: number
+    }
+  | {
+      x: number
+      y: number
+      radius: number
+    }
+  | {
+      x: number
+      y: number
+      radius: number
+      angle: number
+    }
+  | {
+      x: number
+      y: number
+      color: RGB | RGBA | VariableAlias
+    }
+  | {
+      stops: {
+        position: number
+        color: RGB | RGBA | VariableAlias
+      }[]
+    }
+  | VariableAlias
+/**
+ * A read-only description of one property declared by a shader. Surfaced via the `propertyDefinitions` field of a {@link Shader}, keyed by property-definition id.
+ *
+ * @see https://developers.figma.com/docs/plugins/api/Shader
+ */
+interface ShaderPropertyDefinition {
+  /**
+   * The author-defined name of the property.
+   */
+  readonly name: string
+  /**
+   * The declared type of the property. This determines which shape of {@link ShaderPropertyValue} is valid for it. `POINT` corresponds to the editor's "point" property type.
+   */
+  readonly type:
+    | 'BOOLEAN'
+    | 'TEXT'
+    | 'NUMBER'
+    | 'IMAGE'
+    | 'INSTANCE_SWAP'
+    | 'SLOT'
+    | 'COLOR'
+    | 'POINT'
+    | 'LINE'
+    | 'CIRCLE'
+    | 'CIRCLE_POINT'
+    | 'COLOR_POINT'
+    | 'GRADIENT'
+  /**
+   * The author-defined default value for the property, if any.
+   */
+  readonly defaultValue?: ShaderPropertyValue
+  /**
+   * The author-defined description of the property, if any.
+   */
+  readonly description?: string
+}
+/**
+ * A shader available to the current file, as returned by {@link PluginAPI.listAvailableShaders} and {@link PluginAPI.importShaderById}.
+ *
+ * @see https://developers.figma.com/docs/plugins/api/Shader
+ */
+interface Shader {
+  /**
+   * A stable identifier for the shader. The same value round-trips through {@link PluginAPI.importShaderById} and the `id` field of a {@link ShaderEffect} / {@link ShaderPaint} when applying the shader.
+   */
+  readonly id: string
+  /**
+   * The name of the shader.
+   */
+  readonly name: string
+  /**
+   * Whether the shader applies as an effect (`node.effects`) or as a fill (`node.fills` / `node.strokes`).
+   */
+  readonly type: 'effect' | 'fill'
+  /**
+   * Whether the shader has been imported into the file yet. When `false`, call {@link PluginAPI.importShaderById} with this shader's `id` before applying it.
+   */
+  readonly imported: boolean
+  /**
+   * The shader's declared properties, keyed by property-definition id. Populated for imported shaders; may be absent until the shader is imported.
+   */
+  readonly propertyDefinitions?: {
+    [defId: string]: ShaderPropertyDefinition
+  }
+}
 interface Guide {
   readonly axis: 'X' | 'Y'
   readonly offset: number
@@ -5299,6 +5538,350 @@ interface EasingFunctionSpring {
   damping: number
   initialVelocity: number
 }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface MotionEasing {
+  readonly type:
+    | 'EASE_IN'
+    | 'EASE_OUT'
+    | 'EASE_IN_AND_OUT'
+    | 'LINEAR'
+    | 'EASE_IN_BACK'
+    | 'EASE_OUT_BACK'
+    | 'EASE_IN_AND_OUT_BACK'
+    | 'CUSTOM_CUBIC_BEZIER'
+    | 'GENTLE'
+    | 'QUICK'
+    | 'BOUNCY'
+    | 'SLOW'
+    | 'CUSTOM_SPRING'
+    | 'HOLD'
+  readonly easingFunctionCubicBezier?: EasingFunctionBezier
+  readonly easingFunctionSpring?: NormalizedSpring
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface PhysicalSpring {
+  readonly mass: number
+  readonly stiffness: number
+  readonly damping: number
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface NormalizedSpring {
+  /**
+   * A normalized bounce value from 0 to 1.
+   */
+  readonly bounce: number
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type AnimationStylePropValue = string | number | boolean | MotionEasing | VariableAlias
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type AvailableAnimationStylePropValue = string
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface BaseAnimationStyle {
+  readonly styleId: string
+  readonly name: string
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface AvailableAnimationStyle extends BaseAnimationStyle {
+  readonly description?: string
+  readonly props?: {
+    readonly [key: string]: AvailableAnimationStylePropValue
+  }
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface AnimationStyleConfiguration {
+  /**
+   * The duration of the applied animation style in seconds.
+   */
+  readonly duration?: number
+  /**
+   * The timeline offset of the applied animation style in seconds.
+   */
+  readonly timelineOffset?: number
+  readonly props?: {
+    readonly [key: string]: AnimationStylePropValue
+  }
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface AppliedAnimationStyle extends BaseAnimationStyle, AnimationStyleConfiguration {
+  readonly id: string
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type KeyframeValue =
+  | {
+      readonly type: 'FLOAT'
+      readonly value: number
+    }
+  | {
+      readonly type: 'COLOR'
+      readonly value: RGBA
+    }
+  | {
+      readonly type: 'TEXT_DATA'
+      readonly value: string
+    }
+  | {
+      readonly type: 'VECTOR'
+      readonly value: Vector
+    }
+  | {
+      readonly type: 'BOOL'
+      readonly value: boolean
+    }
+  | {
+      readonly type: 'CIRCLE'
+      readonly value: {
+        readonly x: number
+        readonly y: number
+        readonly radius: number
+      }
+    }
+  | {
+      readonly type: 'LINE'
+      readonly value: {
+        readonly x: number
+        readonly y: number
+        readonly x2: number
+        readonly y2: number
+      }
+    }
+  | {
+      readonly type: 'CIRCLE_POINT'
+      readonly value: {
+        readonly x: number
+        readonly y: number
+        readonly radius: number
+        readonly angle: number
+      }
+    }
+  | {
+      readonly type: 'COLOR_POINT'
+      readonly value: {
+        readonly x: number
+        readonly y: number
+        readonly color: RGBA
+      }
+    }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface ManualKeyframeInput {
+  readonly id?: string
+  /**
+   * The keyframe position on the timeline in seconds.
+   */
+  readonly timelinePosition: number
+  readonly easing?: MotionEasing | VariableAlias
+  readonly value: KeyframeValue
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface ManualKeyframeTrackInput {
+  readonly id?: string
+  readonly baseValue?: KeyframeValue
+  readonly keyframes: ReadonlyArray<ManualKeyframeInput>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface ManualKeyframe extends ManualKeyframeInput {
+  readonly id: string
+  readonly easing: MotionEasing | VariableAlias
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface ManualKeyframeBinding {
+  readonly id: string
+  readonly baseValue: KeyframeValue
+  readonly keyframes: ReadonlyArray<ManualKeyframe>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface ManualKeyframeTrack {
+  readonly id: string
+  readonly keyframeOperation: 'SET' | 'OFFSET' | 'SCALE'
+  readonly keyframes: ReadonlyArray<ManualKeyframe>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface KeyframeBinding {
+  readonly baseValue: KeyframeValue
+  readonly timelineDuration: number
+  readonly tracks: ReadonlyArray<ManualKeyframeTrack>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type KeyframePropertyFieldName =
+  | 'CORNER_RADIUS'
+  | 'STROKE_WEIGHT'
+  | 'STACK_SPACING'
+  | 'STACK_PADDING_LEFT'
+  | 'STACK_PADDING_TOP'
+  | 'STACK_PADDING_RIGHT'
+  | 'STACK_PADDING_BOTTOM'
+  | 'WIDTH'
+  | 'HEIGHT'
+  | 'RECTANGLE_TOP_LEFT_CORNER_RADIUS'
+  | 'RECTANGLE_TOP_RIGHT_CORNER_RADIUS'
+  | 'RECTANGLE_BOTTOM_LEFT_CORNER_RADIUS'
+  | 'RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS'
+  | 'BORDER_TOP_WEIGHT'
+  | 'BORDER_BOTTOM_WEIGHT'
+  | 'BORDER_LEFT_WEIGHT'
+  | 'BORDER_RIGHT_WEIGHT'
+  | 'STACK_COUNTER_SPACING'
+  | 'OPACITY'
+  | 'GRID_ROW_GAP'
+  | 'GRID_COLUMN_GAP'
+  | 'TRANSLATION_X'
+  | 'TRANSLATION_Y'
+  | 'TRANSLATION_XY'
+  | 'ROTATION'
+  | 'SCALE_X'
+  | 'SCALE_Y'
+  | 'SCALE_XY'
+  | 'PATH_TRIM_START'
+  | 'PATH_TRIM_END'
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type EffectKeyframeFieldName =
+  | 'OFFSET_X'
+  | 'OFFSET_Y'
+  | 'RADIUS'
+  | 'SPREAD'
+  | 'COLOR'
+  | 'REFRACTION_RADIUS'
+  | 'SPECULAR_ANGLE'
+  | 'SPECULAR_INTENSITY'
+  | 'CHROMATIC_ABERRATION'
+  | 'SPLAY'
+  | 'REFRACTION_INTENSITY'
+  | 'START_RADIUS'
+  | 'NOISE_SIZE_X'
+  | 'NOISE_SIZE_Y'
+  | 'DENSITY'
+  | 'EFFECT_OPACITY'
+  | 'SECONDARY_COLOR'
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type KeyframeField =
+  | {
+      readonly type: 'PROPERTY'
+      readonly name: KeyframePropertyFieldName
+    }
+  | {
+      readonly type: 'INDEXED_ITEM'
+      readonly collection: 'fills' | 'strokes'
+      readonly index: number
+    }
+  | {
+      readonly type: 'INDEXED_ITEM'
+      readonly collection: 'fills' | 'strokes'
+      readonly index: number
+      readonly propertyId: string
+    }
+  | {
+      readonly type: 'INDEXED_ITEM'
+      readonly collection: 'effects'
+      readonly index: number
+      readonly field: EffectKeyframeFieldName
+    }
+  | {
+      readonly type: 'INDEXED_ITEM'
+      readonly collection: 'effects'
+      readonly index: number
+      readonly propertyId: string
+    }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type ComponentPropKeyframeTracks = Partial<Record<string, ManualKeyframeBinding>>
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type ComponentPropKeyframeBindings = Partial<Record<string, KeyframeBinding>>
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type PaintManualKeyframeTrack =
+  | ManualKeyframeBinding
+  | {
+      readonly properties: ComponentPropKeyframeTracks
+    }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type PaintKeyframeBinding =
+  | KeyframeBinding
+  | {
+      readonly properties: ComponentPropKeyframeBindings
+    }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type EffectManualKeyframeTracks = Partial<
+  Record<EffectKeyframeFieldName, ManualKeyframeBinding>
+> & {
+  readonly properties?: ComponentPropKeyframeTracks
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type EffectKeyframeBindings = Partial<Record<EffectKeyframeFieldName, KeyframeBinding>> & {
+  readonly properties?: ComponentPropKeyframeBindings
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type ManualKeyframeTracks = Partial<Record<KeyframePropertyFieldName, ManualKeyframeBinding>> & {
+  readonly fills?: Partial<Record<number, PaintManualKeyframeTrack>>
+  readonly strokes?: Partial<Record<number, PaintManualKeyframeTrack>>
+  readonly effects?: Partial<Record<number, EffectManualKeyframeTracks>>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+type Animations = Partial<Record<KeyframePropertyFieldName, KeyframeBinding>> & {
+  readonly fills?: Partial<Record<number, PaintKeyframeBinding>>
+  readonly strokes?: Partial<Record<number, PaintKeyframeBinding>>
+  readonly effects?: Partial<Record<number, EffectKeyframeBindings>>
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/Motion
+ */
+interface Timeline {
+  readonly id: string
+  /**
+   * The timeline duration in seconds.
+   */
+  readonly duration: number
+}
 type OverflowDirection = 'NONE' | 'HORIZONTAL' | 'VERTICAL' | 'BOTH'
 /**
  * @see https://developers.figma.com/docs/plugins/api/Overlay
@@ -5652,7 +6235,7 @@ interface DevStatusMixin {
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
-interface SceneNodeMixin extends ExplicitVariableModesMixin {
+interface SceneNodeMixin extends ExplicitVariableModesMixin, MotionNodeMixin {
   /**
    * Whether the node is visible or not. Does not affect a plugin's ability to access the node.
    *
@@ -5809,6 +6392,164 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin {
   resolvedVariableModes: {
     [collectionId: string]: string
   }
+}
+/**
+ * Motion node properties and methods are available in Beta. This API is subject to change.
+ *
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
+ */
+interface MotionNodeMixin {
+  /**
+   * The Motion animation style instances currently applied to this node.
+   * Their `props` values are the configured property values for this node.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * if (node) {
+   *   for (const style of node.animationStyles) {
+   *     console.log(style.name, style.id, style.props)
+   *   }
+   * }
+   * ```
+   */
+  readonly animationStyles: AppliedAnimationStyle[]
+  /**
+   * All Motion animation keyframes on this node, including keyframes created by animation styles and manual keyframe tracks.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * const translationX = node?.animations.TRANSLATION_X
+   * if (translationX) {
+   *   console.log(translationX.timelineDuration, translationX.tracks)
+   * }
+   * ```
+   */
+  readonly animations: Animations
+  /**
+   * The manual Motion keyframe tracks bound to this node.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * const manualTranslationX = node?.manualKeyframeTracks.TRANSLATION_X
+   * if (manualTranslationX) {
+   *   console.log(manualTranslationX.keyframes)
+   * }
+   * ```
+   */
+  readonly manualKeyframeTracks: ManualKeyframeTracks
+  /**
+   * The Motion timelines that contain this node. Currently this returns the containing top-level frame's timeline.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * if (node) {
+   *   for (const timeline of node.timelines) {
+   *     console.log(timeline.id, timeline.duration)
+   *   }
+   * }
+   * ```
+   */
+  readonly timelines: ReadonlyArray<Timeline>
+  /**
+   * Applies a Motion animation style to this node and returns the applied animation style instance id.
+   *
+   * @param styleId - The `styleId` of the animation style to apply. Use {@link MotionAPI.figmaAnimationStyles} to get available styles.
+   * @param animationStyleData - Optional values used to configure the applied animation style.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * const [style] = figma.motion.figmaAnimationStyles()
+   * if (node && style) {
+   *   const appliedStyleId = node.applyAnimationStyle(style.styleId, {
+   *     duration: 0.4,
+   *     timelineOffset: 0,
+   *     props: {
+   *       direction: 'right',
+   *       distance: 120,
+   *     },
+   *   })
+   *   console.log(appliedStyleId)
+   * }
+   * ```
+   */
+  applyAnimationStyle(styleId: string, animationStyleData?: AnimationStyleConfiguration): string
+  /**
+   * Removes an applied Motion animation style from this node.
+   *
+   * @param id - The applied animation style instance id returned by {@link MotionNodeMixin.applyAnimationStyle} or read from {@link MotionNodeMixin.animationStyles}.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * const [appliedStyle] = node?.animationStyles ?? []
+   * if (node && appliedStyle) {
+   *   node.removeAnimationStyle(appliedStyle.id)
+   * }
+   * ```
+   */
+  removeAnimationStyle(id: string): void
+  /**
+   * Applies or replaces the manual Motion keyframe track for a property, paint, or effect field on this node.
+   *
+   * @param field - The property, paint, or effect field to animate.
+   * @param track - The manual keyframe track to write.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * if (node) {
+   *   node.applyManualKeyframeTrack(
+   *     { type: 'PROPERTY', name: 'TRANSLATION_X' },
+   *     {
+   *       baseValue: { type: 'FLOAT', value: 0 },
+   *       keyframes: [
+   *         { timelinePosition: 0, value: { type: 'FLOAT', value: 0 } },
+   *         { timelinePosition: 0.3, value: { type: 'FLOAT', value: 120 } },
+   *       ],
+   *     },
+   *   )
+   * }
+   * ```
+   */
+  applyManualKeyframeTrack(field: KeyframeField, track: ManualKeyframeTrackInput): void
+  /**
+   * Removes the manual Motion keyframe track for a property, paint, or effect field on this node.
+   *
+   * @param field - The property, paint, or effect field to remove.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * if (node) {
+   *   node.removeManualKeyframeTrack({
+   *     type: 'PROPERTY',
+   *     name: 'TRANSLATION_X',
+   *   })
+   * }
+   * ```
+   */
+  removeManualKeyframeTrack(field: KeyframeField): void
+  /**
+   * Sets the duration, in seconds, for the timeline with the given id.
+   *
+   * @param id - A timeline id read from {@link MotionNodeMixin.timelines}.
+   * @param duration - The new timeline duration in seconds. Must be greater than zero.
+   *
+   * @remarks
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * const [timeline] = node?.timelines ?? []
+   * if (node && timeline) {
+   *   node.setTimelineDuration(timeline.id, 1.2)
+   * }
+   * ```
+   */
+  setTimelineDuration(id: string, duration: number): void
 }
 type VariableBindableNodeField =
   | 'height'
