@@ -5016,6 +5016,120 @@ interface ExportSettingsREST {
    */
   readonly format: 'JSON_REST_V1'
 }
+
+type VideoExportScale = 0.5 | 0.75 | 1 | 1.5 | 2 | 3 | 4
+
+type VideoExportConstraint =
+  | {
+      readonly type: 'SCALE'
+      readonly value: VideoExportScale
+    }
+  | {
+      readonly type: 'WIDTH' | 'HEIGHT'
+      readonly value: number
+    }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
+ */
+interface ExportSettingsMP4 {
+  /**
+   * The string literal `"MP4"` representing the export format.
+   */
+  readonly format: 'MP4'
+  /**
+   * Frames per second of the exported video. Defaults to `30`.
+   */
+  readonly fps?: 12 | 24 | 30 | 60
+  /**
+   * Quality preset for the exported video. Higher quality produces a larger file. Defaults to `"HIGH"`.
+   */
+  readonly quality?: 'LOW' | 'MEDIUM' | 'HIGH'
+  /**
+   * Constraint on the exported video size.
+   *
+   * ```ts
+   * type VideoExportConstraint =
+   *   | { type: "SCALE"; value: 0.5 | 0.75 | 1 | 1.5 | 2 | 3 | 4 }
+   *   | { type: "WIDTH" | "HEIGHT"; value: number }
+   * ```
+   *
+   * Defaults to 100% of the node size: `{ type: "SCALE", value: 1 }`.
+   *
+   *
+   * - `"SCALE"`: A multiplier on the node size. `value` must be one of the standard Export panel scales (`0.5`, `0.75`, `1`, `1.5`, `2`, `3`, `4`). A `value` of `1` means 100% of the node size.
+   * - `"WIDTH"`: The exported video is scaled to a fixed pixel width of `value`.
+   * - `"HEIGHT"`: The exported video is scaled to a fixed pixel height of `value`.
+   */
+  readonly constraint?: VideoExportConstraint
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
+ */
+interface ExportSettingsGIF {
+  /**
+   * The string literal `"GIF"` representing the export format.
+   */
+  readonly format: 'GIF'
+  /**
+   * Frames per second of the exported GIF. Defaults to `15`.
+   */
+  readonly fps?: 8 | 12 | 15 | 24 | 30
+  /**
+   * Number of times the GIF loops. `0` loops forever. Must be an integer between 0 and 1000. Defaults to `0`.
+   */
+  readonly loopCount?: number
+  /**
+   * Constraint on the exported GIF size.
+   *
+   * ```ts
+   * type VideoExportConstraint =
+   *   | { type: "SCALE"; value: 0.5 | 0.75 | 1 | 1.5 | 2 | 3 | 4 }
+   *   | { type: "WIDTH" | "HEIGHT"; value: number }
+   * ```
+   *
+   * Defaults to 100% of the node size: `{ type: "SCALE", value: 1 }`.
+   *
+   *
+   * - `"SCALE"`: A multiplier on the node size. `value` must be one of the standard Export panel scales (`0.5`, `0.75`, `1`, `1.5`, `2`, `3`, `4`). A `value` of `1` means 100% of the node size.
+   * - `"WIDTH"`: The exported GIF is scaled to a fixed pixel width of `value`.
+   * - `"HEIGHT"`: The exported GIF is scaled to a fixed pixel height of `value`.
+   */
+  readonly constraint?: VideoExportConstraint
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/ExportSettings
+ */
+interface ExportSettingsWEBM {
+  /**
+   * The string literal `"WEBM"` representing the export format.
+   */
+  readonly format: 'WEBM'
+  /**
+   * Frames per second of the exported video. Defaults to `30`.
+   */
+  readonly fps?: 12 | 24 | 30 | 60
+  /**
+   * Quality preset for the exported video. Higher quality produces a larger file. Defaults to `"HIGH"`.
+   */
+  readonly quality?: 'LOW' | 'MEDIUM' | 'HIGH'
+  /**
+   * Constraint on the exported video size.
+   *
+   * ```ts
+   * type VideoExportConstraint =
+   *   | { type: "SCALE"; value: 0.5 | 0.75 | 1 | 1.5 | 2 | 3 | 4 }
+   *   | { type: "WIDTH" | "HEIGHT"; value: number }
+   * ```
+   *
+   * Defaults to 100% of the node size: `{ type: "SCALE", value: 1 }`.
+   *
+   *
+   * - `"SCALE"`: A multiplier on the node size. `value` must be one of the standard Export panel scales (`0.5`, `0.75`, `1`, `1.5`, `2`, `3`, `4`). A `value` of `1` means 100% of the node size.
+   * - `"WIDTH"`: The exported video is scaled to a fixed pixel width of `value`.
+   * - `"HEIGHT"`: The exported video is scaled to a fixed pixel height of `value`.
+   */
+  readonly constraint?: VideoExportConstraint
+}
 /**
  * @see https://developers.figma.com/docs/plugins/api/ExportSettings
  */
@@ -6718,7 +6832,7 @@ interface ChildrenMixin {
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
    * If you only need to search immediate children, it is much faster to call `node.children.filter(callback)` or `node.findChildren(callback)`.
-   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#full-document-traversal) for how to optimize document traversals.
    */
   findAll(callback?: (node: SceneNode) => boolean): SceneNode[]
   /**
@@ -6740,7 +6854,7 @@ interface ChildrenMixin {
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
    * If you only need to search immediate children, it is much faster to call `node.children.find(callback)` or `node.findChild(callback)`.
-   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#full-document-traversal) for how to optimize document traversals.
    */
   findOne(callback: (node: SceneNode) => boolean): SceneNode | null
   /**
@@ -8609,13 +8723,11 @@ interface ExportMixin {
    */
   exportSettings: ReadonlyArray<ExportSettings>
   /**
-   * Exports the node as an encoded image.
+   * Exports the node in the format given by `settings`. Image formats (PNG, JPG), PDF, and the video formats (MP4, GIF, WebM) return a `Uint8Array` of the encoded file; `SVG_STRING` returns a string and `JSON_REST_V1` returns an object.
    *
    * If the manifest contains `"documentAccess": "dynamic-page"`, **and** the node is a {@link PageNode}, you must first call {@link PageNode.loadAsync} to access this function.
    *
    * @param settings - When this parameter is absent, this function defaults to exporting as a PNG at 1x resolution.
-   *
-   * Note that the result is a Uint8Array, representing the bytes of the image file (encoded in the specified format).
    *
    * ```ts title="Create a hexagon, export as PNG, and place on canvas"
    * (async () => {
@@ -8669,12 +8781,38 @@ interface ExportMixin {
    *   console.log(json.document)
    * })()
    * ```
+   *
+   * Passing an {@link ExportSettingsMP4}, {@link ExportSettingsGIF}, or {@link ExportSettingsWEBM} exports a video (returned as a `Uint8Array`). The exported node must be a top-level frame (a frame placed directly on a page) whose content is animated; the entire frame is encoded across the animation's duration. Calling video export on any other node — including a nested animated frame, or an individual layer that has keyframes but is not itself a top-level frame — rejects with an error. To export the animation a layer participates in, first resolve its enclosing top-level frame with {@link BaseNodeMixin.getTopLevelFrame}. Video export is only available when running in Figma.
+   *
+   * ```ts title="Export the selected layer's top-level frame as an MP4 and a GIF"
+   * (async () => {
+   *   const frame = figma.currentPage.selection[0]?.getTopLevelFrame()
+   *   if (!frame) {
+   *     figma.notify('Select a frame to export')
+   *     return
+   *   }
+   *
+   *   try {
+   *     // highlight-start
+   *     const mp4 = await frame.exportAsync({ format: 'MP4', fps: 30, quality: 'HIGH' })
+   *     const gif = await frame.exportAsync({ format: 'GIF', fps: 15, loopCount: 0 })
+   *     // highlight-end
+   *   } catch (e) {
+   *     // exportAsync rejects if the frame has no animated content to encode
+   *     figma.notify('This frame has no animation to export')
+   *   }
+   * })()
+   * ```
    */
   exportAsync(settings?: ExportSettings): Promise<Uint8Array>
 
   exportAsync(settings: ExportSettingsSVGString): Promise<string>
 
   exportAsync(settings: ExportSettingsREST): Promise<Object>
+
+  exportAsync(
+    settings: ExportSettingsMP4 | ExportSettingsGIF | ExportSettingsWEBM,
+  ): Promise<Uint8Array>
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -10063,7 +10201,7 @@ interface DocumentNode extends BaseNodeMixin {
    * ```
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
-   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#full-document-traversal) for how to optimize document traversals.
    */
   findAll(callback?: (node: PageNode | SceneNode) => boolean): Array<PageNode | SceneNode>
   /**
@@ -10086,7 +10224,7 @@ interface DocumentNode extends BaseNodeMixin {
    * ```
    *
    * Caution: ⚠ Large documents in Figma can have tens of thousands of nodes. Be careful using this function as it could be very slow.
-   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#optimizing-traversals) for how to optimize document traversals.
+   * Please refer to our [recommendations](https://developers.figma.com/docs/plugins/accessing-document#full-document-traversal) for how to optimize document traversals.
    */
   findOne(callback: (node: PageNode | SceneNode) => boolean): PageNode | SceneNode | null
   /**
@@ -12394,4 +12532,4 @@ interface RadialRepeatModifier extends RepeatModifier {
 }
 
 // prettier-ignore
-export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, MotionAPI, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, FontStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, GlassEffect, ShaderEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, ShaderPaint, Paint, ShaderPropertyValue, ShaderPropertyDefinition, Shader, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, TextPathStartData, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, MotionEasing, PhysicalSpring, NormalizedSpring, AnimationStylePropValue, AvailableAnimationStylePropValue, BaseAnimationStyle, AvailableAnimationStyle, AnimationStyleConfiguration, AppliedAnimationStyle, KeyframeValue, ManualKeyframeInput, ManualKeyframeTrackInput, ManualKeyframe, ManualKeyframeBinding, ManualKeyframeTrack, KeyframeBinding, KeyframePropertyFieldName, EffectKeyframeFieldName, KeyframeField, ComponentPropKeyframeTracks, ComponentPropKeyframeBindings, PaintManualKeyframeTrack, PaintKeyframeBinding, EffectManualKeyframeTracks, EffectKeyframeBindings, ManualKeyframeTracks, Animations, Timeline, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, MotionNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridTrackReorderOptions, GridTrackReorderEntry, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, VariableWidthPoint, PresetVariableWidthStrokeProperties, CustomVariableWidthStrokeProperties, VariableWidthStrokeProperties, ComplexStrokeProperties, ScatterBrushProperties, StretchBrushProperties, BrushStrokeProperties, DynamicStrokeProperties, GeometryMixin, ComplexStrokesMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, SlotSettings, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, SlotNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria, TransformModifier, RepeatModifier, LinearRepeatModifier, RadialRepeatModifier }
+export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, MotionAPI, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, TextCase, TextDecoration, TextDecorationStyle, FontStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, GlassEffect, ShaderEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, ShaderPaint, Paint, ShaderPropertyValue, ShaderPropertyDefinition, Shader, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, VideoExportScale, VideoExportConstraint, ExportSettingsMP4, ExportSettingsGIF, ExportSettingsWEBM, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, TextPathStartData, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, MotionEasing, PhysicalSpring, NormalizedSpring, AnimationStylePropValue, AvailableAnimationStylePropValue, BaseAnimationStyle, AvailableAnimationStyle, AnimationStyleConfiguration, AppliedAnimationStyle, KeyframeValue, ManualKeyframeInput, ManualKeyframeTrackInput, ManualKeyframe, ManualKeyframeBinding, ManualKeyframeTrack, KeyframeBinding, KeyframePropertyFieldName, EffectKeyframeFieldName, KeyframeField, ComponentPropKeyframeTracks, ComponentPropKeyframeBindings, PaintManualKeyframeTrack, PaintKeyframeBinding, EffectManualKeyframeTracks, EffectKeyframeBindings, ManualKeyframeTracks, Animations, Timeline, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, MotionNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridTrackReorderOptions, GridTrackReorderEntry, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, VariableWidthPoint, PresetVariableWidthStrokeProperties, CustomVariableWidthStrokeProperties, VariableWidthStrokeProperties, ComplexStrokeProperties, ScatterBrushProperties, StretchBrushProperties, BrushStrokeProperties, DynamicStrokeProperties, GeometryMixin, ComplexStrokesMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, SlotSettings, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, SlotNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria, TransformModifier, RepeatModifier, LinearRepeatModifier, RadialRepeatModifier }
