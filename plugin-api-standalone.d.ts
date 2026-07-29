@@ -2633,6 +2633,35 @@ interface NotificationHandler {
  */
 interface MotionAPI {
   /**
+   * The current playhead position of the Motion timeline, in seconds.
+   *
+   * @remarks
+   *
+   * Returns `undefined` when there is no active Motion timeline in the editor UI.
+   *
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * const playheadPosition = figma.motion.playheadPosition
+   *
+   * if (node && playheadPosition !== undefined) {
+   *   node.applyManualKeyframeTrack(
+   *     { type: 'PROPERTY', name: 'OPACITY' },
+   *     {
+   *       baseValue: { type: 'FLOAT', value: 1 },
+   *       keyframes: [
+   *         {
+   *           timelinePosition: playheadPosition,
+   *           value: { type: 'FLOAT', value: 0 },
+   *         },
+   *       ],
+   *     },
+   *   )
+   * }
+   * ```
+   *
+   */
+  readonly playheadPosition: number | undefined
+  /**
    * Returns the Motion animation styles available in the current document.
    *
    * @remarks
