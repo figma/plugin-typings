@@ -2633,6 +2633,35 @@ interface NotificationHandler {
  */
 interface MotionAPI {
   /**
+   * The current playhead position of the Motion timeline, in seconds.
+   *
+   * @remarks
+   *
+   * Returns `undefined` when there is no active Motion timeline in the editor UI.
+   *
+   * ```ts
+   * const node = figma.currentPage.selection[0]
+   * const playheadPosition = figma.motion.playheadPosition
+   *
+   * if (node && playheadPosition !== undefined) {
+   *   node.applyManualKeyframeTrack(
+   *     { type: 'PROPERTY', name: 'OPACITY' },
+   *     {
+   *       baseValue: { type: 'FLOAT', value: 1 },
+   *       keyframes: [
+   *         {
+   *           timelinePosition: playheadPosition,
+   *           value: { type: 'FLOAT', value: 0 },
+   *         },
+   *       ],
+   *     },
+   *   )
+   * }
+   * ```
+   *
+   */
+  readonly playheadPosition: number | undefined
+  /**
    * Returns the Motion animation styles available in the current document.
    *
    * @remarks
@@ -5514,12 +5543,7 @@ type Action =
       readonly type: 'UPDATE_MEDIA_RUNTIME'
       readonly destinationId: string | null
       readonly mediaAction:
-        | 'PLAY'
-        | 'PAUSE'
-        | 'TOGGLE_PLAY_PAUSE'
-        | 'MUTE'
-        | 'UNMUTE'
-        | 'TOGGLE_MUTE_UNMUTE'
+        'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE' | 'MUTE' | 'UNMUTE' | 'TOGGLE_MUTE_UNMUTE'
     }
   | {
       readonly type: 'UPDATE_MEDIA_RUNTIME'
@@ -7093,9 +7117,7 @@ interface DimensionAndPositionMixin {
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface LayoutMixin
-  extends DimensionAndPositionMixin,
-    AutoLayoutChildrenMixin,
-    GridChildrenMixin {
+  extends DimensionAndPositionMixin, AutoLayoutChildrenMixin, GridChildrenMixin {
   /**
    * The actual bounds of a node accounting for drop shadows, thick strokes, and anything else that may fall outside the node's regular bounding box defined in `x`, `y`, `width`, and `height`. The `x` and `y` inside this property represent the absolute position of the node on the page. This value will be `null` if the node is invisible.
    */
@@ -8527,8 +8549,7 @@ interface CustomVariableWidthStrokeProperties {
  * @see https://developers.figma.com/docs/plugins/api/VariableWidthStrokeProperties
  */
 declare type VariableWidthStrokeProperties =
-  | PresetVariableWidthStrokeProperties
-  | CustomVariableWidthStrokeProperties
+  PresetVariableWidthStrokeProperties | CustomVariableWidthStrokeProperties
 /**
  * @see https://developers.figma.com/docs/plugins/api/ComplexStrokeProperties
  */
@@ -9096,7 +9117,8 @@ interface PublishableMixin {
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface DefaultShapeMixin
-  extends BaseNodeMixin,
+  extends
+    BaseNodeMixin,
     SceneNodeMixin,
     ReactionMixin,
     BlendMixin,
@@ -9107,7 +9129,8 @@ interface DefaultShapeMixin
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface BaseFrameMixin
-  extends BaseNodeMixin,
+  extends
+    BaseNodeMixin,
     SceneNodeMixin,
     ChildrenMixin,
     ContainerMixin,
@@ -9167,10 +9190,7 @@ interface BaseFrameMixin
 interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
 
 interface OpaqueNodeMixin
-  extends BaseNodeMixin,
-    SceneNodeMixin,
-    ExportMixin,
-    DimensionAndPositionMixin {}
+  extends BaseNodeMixin, SceneNodeMixin, ExportMixin, DimensionAndPositionMixin {}
 
 interface MinimalBlendMixin {
   /**
@@ -10290,11 +10310,7 @@ interface ExplicitVariableModesMixin {
   setExplicitVariableModeForCollection(collection: VariableCollection, modeId: string): void
 }
 interface PageNode
-  extends BaseNodeMixin,
-    ChildrenMixin,
-    ExportMixin,
-    ExplicitVariableModesMixin,
-    MeasurementsMixin {
+  extends BaseNodeMixin, ChildrenMixin, ExportMixin, ExplicitVariableModesMixin, MeasurementsMixin {
   /**
    * The type of this node, represented by the string literal "PAGE"
    */
@@ -10499,7 +10515,8 @@ interface FrameNode extends DefaultFrameMixin {
   clone(): FrameNode
 }
 interface GroupNode
-  extends BaseNodeMixin,
+  extends
+    BaseNodeMixin,
     SceneNodeMixin,
     ReactionMixin,
     ChildrenMixin,
@@ -10522,7 +10539,8 @@ interface GroupNode
  * @see https://developers.figma.com/docs/plugins/api/TransformGroupNode
  */
 interface TransformGroupNode
-  extends BaseNodeMixin,
+  extends
+    BaseNodeMixin,
     SceneNodeMixin,
     ReactionMixin,
     ChildrenMixin,
@@ -10556,7 +10574,8 @@ interface SliceNode extends BaseNodeMixin, SceneNodeMixin, LayoutMixin, ExportMi
   clone(): SliceNode
 }
 interface RectangleNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
     ComplexStrokesMixin,
@@ -10574,10 +10593,7 @@ interface RectangleNode
   clone(): RectangleNode
 }
 interface LineNode
-  extends DefaultShapeMixin,
-    ConstraintMixin,
-    AnnotationsMixin,
-    ComplexStrokesMixin {
+  extends DefaultShapeMixin, ConstraintMixin, AnnotationsMixin, ComplexStrokesMixin {
   /**
    * The type of this node, represented by the string literal "LINE"
    */
@@ -10588,7 +10604,8 @@ interface LineNode
   clone(): LineNode
 }
 interface EllipseNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
     ComplexStrokesMixin,
@@ -10608,7 +10625,8 @@ interface EllipseNode
   arcData: ArcData
 }
 interface PolygonNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
     ComplexStrokesMixin,
@@ -10628,7 +10646,8 @@ interface PolygonNode
   pointCount: number
 }
 interface StarNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
     ComplexStrokesMixin,
@@ -10654,7 +10673,8 @@ interface StarNode
   innerRadius: number
 }
 interface VectorNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
     ComplexStrokesMixin,
@@ -10671,7 +10691,8 @@ interface VectorNode
   clone(): VectorNode
 }
 interface TextNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     NonResizableTextMixin,
     ComplexStrokesMixin,
@@ -10742,7 +10763,8 @@ interface TextNode
  * @see https://developers.figma.com/docs/plugins/api/TextPathNode
  */
 interface TextPathNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     NonResizableTextPathMixin,
     ComplexStrokesMixin,
@@ -10867,10 +10889,7 @@ interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPr
  * @see https://developers.figma.com/docs/plugins/api/ComponentNode
  */
 interface ComponentNode
-  extends DefaultFrameMixin,
-    PublishableMixin,
-    VariantMixin,
-    ComponentPropertiesMixin {
+  extends DefaultFrameMixin, PublishableMixin, VariantMixin, ComponentPropertiesMixin {
   /**
    * The type of this node, represented by the string literal "COMPONENT"
    */
@@ -11010,7 +11029,8 @@ interface SlotNode extends DefaultFrameMixin {
   readonly limitViolations: Array<'BELOW_MIN' | 'ABOVE_MAX' | 'HAS_NON_PREFERRED'>
 }
 interface BooleanOperationNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ChildrenMixin,
     CornerMixin,
     ComplexStrokesMixin,
@@ -11056,10 +11076,7 @@ interface StickyNode extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMix
   clone(): StickyNode
 }
 interface StampNode
-  extends DefaultShapeMixin,
-    ConstraintMixin,
-    StickableMixin,
-    AspectRatioLockMixin {
+  extends DefaultShapeMixin, ConstraintMixin, StickableMixin, AspectRatioLockMixin {
   /**
    * The type of this node, represented by the string literal "STAMP"
    */
@@ -11196,7 +11213,8 @@ interface TableCellNode extends MinimalFillsMixin {
   readonly width: number
 }
 interface HighlightNode
-  extends DefaultShapeMixin,
+  extends
+    DefaultShapeMixin,
     ConstraintMixin,
     CornerMixin,
     VectorLikeMixin,
@@ -11222,10 +11240,7 @@ interface WashiTapeNode extends DefaultShapeMixin, StickableMixin, AspectRatioLo
   clone(): WashiTapeNode
 }
 interface ShapeWithTextNode
-  extends OpaqueNodeMixin,
-    MinimalFillsMixin,
-    MinimalBlendMixin,
-    MinimalStrokesMixin {
+  extends OpaqueNodeMixin, MinimalFillsMixin, MinimalBlendMixin, MinimalStrokesMixin {
   /**
    * The type of this node, represented by the string literal "SHAPE_WITH_TEXT".
    */
@@ -11745,14 +11760,7 @@ interface ExtendedVariableCollection extends Omit<VariableCollection, 'addMode'>
   removeMode(modeId: string): void
 }
 type AnnotationCategoryColor =
-  | 'yellow'
-  | 'orange'
-  | 'red'
-  | 'pink'
-  | 'violet'
-  | 'blue'
-  | 'teal'
-  | 'green'
+  'yellow' | 'orange' | 'red' | 'pink' | 'violet' | 'blue' | 'teal' | 'green'
 interface AnnotationCategory {
   /**
    * The unique identifier of the annotation category.
@@ -11979,7 +11987,8 @@ interface MediaNode extends OpaqueNodeMixin {
  * @see https://developers.figma.com/docs/plugins/api/SectionNode
  */
 interface SectionNode
-  extends ChildrenMixin,
+  extends
+    ChildrenMixin,
     MinimalFillsMixin,
     OpaqueNodeMixin,
     DevStatusMixin,
@@ -12125,14 +12134,7 @@ interface SlideTransition {
    * The easing of the slide transition.
    */
   readonly curve:
-    | 'EASE_IN'
-    | 'EASE_OUT'
-    | 'EASE_IN_AND_OUT'
-    | 'LINEAR'
-    | 'GENTLE'
-    | 'QUICK'
-    | 'BOUNCY'
-    | 'SLOW'
+    'EASE_IN' | 'EASE_OUT' | 'EASE_IN_AND_OUT' | 'LINEAR' | 'GENTLE' | 'QUICK' | 'BOUNCY' | 'SLOW'
   /**
    * The timing of the slide transition.
    */
