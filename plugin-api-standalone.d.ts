@@ -5489,7 +5489,15 @@ type Reaction = {
   actions?: Action[]
   trigger: Trigger | null
 }
-type VariableDataType = 'BOOLEAN' | 'FLOAT' | 'STRING' | 'VARIABLE_ALIAS' | 'COLOR' | 'EXPRESSION'
+type VariableDataType =
+  | 'BOOLEAN'
+  | 'COLOR'
+  | 'EASING'
+  | 'EXPRESSION'
+  | 'FLOAT'
+  | 'STRING'
+  | 'TIMING'
+  | 'VARIABLE_ALIAS'
 type ExpressionFunction =
   | 'ADDITION'
   | 'SUBTRACTION'
@@ -11422,12 +11430,12 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
    */
   clone(): ConnectorNode
 }
-type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'FLOAT' | 'STRING'
+type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'EASING' | 'FLOAT' | 'STRING' | 'TIMING'
 interface VariableAlias {
   type: 'VARIABLE_ALIAS'
   id: string
 }
-type VariableValue = boolean | string | number | RGB | RGBA | VariableAlias
+type VariableValue = boolean | string | number | RGB | RGBA | MotionEasing | VariableAlias
 type VariableScope =
   | 'ALL_SCOPES'
   | 'TEXT_CONTENT'
