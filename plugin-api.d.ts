@@ -3704,6 +3704,7 @@ type NodeChangeProperty =
   | 'leadingTrim'
   | 'paragraphIndent'
   | 'paragraphSpacing'
+  | 'textWrapStyle'
   | 'listSpacing'
   | 'hangingPunctuation'
   | 'hangingList'
@@ -3828,6 +3829,7 @@ type StyleChangeProperty =
   | 'leadingTrim'
   | 'paragraphIndent'
   | 'paragraphSpacing'
+  | 'textWrapStyle'
   | 'listSpacing'
   | 'hangingPunctuation'
   | 'hangingList'
@@ -5305,6 +5307,10 @@ type LineHeight =
       readonly unit: 'AUTO'
     }
 type LeadingTrim = 'CAP_HEIGHT' | 'NONE'
+/**
+ * @see https://developers.figma.com/docs/plugins/api/TextWrapStyle
+ */
+type TextWrapStyle = 'AUTO' | 'BALANCE' | 'PRETTY'
 type HyperlinkTarget = {
   type: 'URL' | 'NODE'
   value: string
@@ -5445,6 +5451,10 @@ interface StyledTextSegment {
    * The paragraph spacing.
    */
   paragraphSpacing: number
+  /**
+   * The text wrap style applied to the paragraph.
+   */
+  textWrapStyle: TextWrapStyle
   /**
    * A HyperlinkTarget if the text node has exactly one hyperlink, or null if the node has none.
    */
@@ -6251,13 +6261,6 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
    * Note: This property uses a set of heuristics to determine if a node is an asset. At a high level an icon is a small vector graphic and an image is a node with an image fill.
    */
   readonly isAsset: boolean
-  /**
-   * Resolves to a JSON object of CSS properties of the node. This is the same CSS that Figma shows in the inspect panel and is helpful if you are building a [plugin for code generation](https://developers.figma.com/docs/plugins/codegen-plugins).
-   *
-   */
-  getCSSAsync(): Promise<{
-    [key: string]: string
-  }>
   /**
    * Returns the top-most frame that contains this node. If the node is not inside a frame, this will return undefined.
    *
@@ -10004,8 +10007,118 @@ interface NonResizableTextMixin extends BaseNonResizableTextMixin {
   paragraphIndent: number | PluginAPI['mixed']
   /**
    * The vertical distance between paragraphs. Setting this property requires the font to be loaded.
+   *
+   * @remarks
+   *
+   * **Working with Paragraph Level Fields**
+   *
+   * ```ts
+   * const text = figma.createText()
+   * await figma.loadFontAsync({ family: 'Inter', style: 'Regular' })
+   *
+   * // Create text with two paragraphs, separated by \n
+   * text.characters = "hello figma, welcome to my plugin!\nI love the Figma Plugin API!"
+   * text.resize(120, 30)
+   * text.textAutoResize = 'HEIGHT'
+   *
+   * // Apply 20px paragraph spacing - all paragraphs covered by the provided text range will be
+   * // modified, and remaining paragraphs will be untouched.
+   * text.setRangeParagraphSpacing(0, 1, 20)
+   * // text.paragraphSpacing = Symbol(figma.mixed)
+   * // text.getStyledTextSegments(['paragraphSpacing']) =
+   * //    [
+   * //      {
+   * //        "characters": "hello figma, welcome to my plugin!\n",
+   * //        "start": 0,
+   * //        "end": 35,
+   * //        "paragraphSpacing": 20
+   * //      },
+   * //      {
+   * //        "characters": "I love the Figma Plugin API!",
+   * //        "start": 35,
+   * //        "end": 63,
+   * //        "paragraphSpacing": 0
+   * //      }
+   * //    ]
+   *
+   * text.setRangeTextWrapStyle(38, 39, 'BALANCE')
+   * // text.textWrapStyle = Symbol(figma.mixed)
+   * // text.getStyledTextSegments(['textWrapStyle']) =
+   * //    [
+   * //      {
+   * //        "characters": "hello figma, welcome to my plugin!\n",
+   * //        "start": 0,
+   * //        "end": 35,
+   * //        "textWrapStyle": "AUTO"
+   * //      },
+   * //      {
+   * //        "characters": "I love the Figma Plugin API!",
+   * //        "start": 35,
+   * //        "end": 63,
+   * //        "textWrapStyle": "BALANCE"
+   * //      }
+   * //    ]
+   * ```
+   *
    */
   paragraphSpacing: number | PluginAPI['mixed']
+  /**
+   * Controls how text wraps within each paragraph. Setting this property requires the font to be loaded.
+   *
+   * @remarks
+   *
+   * **Working with Paragraph Level Fields**
+   *
+   * ```ts
+   * const text = figma.createText()
+   * await figma.loadFontAsync({ family: 'Inter', style: 'Regular' })
+   *
+   * // Create text with two paragraphs, separated by \n
+   * text.characters = "hello figma, welcome to my plugin!\nI love the Figma Plugin API!"
+   * text.resize(120, 30)
+   * text.textAutoResize = 'HEIGHT'
+   *
+   * // Apply 20px paragraph spacing - all paragraphs covered by the provided text range will be
+   * // modified, and remaining paragraphs will be untouched.
+   * text.setRangeParagraphSpacing(0, 1, 20)
+   * // text.paragraphSpacing = Symbol(figma.mixed)
+   * // text.getStyledTextSegments(['paragraphSpacing']) =
+   * //    [
+   * //      {
+   * //        "characters": "hello figma, welcome to my plugin!\n",
+   * //        "start": 0,
+   * //        "end": 35,
+   * //        "paragraphSpacing": 20
+   * //      },
+   * //      {
+   * //        "characters": "I love the Figma Plugin API!",
+   * //        "start": 35,
+   * //        "end": 63,
+   * //        "paragraphSpacing": 0
+   * //      }
+   * //    ]
+   *
+   * text.setRangeTextWrapStyle(38, 39, 'BALANCE')
+   * // text.textWrapStyle = Symbol(figma.mixed)
+   * // text.getStyledTextSegments(['textWrapStyle']) =
+   * //    [
+   * //      {
+   * //        "characters": "hello figma, welcome to my plugin!\n",
+   * //        "start": 0,
+   * //        "end": 35,
+   * //        "textWrapStyle": "AUTO"
+   * //      },
+   * //      {
+   * //        "characters": "I love the Figma Plugin API!",
+   * //        "start": 35,
+   * //        "end": 63,
+   * //        "textWrapStyle": "BALANCE"
+   * //      }
+   * //    ]
+   * ```
+   *
+   */
+  textWrapStyle: TextWrapStyle | PluginAPI['mixed']
   /**
    * The vertical distance between lines of a list.
    */
@@ -10158,11 +10271,24 @@ interface NonResizableTextMixin extends BaseNonResizableTextMixin {
    * Set the `paragraphSpacing` for a paragraph containing characters in range `start` (inclusive) to `end` (exclusive).
    */
   setRangeParagraphSpacing(start: number, end: number, value: number): void
+  /**
+   * Get the `textWrapStyle` for a paragraph containing characters in range `start` (inclusive) to `end` (exclusive).
+   */
+  getRangeTextWrapStyle(start: number, end: number): TextWrapStyle | PluginAPI['mixed']
+  /**
+   * Set the `textWrapStyle` for a paragraph containing characters in range `start` (inclusive) to `end` (exclusive). Requires the font to be loaded.
+   */
+  setRangeTextWrapStyle(start: number, end: number, value: TextWrapStyle): void
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/TextPathNode
  */
 interface NonResizableTextPathMixin extends BaseNonResizableTextMixin {}
+/**
+ * Absolute-space dimensions and position for connector label sublayers.
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
+ */
+interface SublayerDimensionsMixin {}
 /**
  * @see https://developers.figma.com/docs/plugins/api/TextNode
  */
@@ -11377,7 +11503,7 @@ interface CodeBlockNode extends OpaqueNodeMixin, MinimalBlendMixin {
 /**
  * @see https://developers.figma.com/docs/plugins/api/LabelSublayer
  */
-interface LabelSublayerNode {
+interface LabelSublayerNode extends SublayerDimensionsMixin {
   fills: Paint[] | PluginAPI['mixed']
 }
 interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrokesMixin {
@@ -11388,7 +11514,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
   /**
    * Text sublayer of the ConnectorNode
    */
-  readonly text: TextSublayerNode
+  readonly text: TextSublayerNode & SublayerDimensionsMixin
   /**
    * Text sublayer of the ConnectorNode
    */
@@ -12331,6 +12457,10 @@ interface TextStyle extends BaseStyleMixin {
    * Value to replace the text {@link NonResizableTextMixin.paragraphSpacing} with.
    */
   paragraphSpacing: number
+  /**
+   * Value to replace the text {@link NonResizableTextMixin.textWrapStyle} with.
+   */
+  textWrapStyle: TextWrapStyle
   /**
    * Value to replace the text {@link NonResizableTextMixin.listSpacing} with.
    */
