@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/figma/plugin-typings#readme",
   "devDependencies": {
-    "prettier": "^2.6.1"
+    "prettier": "3.9.3"
   }
 }
