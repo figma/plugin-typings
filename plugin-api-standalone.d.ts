@@ -6250,6 +6250,13 @@ interface BaseNodeMixin extends PluginDataMixin, DevResourcesMixin {
    */
   readonly isAsset: boolean
   /**
+   * Resolves to a JSON object of CSS properties of the node. This is the same CSS that Figma shows in the inspect panel and is helpful if you are building a [plugin for code generation](https://developers.figma.com/docs/plugins/codegen-plugins).
+   *
+   */
+  getCSSAsync(): Promise<{
+    [key: string]: string
+  }>
+  /**
    * Returns the top-most frame that contains this node. If the node is not inside a frame, this will return undefined.
    *
    * Note: This function will only work in Figma Design and will throw an error if called in FigJam or Slides.
