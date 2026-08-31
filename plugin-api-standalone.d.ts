@@ -7621,7 +7621,9 @@ interface AutoLayoutMixin {
    *
    * - In horizontal auto-layout frames, `“MIN”` and `“MAX”` correspond to left and right respectively.
    * - In vertical auto-layout frames, `“MIN”` and `“MAX”` correspond to top and bottom respectively.
-   * - `“SPACE_BETWEEN”` will cause the children to space themselves evenly along the primary axis, only putting the extra space between the children.
+   * - `“SPACE_BETWEEN”` will space the children evenly along the primary axis, only putting the extra space between the children. The first and last child are flush with the edges of the frame.
+   * - `“SPACE_EVENLY”` will space the children evenly along the primary axis, dividing the extra space equally in the spaces before the first child, between each pair of items, and after the last child.
+   * - `“SPACE_AROUND”` will space the children evenly along the primary axis such that the spacing between each pair of items is equal, and the empty space before the first and after the last child is equal to half the space between items.
    *
    * The corresponding property for the counter axis direction is {@link AutoLayoutMixin.counterAxisAlignItems}.
    *
@@ -7636,47 +7638,68 @@ interface AutoLayoutMixin {
    * parentFrame.resize(300, 100)
    *
    * // Parent frame
-   * // +------------------------------------+
-   * // | +-----------++-----------+         |
-   * // | |           ||           |         |
-   * // | |  Child 1  ||  Child 2  |         |
-   * // | |           ||           |         |
-   * // | +-----------++-----------+         |
-   * // +------------------------------------+
+   * // +--------------------------------------+
+   * // |+-----------++-----------+            |
+   * // ||           ||           |            |
+   * // ||  Child 1  ||  Child 2  |            |
+   * // ||           ||           |            |
+   * // |+-----------++-----------+            |
+   * // +--------------------------------------+
    * parentFrame.primaryAxisAlignItems = 'MIN'
    *
    * // Parent frame
-   * // +------------------------------------+
-   * // |          +-----------++-----------+|
-   * // |          |           ||           ||
-   * // |          |  Child 1  ||  Child 2  ||
-   * // |          |           ||           ||
-   * // |          +-----------++-----------+|
-   * // +------------------------------------+
+   * // +--------------------------------------+
+   * // |            +-----------++-----------+|
+   * // |            |           ||           ||
+   * // |            |  Child 1  ||  Child 2  ||
+   * // |            |           ||           ||
+   * // |            +-----------++-----------+|
+   * // +--------------------------------------+
    * parentFrame.primaryAxisAlignItems = 'MAX'
    *
    * // Parent frame
-   * // +------------------------------------+
-   * // |     +-----------++-----------+     |
-   * // |     |           ||           |     |
-   * // |     |  Child 1  ||  Child 2  |     |
-   * // |     |           ||           |     |
-   * // |     +-----------++-----------+     |
-   * // +------------------------------------+
+   * // +--------------------------------------+
+   * // |      +-----------++-----------+      |
+   * // |      |           ||           |      |
+   * // |      |  Child 1  ||  Child 2  |      |
+   * // |      |           ||           |      |
+   * // |      +-----------++-----------+      |
+   * // +--------------------------------------+
    * parentFrame.primaryAxisAlignItems = 'CENTER'
    *
    * // Parent frame
-   * // +------------------------------------+
-   * // |+-----------+          +-----------+|
-   * // ||           |          |           ||
-   * // ||  Child 1  |          |  Child 2  ||
-   * // ||           |          |           ||
-   * // |+-----------+          +-----------+|
-   * // +------------------------------------+
+   * // +--------------------------------------+
+   * // |+-----------+            +-----------+|
+   * // ||           |            |           ||
+   * // ||  Child 1  |            |  Child 2  ||
+   * // ||           |            |           ||
+   * // |+-----------+            +-----------+|
+   * // +--------------------------------------+
    * parentFrame.primaryAxisAlignItems = 'SPACE_BETWEEN'
+   *
+   * // Parent frame
+   * // +--------------------------------------+
+   * // |    +-----------+    +-----------+    |
+   * // |    |           |    |           |    |
+   * // |----|  Child 1  |----|  Child 2  |----|
+   * // |    |           |    |           |    |
+   * // |    +-----------+    +-----------+    |
+   * // +--------------------------------------+
+   * parentFrame.primaryAxisAlignItems = 'SPACE_EVENLY'
+   *
+   * // Parent frame
+   * // +--------------------------------------+
+   * // |   +-----------+      +-----------+   |
+   * // |   |           |      |           |   |
+   * // |---|  Child 1  |------|  Child 2  |---|
+   * // |   |           |      |           |   |
+   * // |   +-----------+      +-----------+   |
+   * // +--------------------------------------+
+   * parentFrame.primaryAxisAlignItems = 'SPACE_AROUND'
    * ```
    */
-  primaryAxisAlignItems: 'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN'
+  primaryAxisAlignItems:
+    'MIN' | 'MAX' | 'CENTER' | 'SPACE_BETWEEN' | 'SPACE_EVENLY' | 'SPACE_AROUND'
   /**
    * Applicable only on "HORIZONTAL" or "VERTICAL" auto-layout frames. Determines how the auto-layout frame’s children should be aligned in the counter axis direction.
    *
