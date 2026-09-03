@@ -1645,8 +1645,54 @@ interface PluginAPI {
    * A common question is whether a plugin needs to be careful about calling `loadFontAsync(font)` for the same font multiple times. The answer is somewhat nuanced. The result of loading a font is cached, so calling `loadFontAsync` won't re-fetch the same font from disk. Therefore, calling `loadFontAsync` on every frame would be perfectly ok.
    *
    * However, note that `loadFontAsync` returns a Promise. Even a Promise resolves immediately, it still needs to round-trip to the JavaScript event loop. So you probably shouldn't call `loadFontAsync` on the same font repeatedly inside a loop.
+   *
+   * **Variable fonts**
+   *
+   * You can pass a {@link FontNameInput} and omit `style` to load every style of the family in one call. This works for both variable and static families, and is convenient when you plan to drive the font with {@link FontName.variationSettings} rather than enumerating named instances. {@link FontName.variationSettings} on the argument is ignored — variation values affect what gets rendered, not what gets loaded — so you can pass the same object you later assign to `node.fontName`.
+   *
+   * ```ts title="Loading and applying a variable font"
+   * (async () => {
+   *   await figma.loadFontAsync({ family: 'Inter' })
+   *
+   *   const text = figma.createText()
+   *   text.fontName = {
+   *     family: 'Inter',
+   *     style: 'Regular',
+   *     variationSettings: { wght: 550 },
+   *   }
+   *   text.characters = 'Hello, world'
+   * })()
+   * ```
    */
-  loadFontAsync(fontName: FontName): Promise<void>
+  loadFontAsync(fontName: FontNameInput): Promise<void>
+  /**
+   * Returns the [OpenType variation axis](https://fonts.google.com/knowledge/glossary/axis_in_variable_fonts) tags a variable font family exposes, or `null` for a static family. These are the tags accepted by {@link FontName.variationSettings}.
+   *
+   * @remarks
+   *
+   * The family has to be available in the editor but does not have to be loaded, so this can be called before {@link PluginAPI.loadFontAsync} to decide what to load. Throws for an unknown family, so `null` always means the family is static.
+   *
+   * Each tag is a 4-character OpenType axis tag such as `"wght"` (weight), `"wdth"` (width), `"slnt"` (slant), `"opsz"` (optical size), or a custom tag defined by the font designer.
+   *
+   * ```ts title="Discovering variation axes, then applying one"
+   * (async () => {
+   *   const family = 'Inter'
+   *   const axes = figma.getFontFamilyVariationAxes(family)
+   *   if (axes === null) {
+   *     console.log(`${family} is a static font`)
+   *     return
+   *   }
+   *
+   *   await figma.loadFontAsync({ family })
+   *   const text = figma.createText()
+   *   if (axes.includes('wght')) {
+   *     text.fontName = { family, style: 'Regular', variationSettings: { wght: 550 } }
+   *   }
+   *   text.characters = 'Variable!'
+   * })()
+   * ```
+   */
+  getFontFamilyVariationAxes(family: string): string[] | null
   /**
    * Returns true if the document contains text with missing fonts.
    */
@@ -3878,10 +3924,75 @@ interface RGBA {
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/FontName
+ *
+ * Describes a font used by a text node. For example, the default font is `{ family: "Inter", style: "Regular" }`.
+ *
+ * @remarks
+ *
+ * Reads always include `family` and `style`. For [variable fonts](https://fonts.google.com/knowledge/glossary/variable_fonts), they also include {@link FontName.variationSettings} with every axis the family defines. Static fonts omit `variationSettings`.
+ *
+ * To apply a font without naming a style, pass a {@link FontNameInput} to {@link PluginAPI.loadFontAsync}, {@link BaseNonResizableTextMixin.setRangeFontName}, or `fontName`. Use {@link PluginAPI.getFontFamilyVariationAxes} to discover the axis tags a family accepts.
+ *
+ * ```ts title="Setting a font with custom variation settings"
+ * (async () => {
+ *   const text = figma.createText()
+ *   await figma.loadFontAsync({ family: 'Inter', style: 'Regular' })
+ *   text.fontName = {
+ *     family: 'Inter',
+ *     style: 'Regular',
+ *     variationSettings: { wght: 600, slnt: -5 },
+ *   }
+ *   text.characters = 'Hello, variable fonts!'
+ * })()
+ * ```
  */
 interface FontName {
   readonly family: string
   readonly style: string
+  /**
+   * The variable font axis values applied to the text, for example `{ wght: 600, slnt: -10 }`. Absent for a static font.
+   *
+   * Reading reports every axis the family defines. When setting, an omitted axis keeps the value of the named instance `style` refers to, so `{ wght: 900 }` on Inter Regular changes only the weight and leaves slant at Regular's default. Setting an axis the family does not define throws; use {@link PluginAPI.getFontFamilyVariationAxes} to discover the valid tags.
+   */
+  readonly variationSettings?: FontVariationSettings
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/FontName
+ *
+ * Variable font axis values keyed by [OpenType variation axis](https://fonts.google.com/knowledge/glossary/axis_in_variable_fonts) tag, mirroring the CSS `font-variation-settings` property. A tag is always four ASCII characters.
+ */
+interface FontVariationSettings {
+  readonly [axis: string]: number
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/FontName
+ *
+ * A font to apply where `style` can be inferred rather than named. Unlike {@link FontName}, `style` may be omitted, in which case Figma resolves the named instance that most closely matches {@link FontName.variationSettings}. Reads always return a fully populated {@link FontName}.
+ *
+ * @remarks
+ *
+ * Accepted by {@link PluginAPI.loadFontAsync}, {@link BaseNonResizableTextMixin.setRangeFontName}, and when assigning {@link BaseNonResizableTextMixin.fontName}.
+ *
+ * Omitting `style` in {@link PluginAPI.loadFontAsync} loads every style of the family. Omitting `style` when setting a font lets Figma pick the named instance closest to `variationSettings` (for example `{ family: 'Inter', variationSettings: { wght: 900 } }` resolves to Inter Black).
+ *
+ * ```ts title="Inferring a named instance from variation settings"
+ * (async () => {
+ *   await figma.loadFontAsync({ family: 'Inter' })
+ *   const text = figma.createText()
+ *   text.characters = 'Hello'
+ *   text.setRangeFontName(0, text.characters.length, {
+ *     family: 'Inter',
+ *     variationSettings: { wght: 900 },
+ *   })
+ *   // Read back: { family: 'Inter', style: 'Black', variationSettings: { wght: 900, slnt: 0 } }
+ *   console.log(text.fontName)
+ * })()
+ * ```
+ */
+interface FontNameInput {
+  readonly family: string
+  readonly style?: string
+  readonly variationSettings?: FontVariationSettings
 }
 type TextCase = 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
 type TextDecoration = 'NONE' | 'UNDERLINE' | 'STRIKETHROUGH'
@@ -5372,7 +5483,7 @@ interface StyledTextSegment {
    */
   fontSize: number
   /**
-   * The font family (e.g. "Inter"), and font style (e.g. "Regular").
+   * The font family (e.g. `"Inter"`), font style (e.g. `"Regular"`). For [variable fonts](https://developers.figma.com/docs/plugins/api/FontName), also {@link FontName.variationSettings}.
    */
   fontName: FontName
   /**
@@ -9653,7 +9764,26 @@ interface BaseNonResizableTextMixin {
    */
   fontSize: number | PluginAPI['mixed']
   /**
-   * The font family (e.g. "Inter"), and font style (e.g. "Regular"). Setting this property to a different value requires the new font to be loaded.
+   * The font family (e.g. `"Inter"`), font style (e.g. `"Regular"`). For [variable fonts](https://developers.figma.com/docs/plugins/api/FontName), also {@link FontName.variationSettings}. Setting this property to a different value requires the new font to be loaded.
+   *
+   * @remarks
+   *
+   * When reading, `variationSettings` is populated only when the font is a variable font, and includes every axis the family defines (not just overrides). Returns `figma.mixed` when the text node has more than one font, or when variation settings differ across character ranges.
+   *
+   * When writing, pass a {@link FontName} or {@link FontNameInput}. Omit `style` to let Figma pick the named instance closest to `variationSettings`. Supply `variationSettings` to override specific axes; keys must match the family's axis tags (see {@link PluginAPI.getFontFamilyVariationAxes}). An omitted axis keeps the named instance's default.
+   *
+   * ```ts title="Set a variable font with custom weight"
+   * (async () => {
+   *   const text = figma.createText()
+   *   await figma.loadFontAsync({ family: 'Inter', style: 'Regular' })
+   *   text.fontName = {
+   *     family: 'Inter',
+   *     style: 'Regular',
+   *     variationSettings: { wght: 650 },
+   *   }
+   *   text.characters = 'Almost bold'
+   * })()
+   * ```
    */
   fontName: FontName | PluginAPI['mixed']
   /**
@@ -9743,19 +9873,36 @@ interface BaseNonResizableTextMixin {
    */
   setRangeFontSize(start: number, end: number, value: number): void
   /**
-   * Get the `fontName` from characters in range `start` (inclusive) to `end` (exclusive).
+   * Get the `fontName` from characters in range `start` (inclusive) to `end` (exclusive). For [variable fonts](https://developers.figma.com/docs/plugins/api/FontName), the returned {@link FontName} includes {@link FontName.variationSettings}. Returns `figma.mixed` when the range contains more than one font or when variation settings differ.
    */
   getRangeFontName(start: number, end: number): FontName | PluginAPI['mixed']
   /**
    * Set the `fontName` from characters in range `start` (inclusive) to `end` (exclusive). Requires the new font to be loaded.
+   *
+   * @remarks
+   *
+   * Accepts a {@link FontNameInput}. Pass `variationSettings` to override specific axes of a [variable font](https://developers.figma.com/docs/plugins/api/FontName). Omit `style` to let Figma pick the named instance closest to `variationSettings`.
+   *
+   * ```ts title="Override weight on a character range"
+   * (async () => {
+   *   const text = figma.createText()
+   *   await figma.loadFontAsync({ family: 'Inter' })
+   *   text.characters = 'Hello world'
+   *   text.setRangeFontName(0, 5, {
+   *     family: 'Inter',
+   *     style: 'Regular',
+   *     variationSettings: { wght: 700 },
+   *   })
+   * })()
+   * ```
    */
-  setRangeFontName(start: number, end: number, value: FontName): void
+  setRangeFontName(start: number, end: number, value: FontNameInput): void
   /**
    * Get the `fontWeight` from characters in range `start` (inclusive) to `end` (exclusive).
    */
   getRangeFontWeight(start: number, end: number): number | PluginAPI['mixed']
   /**
-   * Get the `fontName`s from characters in range `start` (inclusive) to `end` (exclusive).
+   * Get the `fontName`s from characters in range `start` (inclusive) to `end` (exclusive). For [variable fonts](https://developers.figma.com/docs/plugins/api/FontName), each entry includes {@link FontName.variationSettings}.
    */
   getRangeAllFontNames(start: number, end: number): FontName[]
   /**
@@ -12425,7 +12572,7 @@ interface TextStyle extends BaseStyleMixin {
    */
   textDecoration: TextDecoration
   /**
-   * Value to replace the text {@link BaseNonResizableTextMixin.fontName} with.
+   * Value to replace the text {@link BaseNonResizableTextMixin.fontName} with. For [variable fonts](https://developers.figma.com/docs/plugins/api/FontName), this includes {@link FontName.variationSettings}.
    */
   fontName: FontName
   /**
