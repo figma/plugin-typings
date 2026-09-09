@@ -6538,6 +6538,9 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin, MotionNodeMixin {
    * All component properties that are attached on this node. A node can only have `componentPropertyReferences` if it is a component sublayer or an instance sublayer. It will be `null` otherwise. The value in the key-value pair refers to the component property name as returned by `componentPropertyDefinitions` on the containing component, component set or main component (for instances).
    *
    * When setting, may throw the following errors: cannotApplySlotPropertyToNonFrameNode, cannotApplySlotPropertyToFrameWithGrid, or cannotApplySlotPropertyToFrame.
+   *
+   * See the [Working with Component Properties](https://developers.figma.com/docs/plugins/working-with-component-properties) guide for how to create properties and change their values in instances.
+   *
    */
   componentPropertyReferences:
     | {
@@ -9554,7 +9557,7 @@ interface VariantMixin {
    * { Size: 'Large', State: 'Default' }
    * ```
    *
-   * @deprecated Use {@link InstanceNode.componentProperties} instead.
+   * @deprecated Deprecated for instances. Use {@link InstanceNode.componentProperties} instead. Not deprecated for components/variants in component sets.
    */
   readonly variantProperties: {
     [property: string]: string
@@ -9566,154 +9569,10 @@ interface ComponentPropertiesMixin {
    *
    * @remarks
    *
-   * [Component properties-related properties](https://help.figma.com/hc/en-us/articles/5579474826519-Create-and-use-component-properties) define parts of the component people can change by tying them to specific design properties. You can create component properties for any main component or component set, and apply them to nested layers of the component or variant.
+   * [Component properties](https://help.figma.com/hc/en-us/articles/5579474826519-Create-and-use-component-properties) define the changeable aspects of a component by tying them to specific design properties. You can create component properties for any main component or component set, and apply them to nested layers of the component or variant.
    *
-   * ```ts title="Component properties-related properties and methods for component sets, components, and instances"
-   * componentSet.componentPropertyDefinitions
+   * See the [Working with Component Properties](https://developers.figma.com/docs/plugins/working-with-component-properties) guide for how to create properties and change their values in instances.
    *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     defaultValue: 'Small',
-   *     variantOptions: ['Small', 'Medium', 'Large'],
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     defaultValue: false,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     defaultValue: 'submit',
-   *   },
-   *   IconInstance#0:2: {
-   *     type: 'INSTANCE_SWAP',
-   *     defaultValue: '1:1',
-   *     preferredValues: [
-   *       {type: 'COMPONENT', key: 'ckey1'},
-   *       {type: 'COMPONENT_SET', key: 'sgkey1'}
-   *     ],
-   *   },
-   * }
-   *
-   * // componentProperties on an instance
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     value: 'Medium',
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: false,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     value: 'cancel',
-   *   },
-   *   IconInstance#0:2: {
-   *     type: 'INSTANCE_SWAP',
-   *     defaultValue: '1:1',
-   *     preferredValues: [
-   *       {type: 'COMPONENT', key: 'ckey1'},
-   *       {type: 'COMPONENT_SET', key: 'sgkey1'}
-   *     ],
-   *   },
-   * }
-   *
-   * // component property definitions can be created, edited, and deleted
-   * component.addComponentProperty("ButtonIcon", "INSTANCE_SWAP", "2:22")
-   * // returns "ButtonIcon#4:3"
-   *
-   * component.editComponentProperty(
-   *   "ButtonIcon#4:3",
-   *   {name: "PrimaryButtonIcon", defaultValue: "1:100"}
-   * )
-   * // returns "PrimaryButtonIcon#5:5"
-   *
-   * component.deleteComponentProperty("PrimaryButtonIcon#5:5")
-   *
-   * // componentPropertyDefinitions and componentProperties work similarly for
-   * // main components and their instances but will never have 'VARIANT'
-   * // properties.
-   * component.componentPropertyDefinitions
-   *
-   * // Output
-   * {
-   *   ImageVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     defaultValue: true,
-   *   },
-   *   Icon#0:1: {
-   *     type: 'INSTANCE_SWAP',
-   *     defaultValue: '7:23',
-   *   },
-   * }
-   *
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   ImageVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: true,
-   *   },
-   *   Icon#0:1: {
-   *     type: 'INSTANCE_SWAP',
-   *     value: '1:24',
-   *   },
-   * }
-   *
-   * // component properties can be applied to node properties of nested layers
-   * component.children[0].children[0].componentPropertyReferences = {
-   *   'visible': 'IconVisible#0:0'
-   * }
-   * component.children[0].children[0].visible
-   *
-   * // Output
-   * false // gets value from component property definition
-   *
-   * // Use setProperties on an instance to configure it
-   * instance.setProperties({ Size: 'Large', 'ButtonText#0:1': 'login' })
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     value: 'Large',
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: false,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     value: 'login',
-   *   },
-   * }
-   *
-   * instance.setProperties({ 'IconVisible#0:0': true })
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     value: 'Large',
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: true,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     value: 'login',
-   *   },
-   * }
-   * ```
    */
   readonly componentPropertyDefinitions: ComponentPropertyDefinitions
   /**
@@ -11203,6 +11062,8 @@ interface ComponentNode
   createInstance(): InstanceNode
   /**
    * Creates a new slot node within this component.
+   *
+   * See the [Working with Component Properties](https://developers.figma.com/docs/plugins/working-with-component-properties/#add-slot-properties) guide for how to create slot properties and change their values in instances.
    */
   createSlot(): SlotNode
   /**
