@@ -6538,6 +6538,9 @@ interface SceneNodeMixin extends ExplicitVariableModesMixin, MotionNodeMixin {
    * All component properties that are attached on this node. A node can only have `componentPropertyReferences` if it is a component sublayer or an instance sublayer. It will be `null` otherwise. The value in the key-value pair refers to the component property name as returned by `componentPropertyDefinitions` on the containing component, component set or main component (for instances).
    *
    * When setting, may throw the following errors: cannotApplySlotPropertyToNonFrameNode, cannotApplySlotPropertyToFrameWithGrid, or cannotApplySlotPropertyToFrame.
+   *
+   * See the [Working with Component Properties](https://developers.figma.com/docs/plugins/working-with-component-properties) guide for how to create properties and change their values in instances.
+   *
    */
   componentPropertyReferences:
     | {
@@ -9554,7 +9557,7 @@ interface VariantMixin {
    * { Size: 'Large', State: 'Default' }
    * ```
    *
-   * @deprecated Use {@link InstanceNode.componentProperties} instead.
+   * @deprecated Deprecated for instances. Use {@link InstanceNode.componentProperties} instead. Not deprecated for components/variants in component sets.
    */
   readonly variantProperties: {
     [property: string]: string
@@ -9566,154 +9569,10 @@ interface ComponentPropertiesMixin {
    *
    * @remarks
    *
-   * [Component properties-related properties](https://help.figma.com/hc/en-us/articles/5579474826519-Create-and-use-component-properties) define parts of the component people can change by tying them to specific design properties. You can create component properties for any main component or component set, and apply them to nested layers of the component or variant.
+   * [Component properties](https://help.figma.com/hc/en-us/articles/5579474826519-Create-and-use-component-properties) define the changeable aspects of a component by tying them to specific design properties. You can create component properties for any main component or component set, and apply them to nested layers of the component or variant.
    *
-   * ```ts title="Component properties-related properties and methods for component sets, components, and instances"
-   * componentSet.componentPropertyDefinitions
+   * See the [Working with Component Properties](https://developers.figma.com/docs/plugins/working-with-component-properties) guide for how to create properties and change their values in instances.
    *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     defaultValue: 'Small',
-   *     variantOptions: ['Small', 'Medium', 'Large'],
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     defaultValue: false,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     defaultValue: 'submit',
-   *   },
-   *   IconInstance#0:2: {
-   *     type: 'INSTANCE_SWAP',
-   *     defaultValue: '1:1',
-   *     preferredValues: [
-   *       {type: 'COMPONENT', key: 'ckey1'},
-   *       {type: 'COMPONENT_SET', key: 'sgkey1'}
-   *     ],
-   *   },
-   * }
-   *
-   * // componentProperties on an instance
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     value: 'Medium',
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: false,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     value: 'cancel',
-   *   },
-   *   IconInstance#0:2: {
-   *     type: 'INSTANCE_SWAP',
-   *     defaultValue: '1:1',
-   *     preferredValues: [
-   *       {type: 'COMPONENT', key: 'ckey1'},
-   *       {type: 'COMPONENT_SET', key: 'sgkey1'}
-   *     ],
-   *   },
-   * }
-   *
-   * // component property definitions can be created, edited, and deleted
-   * component.addComponentProperty("ButtonIcon", "INSTANCE_SWAP", "2:22")
-   * // returns "ButtonIcon#4:3"
-   *
-   * component.editComponentProperty(
-   *   "ButtonIcon#4:3",
-   *   {name: "PrimaryButtonIcon", defaultValue: "1:100"}
-   * )
-   * // returns "PrimaryButtonIcon#5:5"
-   *
-   * component.deleteComponentProperty("PrimaryButtonIcon#5:5")
-   *
-   * // componentPropertyDefinitions and componentProperties work similarly for
-   * // main components and their instances but will never have 'VARIANT'
-   * // properties.
-   * component.componentPropertyDefinitions
-   *
-   * // Output
-   * {
-   *   ImageVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     defaultValue: true,
-   *   },
-   *   Icon#0:1: {
-   *     type: 'INSTANCE_SWAP',
-   *     defaultValue: '7:23',
-   *   },
-   * }
-   *
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   ImageVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: true,
-   *   },
-   *   Icon#0:1: {
-   *     type: 'INSTANCE_SWAP',
-   *     value: '1:24',
-   *   },
-   * }
-   *
-   * // component properties can be applied to node properties of nested layers
-   * component.children[0].children[0].componentPropertyReferences = {
-   *   'visible': 'IconVisible#0:0'
-   * }
-   * component.children[0].children[0].visible
-   *
-   * // Output
-   * false // gets value from component property definition
-   *
-   * // Use setProperties on an instance to configure it
-   * instance.setProperties({ Size: 'Large', 'ButtonText#0:1': 'login' })
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     value: 'Large',
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: false,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     value: 'login',
-   *   },
-   * }
-   *
-   * instance.setProperties({ 'IconVisible#0:0': true })
-   * instance.componentProperties
-   *
-   * // Output
-   * {
-   *   Size: {
-   *     type: 'VARIANT',
-   *     value: 'Large',
-   *   },
-   *   IconVisible#0:0: {
-   *     type: 'BOOLEAN',
-   *     value: true,
-   *   },
-   *   ButtonText#0:1: {
-   *     type: 'TEXT',
-   *     value: 'login',
-   *   },
-   * }
-   * ```
    */
   readonly componentPropertyDefinitions: ComponentPropertyDefinitions
   /**
@@ -11203,6 +11062,8 @@ interface ComponentNode
   createInstance(): InstanceNode
   /**
    * Creates a new slot node within this component.
+   *
+   * See the [Working with Component Properties](https://developers.figma.com/docs/plugins/working-with-component-properties/#add-slot-properties) guide for how to create slot properties and change their values in instances.
    */
   createSlot(): SlotNode
   /**
@@ -11712,7 +11573,20 @@ interface VariableAlias {
   type: 'VARIABLE_ALIAS'
   id: string
 }
-type VariableValue = boolean | string | number | RGB | RGBA | MotionEasing | VariableAlias
+/**
+ * An authored color value that combines a color with a separate opacity percentage. Either the color or the opacity must be a variable alias, or both.
+ */
+type VariableComposedColor =
+  | {
+      color: RGB | RGBA
+      opacity: VariableAlias
+    }
+  | {
+      color: VariableAlias
+      opacity: number | VariableAlias
+    }
+type VariableValue =
+  boolean | string | number | RGB | RGBA | MotionEasing | VariableAlias | VariableComposedColor
 type VariableScope =
   | 'ALL_SCOPES'
   | 'TEXT_CONTENT'
@@ -11728,6 +11602,7 @@ type VariableScope =
   | 'EFFECT_FLOAT'
   | 'EFFECT_COLOR'
   | 'OPACITY'
+  | 'COLOR_OPACITY'
   | 'FONT_FAMILY'
   | 'FONT_STYLE'
   | 'FONT_WEIGHT'
@@ -12837,4 +12712,4 @@ interface RadialRepeatModifier extends RepeatModifier {
 }
 
 // prettier-ignore
-export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, MotionAPI, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, FontVariationSettings, FontNameInput, TextCase, TextDecoration, TextDecorationStyle, FontStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, GlassEffect, ShaderEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, ShaderPaint, Paint, ShaderPropertyValue, ShaderPropertyDefinition, Shader, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, VideoExportScale, VideoExportConstraint, ExportSettingsMP4, ExportSettingsGIF, ExportSettingsWEBM, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, TextWrapStyle, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, TextPathStartData, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, MotionEasing, PhysicalSpring, NormalizedSpring, AnimationStylePropValue, AvailableAnimationStylePropValue, BaseAnimationStyle, AvailableAnimationStyle, AnimationStyleConfiguration, AppliedAnimationStyle, KeyframeValue, ManualKeyframeInput, ManualKeyframeTrackInput, ManualKeyframe, ManualKeyframeBinding, ManualKeyframeTrack, KeyframeBinding, KeyframePropertyFieldName, EffectKeyframeFieldName, KeyframeField, ComponentPropKeyframeTracks, ComponentPropKeyframeBindings, PaintManualKeyframeTrack, PaintKeyframeBinding, EffectManualKeyframeTracks, EffectKeyframeBindings, ManualKeyframeTracks, Animations, Timeline, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, MotionNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridTrackReorderOptions, GridTrackReorderEntry, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, VariableWidthPoint, PresetVariableWidthStrokeProperties, CustomVariableWidthStrokeProperties, VariableWidthStrokeProperties, ComplexStrokeProperties, ScatterBrushProperties, StretchBrushProperties, BrushStrokeProperties, DynamicStrokeProperties, GeometryMixin, ComplexStrokesMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, SlotSettings, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, SlotNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria, TransformModifier, RepeatModifier, LinearRepeatModifier, RadialRepeatModifier }
+export { ArgFreeEventType, PluginAPI, VersionHistoryResult, VariablesAPI, LibraryVariableCollection, LibraryVariable, AnnotationsAPI, BuzzAPI, BuzzTextField, BuzzMediaField, BuzzAssetType, TeamLibraryAPI, PaymentStatus, PaymentsAPI, ClientStorageAPI, NotificationOptions, NotifyDequeueReason, NotificationHandler, MotionAPI, ShowUIOptions, UIPostMessageOptions, OnMessageProperties, MessageEventHandler, UIAPI, UtilAPI, ColorPalette, ColorPalettes, ConstantsAPI, CodegenEvent, CodegenPreferences, CodegenPreferencesEvent, CodegenResult, CodegenAPI, DevResource, DevResourceWithNodeId, LinkPreviewEvent, PlainTextElement, LinkPreviewResult, AuthEvent, DevResourceOpenEvent, AuthResult, VSCodeAPI, DevResourcesAPI, TimerAPI, ViewportAPI, TextReviewAPI, ParameterValues, SuggestionResults, ParameterInputEvent, ParametersAPI, RunParametersEvent, OpenDevResourcesEvent, RunEvent, SlidesViewChangeEvent, CanvasViewChangeEvent, DropEvent, DropItem, DropFile, DocumentChangeEvent, StyleChangeEvent, StyleChange, BaseDocumentChange, BaseNodeChange, RemovedNode, CreateChange, DeleteChange, PropertyChange, BaseStyleChange, StyleCreateChange, StyleDeleteChange, StylePropertyChange, DocumentChange, NodeChangeProperty, NodeChangeEvent, NodeChange, StyleChangeProperty, TextReviewEvent, TextReviewRange, Transform, Vector, Rect, RGB, RGBA, FontName, FontVariationSettings, FontNameInput, TextCase, TextDecoration, TextDecorationStyle, FontStyle, TextDecorationOffset, TextDecorationThickness, TextDecorationColor, OpenTypeFeature, ArcData, DropShadowEffect, InnerShadowEffect, BlurEffectBase, BlurEffectNormal, BlurEffectProgressive, BlurEffect, NoiseEffectBase, NoiseEffectMonotone, NoiseEffectDuotone, NoiseEffectMultitone, NoiseEffect, TextureEffect, GlassEffect, ShaderEffect, Effect, ConstraintType, Constraints, ColorStop, ImageFilters, SolidPaint, GradientPaint, ImagePaint, VideoPaint, PatternPaint, ShaderPaint, Paint, ShaderPropertyValue, ShaderPropertyDefinition, Shader, Guide, RowsColsLayoutGrid, GridLayoutGrid, LayoutGrid, ExportSettingsConstraints, ExportSettingsImage, ExportSettingsSVGBase, ExportSettingsSVG, ExportSettingsSVGString, ExportSettingsPDF, ExportSettingsREST, VideoExportScale, VideoExportConstraint, ExportSettingsMP4, ExportSettingsGIF, ExportSettingsWEBM, ExportSettings, WindingRule, VectorVertex, VectorSegment, VectorRegion, VectorNetwork, VectorPath, VectorPaths, LetterSpacing, LineHeight, LeadingTrim, TextWrapStyle, HyperlinkTarget, TextListOptions, BlendMode, MaskType, Font, TextStyleOverrideType, StyledTextSegment, TextPathStartData, Reaction, VariableDataType, ExpressionFunction, Expression, VariableValueWithExpression, VariableData, ConditionalBlock, DevStatus, Action, SimpleTransition, DirectionalTransition, Transition, Trigger, Navigation, Easing, EasingFunctionBezier, EasingFunctionSpring, MotionEasing, PhysicalSpring, NormalizedSpring, AnimationStylePropValue, AvailableAnimationStylePropValue, BaseAnimationStyle, AvailableAnimationStyle, AnimationStyleConfiguration, AppliedAnimationStyle, KeyframeValue, ManualKeyframeInput, ManualKeyframeTrackInput, ManualKeyframe, ManualKeyframeBinding, ManualKeyframeTrack, KeyframeBinding, KeyframePropertyFieldName, EffectKeyframeFieldName, KeyframeField, ComponentPropKeyframeTracks, ComponentPropKeyframeBindings, PaintManualKeyframeTrack, PaintKeyframeBinding, EffectManualKeyframeTracks, EffectKeyframeBindings, ManualKeyframeTracks, Animations, Timeline, OverflowDirection, OverlayPositionType, OverlayBackground, OverlayBackgroundInteraction, PublishStatus, ConnectorEndpointPosition, ConnectorEndpointPositionAndEndpointNodeId, ConnectorEndpointEndpointNodeIdAndMagnet, ConnectorEndpoint, ConnectorStrokeCap, BaseNodeMixin, PluginDataMixin, DevResourcesMixin, DevStatusMixin, SceneNodeMixin, MotionNodeMixin, VariableBindableNodeField, VariableBindableTextField, VariableBindablePaintField, VariableBindablePaintStyleField, VariableBindableColorStopField, VariableBindableEffectField, VariableBindableEffectStyleField, VariableBindableLayoutGridField, VariableBindableGridStyleField, VariableBindableComponentPropertyField, VariableBindableComponentPropertyDefinitionField, StickableMixin, ChildrenMixin, ConstraintMixin, DimensionAndPositionMixin, LayoutMixin, AspectRatioLockMixin, BlendMixin, ContainerMixin, DeprecatedBackgroundMixin, StrokeCap, StrokeJoin, HandleMirroring, AutoLayoutMixin, GridTrackSize, GridTrackReorderOptions, GridTrackReorderEntry, GridLayoutMixin, AutoLayoutChildrenMixin, GridChildrenMixin, InferredAutoLayoutResult, DetachedInfo, MinimalStrokesMixin, IndividualStrokesMixin, MinimalFillsMixin, VariableWidthPoint, PresetVariableWidthStrokeProperties, CustomVariableWidthStrokeProperties, VariableWidthStrokeProperties, ComplexStrokeProperties, ScatterBrushProperties, StretchBrushProperties, BrushStrokeProperties, DynamicStrokeProperties, GeometryMixin, ComplexStrokesMixin, CornerMixin, RectangleCornerMixin, ExportMixin, FramePrototypingMixin, VectorLikeMixin, ReactionMixin, DocumentationLink, PublishableMixin, DefaultShapeMixin, BaseFrameMixin, DefaultFrameMixin, OpaqueNodeMixin, MinimalBlendMixin, Annotation, AnnotationProperty, AnnotationPropertyType, AnnotationsMixin, Measurement, MeasurementSide, MeasurementOffset, MeasurementsMixin, VariantMixin, ComponentPropertiesMixin, BaseNonResizableTextMixin, NonResizableTextMixin, NonResizableTextPathMixin, TextSublayerNode, DocumentNode, ExplicitVariableModesMixin, PageNode, FrameNode, GroupNode, TransformGroupNode, SliceNode, RectangleNode, LineNode, EllipseNode, PolygonNode, StarNode, VectorNode, TextNode, TextPathNode, ComponentPropertyType, InstanceSwapPreferredValue, SlotSettings, ComponentPropertyOptions, ComponentPropertyDefinitions, ComponentSetNode, ComponentNode, ComponentProperties, InstanceNode, SlotNode, BooleanOperationNode, StickyNode, StampNode, TableNode, TableCellNode, HighlightNode, WashiTapeNode, ShapeWithTextNode, CodeBlockNode, LabelSublayerNode, ConnectorNode, VariableResolvedDataType, VariableAlias, VariableComposedColor, VariableValue, VariableScope, CodeSyntaxPlatform, Variable, VariableCollection, ExtendedVariableCollection, AnnotationCategoryColor, AnnotationCategory, WidgetNode, EmbedData, EmbedNode, LinkUnfurlData, LinkUnfurlNode, MediaData, MediaNode, SectionNode, SlideNode, SlideRowNode, SlideGridNode, InteractiveSlideElementNode, SlideTransition, BaseNode, SceneNode, NodeType, StyleType, InheritedStyleField, StyleConsumers, BaseStyleMixin, PaintStyle, TextStyle, EffectStyle, GridStyle, BaseStyle, Image, Video, BaseUser, User, ActiveUser, FindAllCriteria, TransformModifier, RepeatModifier, LinearRepeatModifier, RadialRepeatModifier }
