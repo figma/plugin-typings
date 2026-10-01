@@ -1,0 +1,77 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Exact package version (X.Y.Z)'
+        required: true
+        type: string
+      dry_run:
+        description: 'Test and pack only'
+        required: true
+        default: true
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check release ref
+        if: ${{ !inputs.dry_run && github.ref != 'refs/heads/main' }}
+        run: exit 1
+      - uses: figma/actions-checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          persist-credentials: false
+      - uses: figma/actions-setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22.22.0'
+      - run: npm ci --ignore-scripts
+      - run: npm run release:check
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_DRY_RUN: ${{ inputs.dry_run }}
+      - name: Check version availability
+        if: ${{ !inputs.dry_run }}
+        run: node scripts/release.mjs available
+      - uses: figma/actions-upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: npm-package-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .release/package.tgz
+            .release/release.json
+            .release/notes.md
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+  stage:
+    needs: prepare
+    if: ${{ !inputs.dry_run && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: figma/actions-checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          persist-credentials: false
+      - uses: figma/actions-setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22.22.0'
+      - uses: figma/actions-download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: npm-package-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .release/
+      - run: npm install --global npm@11.15.0 --ignore-scripts --registry=https://registry.npmjs.org
+      - run: node scripts/release.mjs verify
+      - run: node scripts/release.mjs available
+      - name: Stage package
+        run: |
+          npm stage publish .release/package.tgz --ignore-scripts --access public --provenance --tag latest --registry=https://registry.npmjs.org
+          echo 'Package staged. Awaiting maintainer approval on npm.' >> "$GITHUB_STEP_SUMMARY"

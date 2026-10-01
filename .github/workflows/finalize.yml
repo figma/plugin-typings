@@ -1,0 +1,48 @@
+name: Finalize Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Published version (X.Y.Z)'
+        required: true
+        type: string
+      release_run_id:
+        description: 'Successful Release workflow run that staged this version'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+jobs:
+  finalize:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: figma/actions-checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: figma/actions-setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22.22.0'
+      - name: Download release artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        run: |
+          [[ "$RELEASE_RUN_ID" =~ ^[0-9]+$ ]]
+          ATTEMPT=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RELEASE_RUN_ID" --jq .run_attempt)
+          [[ "$ATTEMPT" =~ ^[0-9]+$ ]]
+          gh run download "$RELEASE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "npm-package-$RELEASE_RUN_ID-$ATTEMPT" --dir .release
+      - name: Verify publication and finalize
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        run: node scripts/release.mjs finalize
