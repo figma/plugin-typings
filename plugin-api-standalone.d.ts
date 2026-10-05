@@ -4608,6 +4608,12 @@ interface ShaderEffect {
   readonly properties?: {
     [defId: string]: ShaderPropertyValue
   }
+  /**
+   * Read-only property definitions, keyed by the same ids as `properties`. Each entry includes the name, input type, and any default value or description. Supplied on reads of an applied shader effect.
+   */
+  readonly propertyMetadata?: {
+    [defId: string]: ShaderPropertyDefinition
+  }
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/Effect
@@ -4860,6 +4866,12 @@ interface ShaderPaint {
    */
   readonly properties?: {
     [defId: string]: ShaderPropertyValue
+  }
+  /**
+   * Read-only property definitions, keyed by the same ids as `properties`. Each entry includes the name, input type, and any default value or description. Supplied on reads of an applied shader fill or stroke.
+   */
+  readonly propertyMetadata?: {
+    [defId: string]: ShaderPropertyDefinition
   }
   readonly visible?: boolean
   readonly opacity?: number
