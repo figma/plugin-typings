@@ -2919,13 +2919,15 @@ interface UtilAPI {
    * const color = rgb('#FF00FF')
    * ```
    *
-   * @param color - A CSS color string, `RGB` object, or `RGBA` object. The input color's alpha value, if any, will be ignored.
+   * @param color - A CSS color string, `RGB` object, `RGBA` object, or `ColorWithColorSpace`. The input color's alpha value, if any, will be ignored.
    */
-  rgb(color: string | RGB | RGBA): RGB
+  rgb(
+    color: string | RGBWithColorSpace | RGBAWithColorSpace | ColorWithColorSpace,
+  ): RGBWithColorSpace
   /**
    * Creates an `RGBA` color object from a variety of common color encodings.
    *
-   * Accepted color formats include CSS color strings with hex, `rgb()`, `hsl()`, or `lab()` encodings, as well as `RGB` and `RGBA` objects. Alpha defaults to 1 (opaque) if not provided in the input. If a string encoding cannot be parsed, an error will be thrown.
+   * Accepted color formats include CSS color strings with hex, `rgb()`, `hsl()`, or `lab()` encodings, as well as `RGB`, `RGBA`, and `ColorWithColorSpace` objects. Alpha defaults to 1 (opaque) if not provided in the input. If supplied, `alphaOverride` takes precedence over alpha encoded in `color`. If a string encoding cannot be parsed, an error will be thrown.
    *
    * Examples:
    *
@@ -2944,9 +2946,13 @@ interface UtilAPI {
    * const color = rgba('rgb(25% 25% 25% / 0.5)')
    * ```
    *
-   * @param color - A CSS color string, `RGB` object, or `RGBA` object.
+   * @param color - A CSS color string, `RGB` object, `RGBA` object, or `ColorWithColorSpace`.
+   * @param alphaOverride - An optional alpha value that takes precedence over alpha encoded in `color`.
    */
-  rgba(color: string | RGB | RGBA): RGBA
+  rgba(
+    color: string | RGBWithColorSpace | RGBAWithColorSpace | ColorWithColorSpace,
+    alphaOverride?: number,
+  ): RGBAWithColorSpace
   /**
    * Creates a `SolidPaint` object, assigning color and opacity from a variety of common color encodings.
    *
@@ -2959,6 +2965,9 @@ interface UtilAPI {
    * ```ts
    * // Set the current page background to red
    * figma.currentPage.backgrounds = [figma.util.solidPaint("#FF0000")]
+   *
+   * // Create a solid paint from an OKLCH color
+   * figma.currentPage.backgrounds = [figma.util.solidPaint('oklch(40.1% 0.123 21.57)')]
    *
    * // Modify an existing SolidPaint with new color and opacity
    * if (node.fills[0].type === 'SOLID') {
@@ -2983,7 +2992,10 @@ interface UtilAPI {
    * @param color - A CSS color string, `RGB` object, or `RGBA` object.
    * @param overrides - An optional object that allows you to specify additional `SolidPaint` properties, aside from color. This is useful for modifying the color of a pre-existing `SolidPaint` object.
    */
-  solidPaint(color: string | RGB | RGBA, overrides?: Partial<SolidPaint>): SolidPaint
+  solidPaint(
+    color: string | RGBWithColorSpace | RGBAWithColorSpace | ColorWithColorSpace,
+    overrides?: Partial<SolidPaint>,
+  ): SolidPaint
   /**
    *
    * Normalizes the markdown string to verify what markdown will render with Figma's rich-text editors.
@@ -3954,6 +3966,52 @@ interface RGBA {
   readonly a: number
 }
 /**
+ * @see https://developers.figma.com/docs/plugins/api/RGB
+ */
+type ColorWithColorSpace =
+  | {
+      readonly space: 'SRGB' | 'DISPLAY_P3'
+      readonly r: number
+      readonly g: number
+      readonly b: number
+    }
+  | {
+      readonly space: 'HSL'
+      readonly h: number
+      readonly s: number
+      readonly l: number
+    }
+  | {
+      readonly space: 'HSB'
+      readonly h: number
+      readonly s: number
+      readonly b: number
+    }
+  | {
+      readonly space: 'OKLAB'
+      readonly l: number
+      readonly a: number
+      readonly b: number
+    }
+  | {
+      readonly space: 'OKLCH'
+      readonly l: number
+      readonly c: number
+      readonly h: number
+    }
+/**
+ * @see https://developers.figma.com/docs/plugins/api/RGB
+ */
+interface RGBWithColorSpace extends RGB {
+  readonly sourceColor?: ColorWithColorSpace
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/RGB
+ */
+interface RGBAWithColorSpace extends RGBA {
+  readonly sourceColor?: ColorWithColorSpace
+}
+/**
  * @see https://developers.figma.com/docs/plugins/api/FontName
  *
  * Describes a font used by a text node. For example, the default font is `{ family: "Inter", style: "Regular" }`.
@@ -4298,7 +4356,7 @@ interface DropShadowEffect {
   /**
    * The color of the shadow, including its opacity.
    */
-  readonly color: RGBA
+  readonly color: RGBAWithColorSpace
   /**
    * The offset of the shadow relative to its object. Use this property to simulate the direction of the light.
    */
@@ -4341,7 +4399,7 @@ interface InnerShadowEffect {
   /**
    * The color of the shadow, including its opacity.
    */
-  readonly color: RGBA
+  readonly color: RGBAWithColorSpace
   /**
    * The offset of the shadow relative to its object. Use this property to simulate the direction of the light.
    */
@@ -4437,7 +4495,7 @@ interface NoiseEffectBase {
   /**
    * The color of the noise effect.
    */
-  readonly color: RGBA
+  readonly color: RGBAWithColorSpace
   /**
    * Whether the noise effect is visible.
    */
@@ -4487,7 +4545,7 @@ interface NoiseEffectDuotone extends NoiseEffectBase {
   /**
    * The secondary color of the noise effect.
    */
-  readonly secondaryColor: RGBA
+  readonly secondaryColor: RGBAWithColorSpace
 }
 /**
  * @see https://developers.figma.com/docs/plugins/api/Effect
@@ -4648,7 +4706,7 @@ interface ColorStop {
   /**
    * The color value of the gradient stop
    */
-  readonly color: RGBA
+  readonly color: RGBAWithColorSpace
   /**
    * The variable bound to a gradient stop
    */
@@ -4691,7 +4749,7 @@ interface SolidPaint {
    * }
    * ```
    */
-  readonly color: RGB
+  readonly color: RGBWithColorSpace
   /**
    * Whether the paint is visible. Defaults to true.
    */
