@@ -1352,7 +1352,11 @@ interface PluginAPI {
    * @param startSegment - The index of the segment in the vector network to start the text path from.
    * @param startPosition - A number between 0 and 1 representing the position along the start segment to start the text path from.
    */
-  createTextPath(node: VectorNode, startSegment: number, startPosition: number): TextPathNode
+  createTextPath(
+    node: VectorNode | RectangleNode | EllipseNode | PolygonNode | StarNode | LineNode,
+    startSegment: number,
+    startPosition: number,
+  ): TextPathNode
   /**
    * This API creates a new node using the JSX API used by widgets.
    *
