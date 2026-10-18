@@ -145,6 +145,21 @@ function testParameters() {
   })
 }
 
+async function testCreateTextPath() {
+  await figma.loadFontAsync({ family: "Inter", style: "Regular" })
+  // VectorNodes, shape nodes and line nodes are all accepted
+  figma.createTextPath(figma.createVector(), 0, 0)
+  figma.createTextPath(figma.createRectangle(), 0, 0)
+  figma.createTextPath(figma.createEllipse(), 2, 0.5)
+  figma.createTextPath(figma.createPolygon(), 0, 0)
+  figma.createTextPath(figma.createStar(), 0, 0)
+  const textPath = figma.createTextPath(figma.createLine(), 0, 0)
+  textPath.characters = "This is text on a path!"
+
+  // @ts-expect-error Frames cannot be converted to a text path
+  figma.createTextPath(figma.createFrame(), 0, 0)
+}
+
 EOF
 
 npm install typescript@5
