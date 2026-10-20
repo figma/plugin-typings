@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-set -xueo pipefail
+set -euo pipefail
+
+ROOT=$(pwd)
+PACKAGE_TARBALL=$(realpath "${1:?Pass the packed package to test}")
+TSC="$ROOT/node_modules/.bin/tsc"
 
 rm -rf test-artifacts
 mkdir -p test-artifacts
@@ -147,9 +151,9 @@ function testParameters() {
 
 EOF
 
-npm install typescript@5
-npm install ../../
-npx tsc --noEmit
+mkdir -p node_modules/@figma/plugin-typings
+tar -xzf "$PACKAGE_TARBALL" --strip-components=1 -C node_modules/@figma/plugin-typings
+"$TSC" --noEmit
 
 popd
 
@@ -198,8 +202,8 @@ const gradient: GradientPaint = {
 type VectorAlias = Vector
 EOF
 
-npm install typescript@5
-npm install ../../
-npx tsc --noEmit
+mkdir -p node_modules/@figma/plugin-typings
+tar -xzf "$PACKAGE_TARBALL" --strip-components=1 -C node_modules/@figma/plugin-typings
+"$TSC" --noEmit
 
 popd
