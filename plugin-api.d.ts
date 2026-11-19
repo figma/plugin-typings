@@ -3551,7 +3551,6 @@ interface RunParametersEvent<ParametersType = ParameterValues | undefined> {
 
   parameters: ParametersType
 }
-
 interface OpenDevResourcesEvent {
   command: 'open-dev-resource'
 
@@ -3562,9 +3561,7 @@ interface OpenDevResourcesEvent {
     name: string
   }
 }
-
 type RunEvent = RunParametersEvent | OpenDevResourcesEvent
-
 interface SlidesViewChangeEvent {
   view: 'GRID' | 'SINGLE_SLIDE'
 }
@@ -3573,7 +3570,6 @@ interface SlidesViewChangeEvent {
  *
  * This event is triggered when users switch between Asset View and Grid View
  * in the Slides or Buzz interface, allowing plugins to respond to view changes.
- *
  */
 interface CanvasViewChangeEvent {
   /**
@@ -3583,7 +3579,6 @@ interface CanvasViewChangeEvent {
    */
   view: 'SINGLE_ASSET' | 'GRID'
 }
-
 interface DropEvent {
   node: BaseNode | SceneNode
 
@@ -3601,13 +3596,11 @@ interface DropEvent {
 
   dropMetadata?: any
 }
-
 interface DropItem {
   type: string
 
   data: string
 }
-
 interface DropFile {
   name: string
 
@@ -3617,14 +3610,12 @@ interface DropFile {
 
   getTextAsync(): Promise<string>
 }
-
 interface DocumentChangeEvent {
   /**
    * An array of {@link DocumentChange} that has happened since the last time the event was fired.
    */
   documentChanges: DocumentChange[]
 }
-
 interface StyleChangeEvent {
   /**
    * An array of {@link StyleChange} that has happened since the last time the event was fired.
@@ -3893,7 +3884,6 @@ type NodeChangeProperty =
   | 'animationStyles'
   | 'animations'
   | 'manualKeyframeTracks'
-
 interface NodeChangeEvent {
   nodeChanges: NodeChange[]
 }
@@ -3926,11 +3916,9 @@ type StyleChangeProperty =
   | 'paint'
   | 'effects'
   | 'layoutGrids'
-
 type TextReviewEvent = {
   text: string
 }
-
 type TextReviewRange = {
   start: number
   end: number
@@ -4661,7 +4649,9 @@ interface ShaderEffect {
    */
   readonly id: string
   /**
-   * The read/write map of property assignments, keyed by property-definition id (the keys of {@link Shader.propertyDefinitions}, not property names). On reads, this is populated with the effect's current assignments, including author-defined defaults, so a plugin can discover the available ids after the shader is applied.
+   * The read/write map of property assignments, keyed by property-definition id (the keys of {@link Shader.propertyDefinitions}, not property names). On reads, this is populated with the effect's current assignments, including author-defined defaults, so a plugin can discover the available ids after the shader is applied. Animated properties are omitted; read their tracks through {@link MotionNodeMixin.manualKeyframeTracks}.
+   *
+   * On writes, omitted static properties reset to their author-defined defaults. For the same shader at the same array index, omitted animated properties keep their keyframe bindings, even when `properties` is empty or absent. Use {@link MotionNodeMixin.removeManualKeyframeTrack} to remove a track.
    */
   readonly properties?: {
     [defId: string]: ShaderPropertyValue
@@ -4920,7 +4910,9 @@ interface ShaderPaint {
    */
   readonly id: string
   /**
-   * The read/write map of property assignments, keyed by property-definition id (the keys of {@link Shader.propertyDefinitions}, not property names). On reads, this is populated with the paint's current assignments, including author-defined defaults, so a plugin can discover the available ids after the shader is applied.
+   * The read/write map of property assignments, keyed by property-definition id (the keys of {@link Shader.propertyDefinitions}, not property names). On reads, this is populated with the paint's current assignments, including author-defined defaults, so a plugin can discover the available ids after the shader is applied. Animated properties are omitted; read their tracks through {@link MotionNodeMixin.manualKeyframeTracks}.
+   *
+   * On writes, omitted static properties reset to their author-defined defaults. For the same shader at the same array index, omitted animated properties keep their keyframe bindings, even when `properties` is empty or absent. Use {@link MotionNodeMixin.removeManualKeyframeTrack} to remove a track.
    */
   readonly properties?: {
     [defId: string]: ShaderPropertyValue
@@ -6137,6 +6129,9 @@ interface KeyframeBinding {
   readonly tracks: ReadonlyArray<ManualKeyframeTrack>
 }
 /**
+ * A node property that can be animated with {@link MotionNodeMixin.applyManualKeyframeTrack}.
+ *
+ * The `TRANSFORM_3D_ROTATION_X`, `TRANSFORM_3D_ROTATION_Y`, and `TRANSFORM_3D_ROTATION_Z` fields use degrees, matching {@link Transform3d}. `TRANSFORM_3D_TRANSLATION_Z` and `SCENE_3D_PERSPECTIVE` use pixels. All five use `FLOAT` values. Scene perspective keyframe values and base values must be nonnegative. 3D transform tracks require a `FIXED_ORDER` transform.
  * @see https://developers.figma.com/docs/plugins/api/Motion
  */
 type KeyframePropertyFieldName =
@@ -6170,6 +6165,11 @@ type KeyframePropertyFieldName =
   | 'SCALE_XY'
   | 'PATH_TRIM_START'
   | 'PATH_TRIM_END'
+  | 'TRANSFORM_3D_TRANSLATION_Z'
+  | 'TRANSFORM_3D_ROTATION_X'
+  | 'TRANSFORM_3D_ROTATION_Y'
+  | 'TRANSFORM_3D_ROTATION_Z'
+  | 'SCENE_3D_PERSPECTIVE'
 /**
  * @see https://developers.figma.com/docs/plugins/api/Motion
  */
@@ -6534,7 +6534,7 @@ interface PluginDataMixin {
    *
    * @remarks
    *
-   * The data is specific to your plugin ID. Plugins with other IDs won't be able to read this data. You can retrieve it later by calling `getPluginData` with the same key. To find all data stored on a node or style by your plugin use `getPluginDataKeys`.
+   * The data is specific to your plugin ID. Plugins with other IDs won't be able to read this data. You can retrieve it later by calling `getPluginData` with the same key. To find all data stored on a node or style by your plugin use `getPluginDataKeys`. Use {@link PluginDataMixin.setSharedPluginData} instead if other plugins need to read this data.
    *
    * Caution: ⚠ The data is stored privately for **stability**, not **security**. It prevents other plugins from accessing with your data. It does not, however, prevent users from seeing the data given sufficient effort. For example, they could export the document as a .fig file and try to decode it.
    *
@@ -6563,7 +6563,7 @@ interface PluginDataMixin {
    *
    * This lets you store custom information on any node or style. You can retrieve it later by calling {@link PluginDataMixin.getSharedPluginData} with the same namespace and key. To find all data stored on a node or style in a particular namespace, use {@link PluginDataMixin.getSharedPluginDataKeys}.
    *
-   * Any data you write using this API will be readable by any plugin. The intent is to allow plugins to interoperate with each other. Use {@link PluginDataMixin.setPluginData} instead if you don't want other plugins to be able to read your data.
+   * Any data you write using this API will be readable by any plugin. The intent is to allow plugins to interoperate with each other.
    *
    * You must also provide a `namespace` argument to avoid key collisions with other plugins. This argument is mandatory to prevent multiple plugins from using generic key names like `data` and overwriting one another. We recommend passing a value that identifies your plugin. This namespace can be given to authors of other plugins so that they can read data from your plugin.
    *
@@ -7390,6 +7390,184 @@ interface DimensionAndPositionMixin {
   readonly absoluteBoundingBox: Rect | null
 }
 /**
+ * A node's 3D transform, set with {@link Transform3dMixin.transform3d}.
+ *
+ * `NONE` removes the transform. `FIXED_ORDER` uses the transform order translateZ → rotateX → rotateY → rotateZ.
+ *
+ * `FREEFORM` represents an imported transform. Assigning it throws an error.
+ */
+type Transform3d =
+  | {
+      readonly type: 'NONE'
+    }
+  | {
+      readonly type: 'FIXED_ORDER'
+      /** Z translation in pixels, equivalent to CSS `translateZ()`. */
+      readonly translateZ: number
+      /** X-axis rotation in degrees, equivalent to CSS `rotateX()`. */
+      readonly rotateX: number
+      /** Y-axis rotation in degrees, equivalent to CSS `rotateY()`. */
+      readonly rotateY: number
+      /** Z-axis rotation in degrees, equivalent to CSS `rotateZ()`. */
+      readonly rotateZ: number
+      /** Whether the back of the layer is shown. `true` maps to CSS `backface-visibility: visible`; `false` to `backface-visibility: hidden`. Defaults to true when omitted. */
+      readonly backfaceVisible?: boolean
+      /** Whether the 3D transform is enabled. Turning it off keeps its settings. Defaults to true when omitted. */
+      readonly visible?: boolean
+    }
+  | {
+      readonly type: 'FREEFORM'
+      readonly backfaceVisible: boolean
+      readonly visible?: boolean
+    }
+/**
+ * One axis of a {@link TransformOrigin}.
+ * @see https://developers.figma.com/docs/plugins/api/TransformOrigin
+ */
+interface TransformOriginAxis {
+  /**
+   * The unit for this axis. `"PERCENT"` is relative to the node's width (x) or height (y), with 50 at the center. `"PIXELS"` is an offset from the node's top-left corner.
+   */
+  readonly unit: 'PERCENT' | 'PIXELS'
+  /**
+   * The finite offset in the specified unit. Values outside the node's bounds are allowed.
+   */
+  readonly value: number
+}
+/**
+ * The origin for a node's 3D transform, corresponding to the X/Y values of CSS `transform-origin`. Set with {@link Transform3dMixin.transformOrigin}. Defaults to 50 percent on both axes; each axis can use a different unit.
+ */
+interface TransformOrigin {
+  /**
+   * The horizontal origin, measured from the node's left edge.
+   */
+  readonly x: TransformOriginAxis
+  /**
+   * The vertical origin, measured from the node's top edge.
+   */
+  readonly y: TransformOriginAxis
+}
+/**
+ * The shared 3D rendering context for a frame, component, or instance, set with {@link Scene3dMixin.scene3d}.
+ */
+interface Scene3d {
+  /**
+   * Perspective distance in pixels, corresponding to CSS `perspective`. Negative values disable perspective; `-1` is the default. `0` and positive values below `1` render as `1px` perspective. The assigned value is preserved and must be finite.
+   */
+  readonly perspective: number
+  /**
+   * Whether children share a 3D rendering context—a shared space in which their transformed depth determines rendering order. Corresponds to CSS `transform-style: preserve-3d` when `true`, or `flat` when `false`.
+   *
+   * When `true`, children share a 3D space. Overlapping surfaces are rendered according to their transformed depth along the Z axis. Surfaces in the same plane follow layer order.
+   *
+   * When `false`, children are flattened into the container's plane and drawn in layer order, regardless of their depth.
+   *
+   * Caution: Avoid applying [opacity](https://developers.figma.com/api/node-properties.md#opacity), [blend modes](https://developers.figma.com/api/node-properties.md#blendmode), {@link BlendMixin.effects} (including linked effect styles), or {@link BaseFrameMixin.clipsContent} to a container whose `scene3d.preserve3d` is `true`. These properties have no visual effect on that container: it renders with full opacity and `PASS_THROUGH` blending, without effects or clipping. Their stored values are retained and apply again when `preserve3d` is `false`.
+   *
+   * To apply opacity, blending, effects, or clipping to the whole scene, use an ancestor frame with `preserve3d: false`. Put the perspective on that flat frame and keep `preserve3d: true` on an inner container so its children still share a 3D space. Applying opacity to individual children fades each one separately, which can make overlapping children show through one another.
+   */
+  readonly preserve3d: boolean
+  /**
+   * Whether the scene's perspective effect is applied. Defaults to `true` when omitted on assignment. Setting this to `false` preserves the stored perspective value; `preserve3d` applies independently.
+   */
+  readonly visible?: boolean
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
+ */
+interface Scene3dMixin {
+  /**
+   * The container's {@link Scene3d}, or `null` when none is configured. Assign a new object to update it, or `null` to clear it.
+   *
+   * Instances inherit their main component's scene until overridden. Assigning `null` opts an instance out of the inherited scene.
+   *
+   * @remarks
+   * Note: 3D transforms are available in beta. The API is subject to change.
+   *
+   * Assigning `{ perspective: -1, preserve3d: false }` reads back as `null` when `visible` is omitted or `true`. With `visible: false`, it reads back as an object.
+   *
+   * ```ts
+   * const scene = figma.createFrame()
+   * scene.resize(400, 300)
+   * scene.scene3d = { perspective: 800, preserve3d: true }
+   *
+   * const card = figma.createRectangle()
+   * scene.appendChild(card)
+   * card.resize(160, 100)
+   * card.x = 120
+   * card.y = 100
+   * card.transform3d = {
+   *   type: 'FIXED_ORDER',
+   *   translateZ: 40,
+   *   rotateX: 0,
+   *   rotateY: 30,
+   *   rotateZ: 0,
+   * }
+   *
+   * // Disable perspective while keeping the other scene settings.
+   * scene.scene3d = { ...scene.scene3d, perspective: -1 }
+   * ```
+   */
+  scene3d: Scene3d | null
+}
+/**
+ * @see https://developers.figma.com/docs/plugins/api/node-properties
+ */
+interface Transform3dMixin {
+  /**
+   * The node's {@link Transform3d}. Defaults to `{ type: 'NONE' }`. Assign a new `FIXED_ORDER` object to update it, or `{ type: 'NONE' }` to remove it. Assigning a `FREEFORM` value throws an error.
+   *
+   * @remarks
+   * Note: 3D transforms are available in beta. The API is subject to change.
+   *
+   * ```ts
+   * const card = figma.createRectangle()
+   * card.resize(160, 100)
+   * card.transform3d = {
+   *   type: 'FIXED_ORDER',
+   *   translateZ: 40,
+   *   rotateX: 0,
+   *   rotateY: 30,
+   *   rotateZ: 0,
+   *   backfaceVisible: false,
+   * }
+   *
+   * // Preserve the other settings when changing one rotation.
+   * if (card.transform3d.type === 'FIXED_ORDER') {
+   *   card.transform3d = { ...card.transform3d, rotateY: 45 }
+   * }
+   *
+   * // Remove the transform.
+   * card.transform3d = { type: 'NONE' }
+   * ```
+   */
+  transform3d: Transform3d
+  /**
+   * The origin for the node's 3D transform, corresponding to CSS `transform-origin`. Defaults to 50 percent on both axes. Assign a new {@link TransformOrigin} object to update it.
+   *
+   * @remarks
+   * Note: 3D transforms are available in beta. The API is subject to change.
+   *
+   * ```ts
+   * const card = figma.createRectangle()
+   * card.resize(160, 100)
+   * // Rotate around the middle of the left edge, like a hinged door.
+   * card.transformOrigin = {
+   *   x: { unit: 'PIXELS', value: 0 },
+   *   y: { unit: 'PERCENT', value: 50 },
+   * }
+   * card.transform3d = {
+   *   type: 'FIXED_ORDER',
+   *   translateZ: 0,
+   *   rotateX: 0,
+   *   rotateY: 45,
+   *   rotateZ: 0,
+   * }
+   * ```
+   */
+  transformOrigin: TransformOrigin
+}
+/**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
 interface LayoutMixin
@@ -7642,16 +7820,22 @@ interface BlendMixin extends MinimalBlendMixin {
   maskType: MaskType
   /**
    * Array of effects. See {@link Effect} type. For help on how to change this value, see [Editing Properties](https://developers.figma.com/docs/plugins/editing-properties).
+   *
+   * Caution: This property is ignored during rendering if `scene3d.preserve3d` is `true`, so avoid applying it to those nodes. See {@link Scene3d.preserve3d} for guidance.
    */
   effects: ReadonlyArray<Effect>
   /**
    * The id of the {@link EffectStyle} object that the properties of this node are linked to.
    *
    * If the manifest contains`"documentAccess": "dynamic-page"`, this property is read-only. Use `setEffectStyleIdAsync` to update the style.
+   *
+   * Caution: This property is ignored during rendering if `scene3d.preserve3d` is `true`, so avoid applying it to those nodes. See {@link Scene3d.preserve3d} for guidance.
    */
   effectStyleId: string
   /**
    * Set the {@link EffectStyle} that the properties of this node are linked to.
+   *
+   * Caution: This property is ignored during rendering if `scene3d.preserve3d` is `true`, so avoid applying it to those nodes. See {@link Scene3d.preserve3d} for guidance.
    */
   setEffectStyleIdAsync(styleId: string): Promise<void>
 }
@@ -9423,6 +9607,7 @@ interface DefaultShapeMixin
     BlendMixin,
     GeometryMixin,
     LayoutMixin,
+    Transform3dMixin,
     ExportMixin {}
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
@@ -9468,6 +9653,8 @@ interface BaseFrameMixin
   setGridStyleIdAsync(styleId: string): Promise<void>
   /**
    * Whether the frame clips its contents. That is, whether layers inside the frame are visible outside the bounds of the frame.
+   *
+   * Caution: This property is ignored during rendering if `scene3d.preserve3d` is `true`, so avoid applying it to those nodes. See {@link Scene3d.preserve3d} for guidance.
    */
   clipsContent: boolean
   /**
@@ -9486,7 +9673,8 @@ interface BaseFrameMixin
 /**
  * @see https://developers.figma.com/docs/plugins/api/node-properties
  */
-interface DefaultFrameMixin extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin {}
+interface DefaultFrameMixin
+  extends BaseFrameMixin, FramePrototypingMixin, ReactionMixin, Transform3dMixin {}
 
 interface OpaqueNodeMixin
   extends BaseNodeMixin, SceneNodeMixin, ExportMixin, DimensionAndPositionMixin {}
@@ -9494,10 +9682,14 @@ interface OpaqueNodeMixin
 interface MinimalBlendMixin {
   /**
    * Opacity of the node, as shown in the Layer panel. Must be between 0 and 1.
+   *
+   * Caution: This property is ignored during rendering if `scene3d.preserve3d` is `true`, so avoid applying it to those nodes. See {@link Scene3d.preserve3d} for guidance.
    */
   opacity: number
   /**
    * Blend mode of this node, as shown in the Layer panel. In addition to the blend modes that paints & effects support, the layer blend mode can also have the value PASS_THROUGH.
+   *
+   * Caution: This property is ignored during rendering if `scene3d.preserve3d` is `true`, so avoid applying it to those nodes. See {@link Scene3d.preserve3d} for guidance.
    */
   blendMode: BlendMode
 }
@@ -9913,6 +10105,16 @@ interface BaseNonResizableTextMixin {
   getRangeFontWeight(start: number, end: number): number | PluginAPI['mixed']
   /**
    * Get the `fontName`s from characters in range `start` (inclusive) to `end` (exclusive). For [variable fonts](https://developers.figma.com/docs/plugins/api/FontName), each entry includes {@link FontName.variationSettings}.
+   *
+   * @remarks
+   *
+   * Throws if `start === end` (an empty range). Only call
+   * `node.getRangeAllFontNames(0, node.characters.length)` when
+   * `node.characters.length > 0`.
+   *
+   * For empty text, load the node's concrete `fontName` with
+   * {@link PluginAPI.loadFontAsync} before editing instead of
+   * enumerating a range.
    */
   getRangeAllFontNames(start: number, end: number): FontName[]
   /**
@@ -10813,7 +11015,7 @@ interface PageNode
    */
   focusedNode: SceneNode | null
 }
-interface FrameNode extends DefaultFrameMixin {
+interface FrameNode extends DefaultFrameMixin, Scene3dMixin {
   /**
    * The type of this node, represented by the string literal "FRAME".
    */
@@ -10833,6 +11035,7 @@ interface GroupNode
     DeprecatedBackgroundMixin,
     BlendMixin,
     LayoutMixin,
+    Transform3dMixin,
     ExportMixin,
     AspectRatioLockMixin {
   /**
@@ -10857,6 +11060,7 @@ interface TransformGroupNode
     DeprecatedBackgroundMixin,
     BlendMixin,
     LayoutMixin,
+    Transform3dMixin,
     ExportMixin,
     AspectRatioLockMixin {
   /**
@@ -11198,7 +11402,12 @@ interface ComponentSetNode extends BaseFrameMixin, PublishableMixin, ComponentPr
  * @see https://developers.figma.com/docs/plugins/api/ComponentNode
  */
 interface ComponentNode
-  extends DefaultFrameMixin, PublishableMixin, VariantMixin, ComponentPropertiesMixin {
+  extends
+    DefaultFrameMixin,
+    PublishableMixin,
+    VariantMixin,
+    ComponentPropertiesMixin,
+    Scene3dMixin {
   /**
    * The type of this node, represented by the string literal "COMPONENT"
    */
@@ -11241,7 +11450,7 @@ type ComponentProperties = {
     }
   }
 }
-interface InstanceNode extends DefaultFrameMixin, VariantMixin {
+interface InstanceNode extends DefaultFrameMixin, VariantMixin, Scene3dMixin {
   /**
    * The type of this node, represented by the string literal "INSTANCE"
    */
@@ -11719,6 +11928,7 @@ interface ConnectorNode extends OpaqueNodeMixin, MinimalBlendMixin, MinimalStrok
    */
   clone(): ConnectorNode
 }
+
 type VariableResolvedDataType = 'BOOLEAN' | 'COLOR' | 'EASING' | 'FLOAT' | 'STRING' | 'TIMING'
 interface VariableAlias {
   type: 'VARIABLE_ALIAS'
@@ -11736,6 +11946,7 @@ type VariableComposedColor =
       color: VariableAlias
       opacity: number | VariableAlias
     }
+
 type VariableValue =
   boolean | string | number | RGB | RGBA | MotionEasing | VariableAlias | VariableComposedColor
 type VariableScope =
@@ -12355,7 +12566,7 @@ interface SectionNode
 /**
  * @see https://developers.figma.com/docs/plugins/api/SlideNode
  */
-interface SlideNode extends BaseFrameMixin {
+interface SlideNode extends BaseFrameMixin, Transform3dMixin {
   /**
    * The type of this node, represented by the string literal "SLIDE"
    */
